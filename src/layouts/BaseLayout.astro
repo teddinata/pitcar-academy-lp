@@ -3,6 +3,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
 import SeoHead from '../components/SeoHead.astro';
+import GoogleAnalytics from '../components/GoogleAnalytics.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
   image?: string;
   canonical?: string;
   whatsappNumber?: string;
+  gaId?: string;
 }
 
 import { whatsappConfig } from "../content.config";
@@ -20,6 +22,7 @@ const {
   image = '/og-image.png',
   canonical = '/',
   whatsappNumber = whatsappConfig.phoneNumber,
+  gaId = 'G-FNT01JRZN7',
 } = Astro.props;
 
 const siteUrl = Astro.site || 'https://academy.pitcar.co.id';
@@ -32,6 +35,9 @@ const siteUrl = Astro.site || 'https://academy.pitcar.co.id';
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
+
+    <!-- Google Analytics -->
+    <GoogleAnalytics id={gaId} />
 
     <!-- SEO -->
     <SeoHead
