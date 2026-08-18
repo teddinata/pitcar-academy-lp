@@ -11,9 +11,10 @@ const { id = 'G-FNT01JRZN7' } = Astro.props;
     <script async src={`https://www.googletagmanager.com/gtag/js?id=${id}`}></script>
     <script is:inline define:vars={{ id }}>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+      function gtag(){window.dataLayer.push(arguments);}
+      window.gtag = gtag;
 
+      gtag('js', new Date());
       gtag('config', id);
 
       // Auto-track GA4 event 'whatsapp_click' when any WhatsApp link is clicked
@@ -22,15 +23,13 @@ const { id = 'G-FNT01JRZN7' } = Astro.props;
         if (!anchor) return;
         var href = anchor.getAttribute('href') || anchor.href || '';
         if (href.includes('wa.me') || href.includes('whatsapp.com') || href.includes('api.whatsapp.com')) {
-          if (typeof window.gtag === 'function') {
-            window.gtag('event', 'whatsapp_click', {
-              link_url: href,
-              link_text: anchor.innerText ? anchor.innerText.trim() : '',
-              page_location: window.location.href
-            });
-          }
+          gtag('event', 'whatsapp_click', {
+            link_url: href,
+            link_text: anchor.innerText ? anchor.innerText.trim() : '',
+            page_location: window.location.href
+          });
         }
-      });
+      }, true);
     </script>
   </>
 )}
