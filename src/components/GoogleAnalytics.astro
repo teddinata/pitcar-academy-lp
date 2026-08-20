@@ -16,20 +16,26 @@ const { id = 'G-FNT01JRZN7' } = Astro.props;
 
       gtag('js', new Date());
       gtag('config', id);
+    </script>
 
-      // Auto-track GA4 event 'whatsapp_click' when any WhatsApp link is clicked
-      document.addEventListener('click', function (e) {
-        var anchor = e.target && e.target.closest ? e.target.closest('a') : null;
-        if (!anchor) return;
-        var href = anchor.getAttribute('href') || anchor.href || '';
-        if (href.includes('wa.me') || href.includes('whatsapp.com') || href.includes('api.whatsapp.com')) {
-          gtag('event', 'whatsapp_click', {
-            link_url: href,
-            link_text: anchor.innerText ? anchor.innerText.trim() : '',
-            page_location: window.location.href
-          });
-        }
-      }, true);
+    <!-- Google tag (gtag.js) event - delayed navigation helper -->
+    <script is:inline>
+      // Helper function to delay opening a URL until a gtag event is sent.
+      // Call it in response to an action that should navigate to a URL.
+      function gtagSendEvent(url) {
+        var callback = function () {
+          if (typeof url === 'string') {
+            window.location = url;
+          }
+        };
+        gtag('event', 'whatsapp_click', {
+          'event_callback': callback,
+          'event_timeout': 2000,
+          // <event_parameters>
+        });
+        return false;
+      }
     </script>
   </>
 )}
+

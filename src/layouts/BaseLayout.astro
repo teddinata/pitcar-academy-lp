@@ -31,13 +31,13 @@ const siteUrl = Astro.site || 'https://academy.pitcar.co.id';
 <!doctype html>
 <html lang="id" class="scroll-smooth">
   <head>
+    <!-- Google Analytics -->
+    <GoogleAnalytics id={gaId} />
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-
-    <!-- Google Analytics -->
-    <GoogleAnalytics id={gaId} />
 
     <!-- SEO -->
     <SeoHead
