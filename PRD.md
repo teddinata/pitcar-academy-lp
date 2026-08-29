@@ -12,12 +12,13 @@
 Pitcar Academy belum memiliki platform digital yang terstandarisasi untuk menarik calon peserta didik dan mengonversi mereka menjadi pendaftar program pelatihan mekanik. Informasi tersedia namun tidak tersaji dalam format yang profesional, mudah dipahami, dan mengoptimalkan konversi melalui WhatsApp.
 
 ### Proposed Solution
-Membangun landing page single-page yang SEO-friendly, cepat, dan conversion-oriented dengan fokus utama mengarahkan pengunjung untuk langsung chat via WhatsApp. Landing page dibuat dengan struktur arsitektur yang memungkinkan penambahan modul LMS (`/admin`) di masa depan.
+Membangun landing page single-page yang SEO-friendly, cepat, dan conversion-oriented. Pengunjung mengisi short qualification form terlebih dahulu; lead disimpan melalui backend Laravel, kemudian WhatsApp dibuka dengan pesan terstruktur untuk Education Consultant. Landing page tetap memungkinkan penambahan modul LMS (`/admin`) di masa depan.
 
 ### Success Criteria (KPIs)
 | Metric | Target |
 |--------|--------|
-| WhatsApp Click Rate (CTR) | ≥ 8% dari total kunjungan |
+| Lead Form Completion Rate | ≥ 20% dari pengunjung yang memulai form |
+| Lead-to-WhatsApp Rate | ≥ 80% dari lead yang berhasil tersimpan |
 | Lighthouse Performance Score | ≥ 95 (desktop & mobile) |
 | Lighthouse Accessibility Score | ≥ 95 |
 | Core Web Vitals | All "Good" (LCP < 2.5s, CLS < 0.1, INP < 200ms) |
@@ -75,16 +76,17 @@ Membangun landing page single-page yang SEO-friendly, cepat, dan conversion-orie
 - Tiap keunggulan punya judul singkat + deskripsi 1 kalimat
 - Tampilan visual bersih: 2 kolom di mobile, 5 kolom di desktop (atau horizontal scroll swipe)
 
-#### STORY 5: Pengunjung Langsung Chat via WhatsApp
-> As an interested visitor, I want to easily start a conversation on WhatsApp without filling any form or registering first.
+#### STORY 5: Pengunjung Memulai Konsultasi dengan Konteks
+> As an interested visitor, I want to share a short profile before WhatsApp opens so the consultant can immediately give relevant advice.
 
 **Acceptance Criteria:**
-- CTA WhatsApp sticky/floating button selalu terlihat (bottom-right, fixed position)
-- Floating button animasi subtle (pulse/bounce) untuk menarik perhatian
-- Minimal 3 posisi CTA WhatsApp: Hero, Akhir konten (section terakhir), Floating bottom-right
-- URL WhatsApp pakai `wa.me` + parameter `text=` dengan pesan pre-filled sesuai section
-- Nomor WhatsApp dikonfigurasi via env/config (mudah diganti tanpa edit kode)
-- Klik CTA membuka tab baru (target blank)
+- CTA utama, paket, header, footer, dan floating button mengarah ke short lead form
+- CTA paket otomatis memilih program interest yang sesuai
+- Form menangkap kontak, qualification fields, source CTA, UTM, dan referrer
+- Lead disimpan melalui `POST /api/leads` sebelum WhatsApp dibuka
+- Pesan WhatsApp dihasilkan secara terstruktur dan menyertakan `lead_code` bila tersedia
+- API base URL dan nomor consultant dikonfigurasi melalui environment variables
+- Kegagalan API selalu terlihat dan menyediakan retry/copy/WhatsApp fallback
 
 #### STORY 6: Pengunjung Mengakses LP dari HP
 > As a mobile user, I want the LP to be perfectly responsive and fast on my phone, so I can browse comfortably anywhere.
@@ -107,7 +109,6 @@ Membangun landing page single-page yang SEO-friendly, cepat, dan conversion-orie
 ---
 
 ### Non-Goals
-- **Form pendaftaran / lead capture** (tidak ada form di LP)
 - **Payment gateway integration** (eksklusi pembayaran online)
 - **User authentication** (tidak diperlukan untuk LP)
 - **Blog / news section** (fokus landing page saja)
@@ -207,13 +208,14 @@ pitcar-academy-lp/
 
 | Integration | Purpose | Implementation |
 |-------------|---------|----------------|
-| **WhatsApp API** | Direct chat via `wa.me` | Static URL dengan encoded message |
+| **Laravel Lead API** | Lead capture, scoring, CRM handoff | `POST /api/leads` dengan typed JSON payload |
+| **WhatsApp** | Konsultasi setelah lead tersimpan | URL dari API atau fallback `wa.me` dari env |
 | **Google Search Console** | SEO monitoring | Submit sitemap.xml |
 | **Vercel Analytics / Plausible** *(Optional)* | Traffic tracking | Lightweight privacy-first script |
 
-### WhatsApp Link Configuration
+### Lead and WhatsApp Configuration
 
-All WhatsApp links follow this pattern:
+Frontend mengirim lead ke backend lebih dulu. Setelah respons sukses, URL WhatsApp mengikuti pola:
 
 ```
 https://wa.me/{nomor}?text={pesan_terenkodi}
@@ -224,7 +226,7 @@ Example messages:
 - Package Specific: `"Halo, saya tertarik dengan PAKET BASIC - Rp 5.000.000. Bagaimana cara daftarnya?"`
 - Sticky Button: `"Halo Pitcar Academy, saya mau daftar program pelatihan mekanik."`
 
-Number and messages are defined centrally in `content.config.ts`.
+API base URL dan nomor Education Consultant ditentukan melalui `.env`; kontrak request/response berada di `docs/lead-api-contract.md`.
 
 ### SEO Implementation Checklist
 
@@ -248,10 +250,11 @@ Number and messages are defined centrally in `content.config.ts`.
 
 | Aspect | Approach |
 |--------|----------|
-| HTTPS |强制 via VPS Nginx config + Let's Encrypt |
-| CSP | Basic CSP header (self + wa.me) |
-| Form security | N/A (no forms) |
-| WhatsApp safety | No sensitive data transmitted; external link warning if needed |
+| HTTPS | Wajib melalui hosting / reverse proxy |
+| CSP | Allow origin Lead API, Google Analytics (bila aktif), dan WhatsApp sesuai deployment |
+| Form security | Server-side validation, rate limiting, idempotency, CORS allowlist, dan consent timestamp |
+| Data privacy | Secret hanya di backend; frontend memberi tahu penggunaan data sebelum submit |
+| WhatsApp safety | Hanya menerima HTTPS URL dari host WhatsApp yang diizinkan |
 
 ---
 
@@ -261,16 +264,17 @@ Number and messages are defined centrally in `content.config.ts`.
 
 | Phase | Scope | Timeline Estimate |
 |-------|-------|-------------------|
-| **Phase 1 — MVP** | LP + WhatsApp CTA + SEO basic | Week 1-2 |
-| **Phase 2 — Enhanced** | FAQ page + Testimoni + Rich snippets + Analytics | Week 3 |
-| **Phase 3 — Performance** | Image optimization + Cache strategy + CDN setup | Week 4 |
+| **Phase 1 — Funnel** | LP + lead form + WhatsApp handoff + SEO | Week 1-2 |
+| **Phase 2 — Backend** | Laravel API + scoring + CRM/notification queue | Week 2-3 |
+| **Phase 3 — Optimization** | A/B test, analytics funnel, cache strategy, CWV monitoring | Week 4 |
 | **Phase 4 — LMS Ready** | `/admin` route converted to React/Vue SPA with auth | Month 2+ |
 
 ### Technical Risks
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
-| WhatsApp link open rate rendah | Konversi rendah | A/B testing CTA copy + floating button always visible |
+| Lead form completion rendah | Konversi rendah | Pantau step drop-off, sederhanakan field, A/B testing CTA copy |
+| Lead API tidak tersedia | Lead tidak tersimpan | Pending lead lokal, retry eksplisit, dan WhatsApp fallback |
 | LP lambat di network buruk | Bounce tinggi tinggi | Static generation, compressed assets, aggressive caching |
 | Perubahan konten butuh rebuild | Agility issue | Centralized config file untuk semua konten bisnis |
 | `/admin` conflict dengan Astro routing | Build error | Gunakan folder-based nesting `pages/admin/` dengan proper exclusion |
@@ -286,32 +290,9 @@ Design akan mengikuti brand identity yang ada di **pitcar.co.id**:
 
 ---
 
-## Appendix: WhatsApp Pre-filled Messages Detail
+## Appendix: Lead Integration
 
-```typescript
-// content.config.ts example
-export const whatsappConfig = {
-  phoneNumber: "628XXXXXXXXX",  // Ganti dengan nomor official
-  baseUrl: "https://wa.me",
-  messages: {
-    hero: encodeURIComponent(
-      "Halo Pitcar Academy, saya tertarik dengan program pelatihan mekanik. Bisa info lebih lanjut?"
-    ),
-    packageBasic: encodeURIComponent(
-      "Halo, saya tertarik dengan PAKET BASIC Maintenance Mobil EFI - Rp 5.000.000. Bagaimana cara daftarnya?"
-    ),
-    packageAdvanced: encodeURIComponent(
-      "Halo, saya tertarik dengan PAKET ADVANCED General Repair Mobil EFI - Rp 5.000.000. Bagaimana cara daftarnya?"
-    ),
-    packageProfessional: encodeURIComponent(
-      "Halo, saya tertarik dengan PAKET PROFESSIONAL Level 1&2 - Rp 8.500.000. Bagaimana cara daftarnya?"
-    ),
-    sticky: encodeURIComponent(
-      "Halo Pitcar Academy, saya mau tanya tentang program pelatihan mekanik."
-    ),
-  },
-};
-```
+Lihat `docs/lead-api-contract.md` untuk payload, response, enum qualification, error handling, dan catatan implementasi Laravel.
 
 ---
 
