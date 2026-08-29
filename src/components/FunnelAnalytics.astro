@@ -1,0 +1,130 @@
+<script>
+  type FunnelEventParams = Record<string, string | number | boolean | null | undefined>;
+  type LeadAttributionSnapshot = {
+    landing_page: string;
+    referrer: string | null;
+    utm_source: string | null;
+    utm_medium: string | null;
+    utm_campaign: string | null;
+    utm_content: string | null;
+    utm_term: string | null;
+  };
+
+  const pendingEventKey = 'pitcar_academy_pending_analytics_event_v1';
+  const pendingCtaKey = 'pitcar_academy_pending_cta_v1';
+  const attributionKey = 'pitcar_academy_attribution_v1';
+
+  function readCurrentAttribution(): LeadAttributionSnapshot {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      landing_page: window.location.href,
+      referrer: document.referrer || null,
+      utm_source: params.get('utm_source'),
+      utm_medium: params.get('utm_medium'),
+      utm_campaign: params.get('utm_campaign'),
+      utm_content: params.get('utm_content'),
+      utm_term: params.get('utm_term'),
+    };
+  }
+
+  const currentAttribution = readCurrentAttribution();
+  let leadAttribution = currentAttribution;
+  try {
+    const storedAttribution = sessionStorage.getItem(attributionKey);
+    const hasCurrentCampaign = Object.entries(currentAttribution)
+      .some(([key, value]) => key.startsWith('utm_') && Boolean(value));
+    if (storedAttribution && !hasCurrentCampaign) {
+      leadAttribution = JSON.parse(storedAttribution) as LeadAttributionSnapshot;
+    } else {
+      sessionStorage.setItem(attributionKey, JSON.stringify(currentAttribution));
+    }
+  } catch {
+    // Current-page attribution remains available when session storage is blocked.
+  }
+  window.getLeadAttribution = () => ({ ...leadAttribution });
+
+  function getAttribution(): FunnelEventParams {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      page_location: window.location.href,
+      page_referrer: document.referrer || null,
+      utm_source: params.get('utm_source'),
+      utm_medium: params.get('utm_medium'),
+      utm_campaign: params.get('utm_campaign'),
+      utm_content: params.get('utm_content'),
+      utm_term: params.get('utm_term'),
+    };
+  }
+
+  function compact(params: FunnelEventParams): FunnelEventParams {
+    return Object.fromEntries(
+      Object.entries(params).filter(([, value]) => value !== null && value !== undefined && value !== ''),
+    );
+  }
+
+  window.trackFunnelEvent = (eventName, params = {}) => {
+    window.dataLayer = window.dataLayer || [];
+    if (!window.gtag) {
+      // Same shape as the official gtag stub: gtag.js replays `arguments`
+      // objects queued on dataLayer, not plain arrays.
+      window.gtag = function () {
+        window.dataLayer?.push(arguments);
+      };
+    }
+    window.gtag('event', eventName, compact({ ...getAttribution(), ...params }));
+  };
+
+  try {
+    const rawPendingEvent = sessionStorage.getItem(pendingEventKey);
+    if (rawPendingEvent) {
+      sessionStorage.removeItem(pendingEventKey);
+      const pendingEvent = JSON.parse(rawPendingEvent) as {
+        name?: string;
+        params?: FunnelEventParams;
+      };
+      if (pendingEvent.name) window.trackFunnelEvent(pendingEvent.name, pendingEvent.params);
+    }
+  } catch {
+    // Analytics must never block the conversion funnel when storage is unavailable.
+  }
+
+  document.addEventListener('click', (event) => {
+    const element = (event.target as Element | null)?.closest<HTMLElement>('[data-lead-cta], [data-lead-whatsapp]');
+    if (!element) return;
+
+    const form = document.querySelector<HTMLFormElement>('#lead-form');
+    const programSelect = form?.elements.namedItem('program_interest') as HTMLSelectElement | null;
+    const sourceInput = form?.elements.namedItem('source_cta') as HTMLInputElement | null;
+    const params: FunnelEventParams = {
+      source_cta: element.dataset.sourceCta || sourceInput?.value || 'unknown',
+      program_interest: element.dataset.programInterest || programSelect?.value || 'undecided',
+    };
+
+    if (element.matches('[data-lead-whatsapp]')) {
+      window.trackFunnelEvent?.('whatsapp_open', params);
+      return;
+    }
+
+    const anchor = element.closest<HTMLAnchorElement>('a[href]');
+    if (anchor) {
+      try {
+        const destination = new URL(anchor.href, window.location.href);
+        const leavesDocument = destination.origin !== window.location.origin
+          || destination.pathname !== window.location.pathname
+          || destination.search !== window.location.search;
+        if (leavesDocument) {
+          sessionStorage.setItem(pendingEventKey, JSON.stringify({
+            name: 'cta_click',
+            params: compact({ ...getAttribution(), ...params }),
+          }));
+          sessionStorage.setItem(pendingCtaKey, JSON.stringify(params));
+          return;
+        }
+      } catch {
+        // Fall through and record the click on the current document.
+      }
+    }
+
+    window.trackFunnelEvent?.('cta_click', params);
+  });
+</script>

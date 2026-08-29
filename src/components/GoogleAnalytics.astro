@@ -3,39 +3,40 @@ interface Props {
   id?: string;
 }
 
-const { id = 'G-FNT01JRZN7' } = Astro.props;
+const { id } = Astro.props;
 ---
 
 {id && (
-  <>
-    <script async src={`https://www.googletagmanager.com/gtag/js?id=${id}`}></script>
-    <script is:inline define:vars={{ id }}>
+  <script is:inline define:vars={{ id }}>
+    (() => {
+      let loaded = false;
       window.dataLayer = window.dataLayer || [];
-      function gtag(){window.dataLayer.push(arguments);}
-      window.gtag = gtag;
+      window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+      window.gtag('js', new Date());
+      window.gtag('config', id, { transport_type: 'beacon' });
 
-      gtag('js', new Date());
-      gtag('config', id);
-    </script>
+      const loadAnalytics = () => {
+        if (loaded) return;
+        loaded = true;
 
-    <!-- Google tag (gtag.js) event - delayed navigation helper -->
-    <script is:inline>
-      // Helper function to delay opening a URL until a gtag event is sent.
-      // Call it in response to an action that should navigate to a URL.
-      function gtagSendEvent(url) {
-        var callback = function () {
-          if (typeof url === 'string') {
-            window.location = url;
-          }
-        };
-        gtag('event', 'whatsapp_click', {
-          'event_callback': callback,
-          'event_timeout': 2000,
-          // <event_parameters>
-        });
-        return false;
-      }
-    </script>
-  </>
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;
+        document.head.appendChild(script);
+      };
+
+      const scheduleLoad = () => {
+        if ('requestIdleCallback' in window) {
+          window.requestIdleCallback(loadAnalytics, { timeout: 3000 });
+        } else {
+          window.setTimeout(loadAnalytics, 1500);
+        }
+      };
+
+      window.addEventListener('load', scheduleLoad, { once: true });
+      ['pointerdown', 'keydown'].forEach((eventName) => {
+        window.addEventListener(eventName, loadAnalytics, { once: true, passive: true });
+      });
+    })();
+  </script>
 )}
-
