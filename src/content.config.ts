@@ -2,34 +2,6 @@ export const collections = {
   // Content data — semua info bisnis di sini
 };
 
-// WhatsApp configuration (not a collection, just exported config)
-export const whatsappConfig = {
-  phoneNumber: '6285742228865', // Ganti dengan nomor official WA
-  messages: {
-    hero: encodeURIComponent(
-      'Halo Pitcar Academy, saya tertarik dengan program pelatihan mekanik. Bisa info lebih lanjut?'
-    ),
-    packageBasic: encodeURIComponent(
-      'Halo, saya tertarik dengan PAKET BASIC Maintenance Mobil EFI - Rp 5.000.000. Bagaimana cara daftarnya?'
-    ),
-    packageAdvanced: encodeURIComponent(
-      'Halo, saya tertarik dengan PAKET ADVANCE General Repair Mobil EFI - Rp 5.000.000. Bagaimana cara daftarnya?'
-    ),
-    packageProfessional: encodeURIComponent(
-      'Halo, saya tertarik dengan PAKET PROFESSIONAL Level 1&2 Maintenance & General Repair - Rp 8.500.000. Bagaimana cara daftarnya?'
-    ),
-    sticky: encodeURIComponent(
-      'Halo Pitcar Academy, saya mau tanya tentang program pelatihan mekanik.'
-    ),
-    faq: encodeURIComponent(
-      'Halo Pitcar Academy, saya punya pertanyaan setelah membaca FAQ. Bisa dibantu?'
-    ),
-    ctaBottom: encodeURIComponent(
-      'Halo Pitcar Academy, saya ingin mendaftar program pelatihan mekanik!'
-    ),
-  },
-};
-
 // Package data
 export interface PackageItem {
   id: string;
@@ -236,4 +208,3 @@ export const faqs: FaqItem[] = [
       'Free Mess hanya berlaku untuk 10 pendaftar tercepat saja. Segera daftarkan diri Anda melalui WhatsApp untuk memastikan kuota.',
   },
 ];
-

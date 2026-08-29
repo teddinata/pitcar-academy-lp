@@ -1,5 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  // The palette below only flips under a `.dark` class, which nothing sets.
+  // Leaving this on the default 'media' let `dark:` utilities fire on
+  // prefers-color-scheme while the page background stayed white.
+  darkMode: 'class',
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
   theme: {
     extend: {

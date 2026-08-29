@@ -2,11 +2,6 @@
 import PackageCard from './PackageCard.astro';
 import { packages } from '../content.config.ts';
 
-interface Props {
-  whatsappNumber: string;
-}
-
-const { whatsappNumber } = Astro.props;
 ---
 
 <section
@@ -24,7 +19,7 @@ const { whatsappNumber } = Astro.props;
       </span>
       <h2 class="heading-primary text-white mb-5">
         Program Pelatihan <span
-          class="bg-gradient-to-r from-brand-400 to-brand-300 bg-clip-text text-transparent"
+          class="text-brand-300"
           >Pitcar Academy</span>
       </h2>
       <p class="section-subtitle">
@@ -35,7 +30,7 @@ const { whatsappNumber } = Astro.props;
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {
         packages.map((pkg) => (
-          <PackageCard pkg={pkg} whatsappNumber={whatsappNumber} />
+          <PackageCard pkg={pkg} />
         ))
       }
     </div>
