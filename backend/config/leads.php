@@ -108,6 +108,10 @@ return [
     | should say — set this once legal has decided.
     */
 
+    // Whether a CSV export carries full WhatsApp numbers or masked ones.
+    // Confirm against the privacy policy before enabling in production.
+    'export_includes_full_number' => (bool) env('LEAD_EXPORT_FULL_NUMBER', true),
+
     'retention_days' => env('LEAD_RETENTION_DAYS') ? (int) env('LEAD_RETENTION_DAYS') : null,
 
 ];

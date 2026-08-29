@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class EducationConsultant extends Model
@@ -11,7 +12,7 @@ class EducationConsultant extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'whatsapp_number', 'is_active',
+        'user_id', 'name', 'whatsapp_number', 'is_active',
         'programs', 'domiciles', 'max_active_leads', 'priority',
     ];
 
@@ -24,6 +25,11 @@ class EducationConsultant extends Model
             'max_active_leads' => 'integer',
             'priority' => 'integer',
         ];
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function leads(): HasMany

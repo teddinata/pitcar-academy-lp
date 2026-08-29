@@ -45,6 +45,21 @@ class LeadSecurityTest extends TestCase
         $this->assertSame($consultant->id, $lead->assigned_consultant_id);
     }
 
+    public function test_pipeline_fields_stay_guarded_against_mass_assignment(): void
+    {
+        $this->postJson('/api/leads', $this->leadPayload())->assertCreated();
+        $lead = Lead::sole();
+
+        // update() is the path any careless future code would reach for; the
+        // dashboard has to go through updatePipeline() on purpose.
+        $lead->update(['status' => 'converted', 'score' => 100, 'lead_code' => 'PA-1999-000001']);
+
+        $fresh = $lead->fresh();
+        $this->assertNotSame('converted', $fresh->status);
+        $this->assertNotSame(100, $fresh->score);
+        $this->assertNotSame('PA-1999-000001', $fresh->lead_code);
+    }
+
     public function test_the_response_never_leaks_internal_fields(): void
     {
         $response = $this->postJson('/api/leads', $this->leadPayload())->assertCreated();
