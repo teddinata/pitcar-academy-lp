@@ -135,6 +135,57 @@ columns reporting needs. It is a no-op until that value is set. Run
 `NotifyNewLead` logs the lead code, score, qualification and attribution — never
 the name or number.
 
+## Dashboard
+
+Filament panel at `/admin`. Seed the first admin, then manage everyone else from
+inside the panel:
+
+```bash
+ADMIN_EMAIL=you@pitcar.co.id ADMIN_PASSWORD='a-long-password' \
+  php artisan db:seed --class=DashboardUserSeeder --force
+```
+
+Three roles, kept as an enum column rather than a permission package because
+three is not enough to justify five extra tables:
+
+| Role | Sees | Can |
+| --- | --- | --- |
+| `admin` | all leads | everything, including users and deleting leads |
+| `manager` | all leads | assign, edit pipeline, export, manage consultants |
+| `consultant` | only leads assigned to them | edit their own pipeline, add notes |
+
+Consultant scoping is enforced in `LeadResource::getEloquentQuery()`, so it also
+covers the widgets and the export — not just the table.
+
+What the panel does:
+
+- **Leads** — search by name, number, code or domicile; filter by qualification,
+  status, program, consultant, UTM source, source CTA, date range, overdue SLA
+  and unassigned. Bulk-assign to a consultant. Export the current filtered view
+  to CSV.
+- **Lead detail** — the visitor's answers and the scoring breakdown read-only,
+  with an editable follow-up block (status, consultant, SLA, lost reason).
+  A lost reason is required exactly when the status is `lost` or `invalid`.
+- **Catatan konsultasi** — notes with server-stamped authorship.
+- **Riwayat status** — append-only audit trail, written by `LeadObserver` so it
+  cannot be bypassed by updating a lead from elsewhere.
+- **Consultants** — roster, capacity, routing by program and domicile, and the
+  link to a dashboard account.
+
+Leads cannot be created by hand: one made here would have no `submission_id`,
+no score and no attribution.
+
+The pipeline columns stay out of `$fillable`, so the panel writes them through
+`Lead::updatePipeline()`. That keeps the intake endpoint unable to set them
+while still letting an authorised human move a lead along.
+
+### Export and privacy
+
+`LEAD_EXPORT_FULL_NUMBER=false` masks phone numbers in the CSV. Every export is
+logged with the acting user and the row count. Whether full numbers may leave
+the system is a privacy decision, not a technical one — confirm it before
+production.
+
 ## Tests
 
 ```bash

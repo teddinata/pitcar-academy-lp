@@ -33,7 +33,7 @@ pitcar-academy-lp/
 │   │       └── index.astro
 │   └── styles/
 │       └── global.css
-├── backend/                # Laravel Lead API (POST /api/leads) — see backend/README.md
+├── backend/                # Laravel Lead API + Filament dashboard — see backend/README.md
 ├── docs/                   # Lead API contract, release checklist, revamp proposal
 ├── astro.config.mjs
 ├── tailwind.config.js
@@ -58,7 +58,11 @@ cd backend && composer install && php artisan migrate && php artisan serve
 ```
 
 Then set `PUBLIC_LEAD_API_BASE_URL=http://127.0.0.1:8000` in `.env` and restart
-the dev server.
+the dev server. Full variable reference and the common mistakes are in
+[docs/environment-setup.md](docs/environment-setup.md).
+
+The sales dashboard lives at `/admin` on the backend (Filament): lead list with
+filters, assignment, consultation notes, status history and CSV export.
 
 ### Two delivery modes
 

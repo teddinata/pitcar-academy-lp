@@ -15,9 +15,28 @@ Checklist ini memisahkan pekerjaan yang dapat diselesaikan di repository Astro d
 - Bila CRM/notifikasi gagal setelah database insert, pertahankan lead yang sudah tersimpan dan retry integrasi lewat queue.
 - Kembalikan `whatsapp_url` HTTPS dengan host `wa.me` atau `api.whatsapp.com`; backend sebaiknya memilih consultant berdasarkan routing bisnis.
 
+## Dashboard operasional
+
+Sudah tersedia di `backend/` (Filament, path `/admin`): daftar lead dengan
+pencarian dan filter (qualification, program, status, consultant, UTM, source
+CTA, rentang tanggal, SLA terlewat, belum di-assign), bulk assignment, catatan
+konsultasi, riwayat status, export CSV, serta role admin/manager/consultant.
+
+Sebelum staging:
+
+- Seed admin pertama lewat `DashboardUserSeeder` (kredensial dari env, bukan kode).
+- Isi roster Education Consultant beserta kapasitas dan aturan routing.
+- Tentukan `LEAD_EXPORT_FULL_NUMBER` sesuai kebijakan privasi.
+- Pastikan `/admin` hanya dapat diakses lewat HTTPS.
+
+Belum tersedia dan masih perlu diputuskan: integrasi CRM/Slack sungguhan
+(`NotifyNewLead` baru menulis log) dan alerting SLA otomatis.
+
 ## Environment staging/production
 
-Isi seluruh nilai berikut pada build environment, bukan di source code:
+Panduan lengkap beserta kesalahan yang sering terjadi ada di
+[environment-setup.md](environment-setup.md). Ringkasnya, isi nilai berikut pada
+build environment, bukan di source code:
 
 ```dotenv
 SITE_URL=https://academy.pitcar.co.id
