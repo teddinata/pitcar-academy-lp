@@ -1,35 +1,25 @@
 ---
-interface Props {
-  whatsappNumber?: string;
-}
-import { whatsappConfig } from "../content.config";
-const { whatsappNumber = whatsappConfig.phoneNumber } = Astro.props;
+const homePrefix = Astro.url.pathname === '/' ? '' : '/';
 
 const navLinks = [
-  { href: "#about", label: "Tentang" },
-  { href: "#packages", label: "Paket Belajar" },
-  { href: "#advantages", label: "Keunggulan" },
-  { href: "#faq", label: "FAQ" },
+  { href: `${homePrefix}#about`, label: "Tentang" },
+  { href: `${homePrefix}#packages`, label: "Paket Belajar" },
+  { href: `${homePrefix}#advantages`, label: "Keunggulan" },
+  { href: `${homePrefix}#faq`, label: "FAQ" },
 ];
-
-const waMessage = encodeURIComponent(
-  "Halo Pitcar Academy, saya tertarik dengan program pelatihan mekanik.",
-);
+const consultationHref = `${homePrefix}#konsultasi`;
 ---
 
 <header
-  class="fixed top-0 left-0 right-0 z-50 flex flex-col shadow-lg transition-all duration-300"
+  class="fixed top-0 left-0 right-0 z-50 flex flex-col shadow-sm"
 >
   <!-- Announcement Bar -->
   <div
-    class="bg-gradient-to-r from-red-700 via-red-600 to-red-700 text-white text-xs sm:text-sm py-2.5 px-4 text-center font-bold flex items-center justify-center gap-2 shadow-md relative z-10"
+    class="bg-brand-700 text-white text-xs sm:text-sm py-2.5 px-4 text-center font-bold flex items-center justify-center gap-2 relative z-10"
   >
-    <span class="animate-bounce">🔥</span>
     <span
-      >PROMO EARLY BIRD: Harga Hemat Khusus Pendaftar Agustus. Harga Naik Rp
-      500.000 di Bulan September!</span
+      >Early Bird Agustus — harga naik Rp500 ribu di September</span
     >
-    <span class="animate-bounce">🔥</span>
   </div>
 
   <div
@@ -37,18 +27,18 @@ const waMessage = encodeURIComponent(
   >
     <nav
       class="container-custom max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 md:h-20"
-      aria-label="Main navigation"
+      aria-label="Navigasi utama"
     >
       <!-- Logo -->
       <a
         href="/"
         class="flex items-center gap-3 group"
-        aria-label="Pitcar Academy Home"
       >
         <div
           class="w-9 h-9 md:w-10 md:h-10 bg-primary rounded-lg flex items-center justify-center shadow-lg group-hover:bg-secondary transition-colors"
         >
           <svg
+            aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             class="w-5 h-5 md:w-6 md:h-6 text-white"
             viewBox="0 0 24 24"
@@ -87,10 +77,13 @@ const waMessage = encodeURIComponent(
           ))
         }
         <a
-          href="#cta"
-          class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-5 py-2.5 rounded-lg transition-all duration-300 text-sm inline-flex items-center gap-2"
+          href={consultationHref}
+          data-lead-cta
+          data-source-cta="header_desktop"
+          class="inline-flex min-h-11 items-center gap-2 rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-brand-700"
         >
           <svg
+            aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             width="16"
             height="16"
@@ -104,7 +97,7 @@ const waMessage = encodeURIComponent(
             <path d="M5 12h14"></path>
             <path d="m12 5 7 7-7 7"></path>
           </svg>
-          Daftar Sekarang
+          Konsultasi Gratis
         </a>
       </div>
 
@@ -112,10 +105,13 @@ const waMessage = encodeURIComponent(
       <button
         id="mobile-menu-btn"
         type="button"
-        class="lg:hidden p-2 text-slate-300 hover:text-white focus:outline-none"
-        aria-label="Toggle Navigation Menu"
+        class="inline-flex min-h-11 min-w-11 items-center justify-center p-2 text-slate-300 hover:text-white focus-visible:outline-none lg:hidden"
+        aria-label="Buka menu navigasi"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
       >
         <svg
+          aria-hidden="true"
           id="menu-icon-open"
           xmlns="http://www.w3.org/2000/svg"
           class="w-6 h-6"
@@ -130,6 +126,7 @@ const waMessage = encodeURIComponent(
             d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
         <svg
+          aria-hidden="true"
           id="menu-icon-close"
           xmlns="http://www.w3.org/2000/svg"
           class="w-6 h-6 hidden"
@@ -163,10 +160,13 @@ const waMessage = encodeURIComponent(
       ))
     }
     <a
-      href="#cta"
-      class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold px-5 py-3 rounded-xl transition-all duration-300 text-base flex items-center justify-center gap-2 mt-4"
+      href={consultationHref}
+      data-lead-cta
+      data-source-cta="header_mobile"
+      class="mobile-nav-link mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-base font-semibold text-white transition-all duration-300 hover:bg-brand-700"
     >
       <svg
+        aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
         width="18"
         height="18"
@@ -180,7 +180,7 @@ const waMessage = encodeURIComponent(
         <path d="M5 12h14"></path>
         <path d="m12 5 7 7-7 7"></path>
       </svg>
-      Daftar Sekarang
+      Konsultasi Gratis
     </a>
   </div>
 </header>
@@ -196,6 +196,8 @@ const waMessage = encodeURIComponent(
       menu.classList.toggle("hidden");
       iconOpen.classList.toggle("hidden");
       iconClose.classList.toggle("hidden");
+      btn.setAttribute("aria-expanded", String(!menu.classList.contains("hidden")));
+      btn.setAttribute("aria-label", menu.classList.contains("hidden") ? "Buka menu navigasi" : "Tutup menu navigasi");
     });
 
     document.querySelectorAll(".mobile-nav-link").forEach((link) => {
@@ -203,7 +205,20 @@ const waMessage = encodeURIComponent(
         menu.classList.add("hidden");
         iconOpen.classList.remove("hidden");
         iconClose.classList.add("hidden");
+        btn.setAttribute("aria-expanded", "false");
+        btn.setAttribute("aria-label", "Buka menu navigasi");
       });
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !menu.classList.contains("hidden")) {
+        menu.classList.add("hidden");
+        iconOpen.classList.remove("hidden");
+        iconClose.classList.add("hidden");
+        btn.setAttribute("aria-expanded", "false");
+        btn.setAttribute("aria-label", "Buka menu navigasi");
+        btn.focus();
+      }
     });
   }
 </script>

@@ -1,12 +1,5 @@
 ---
 // TargetAudienceSection — "Siapa yang Cocok?" with brand colors
-interface Props {
-  whatsappNumber?: string;
-}
-
-import { whatsappConfig } from "../content.config";
-const { whatsappNumber = whatsappConfig.phoneNumber } = Astro.props;
-const waMessage = encodeURIComponent('Halo Pitcar Academy, saya mau konsultasi program mana yang cocok untuk latar belakang saya.');
 ---
 
 <section class="section-padding bg-page border-t border-slate-200 dark:border-slate-800" aria-label="Target Peserta">
@@ -17,7 +10,7 @@ const waMessage = encodeURIComponent('Halo Pitcar Academy, saya mau konsultasi p
         Target Peserta
       </span>
       <h2 class="heading-primary mb-5">
-        Pitcar Academy <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent italic">Cocok Untuk Kamu yang...</span>
+        Pitcar Academy <span class="text-primary italic">Cocok Untuk Kamu yang...</span>
       </h2>
       <p class="section-subtitle">
         Program ini dirancang inklusif bagi siapa saja yang serius ingin berkembang di dunia mekanik otomotif.
@@ -85,11 +78,13 @@ const waMessage = encodeURIComponent('Halo Pitcar Academy, saya mau konsultasi p
     </div>
 
     <!-- Consultation CTA -->
-    <div class="bg-gradient-to-br from-slate-900 to-slate-950 p-8 sm:p-10 rounded-3xl text-center max-w-3xl mx-auto shadow-xl text-white">
+    <div class="bg-slate-950 p-8 sm:p-10 rounded-2xl text-center max-w-3xl mx-auto shadow-xl text-white">
       <h3 class="text-xl sm:text-2xl font-black mb-3">Tidak yakin program mana yang cocok untukmu?</h3>
       <p class="text-slate-300 text-sm sm:text-base mb-6">Konsultasikan minat, latar belakang, dan tujuan kariermu bersama tim konsultan kami.</p>
       <a
-        href="#cta"
+        href="#konsultasi"
+        data-lead-cta
+        data-source-cta="audience_consultation"
         class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-extrabold px-6 py-3.5 rounded-xl text-sm transition-all duration-200 shadow-lg"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

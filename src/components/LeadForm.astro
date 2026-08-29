@@ -1,0 +1,496 @@
+---
+const inputClass = 'mt-2 min-h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base text-slate-950 placeholder:text-slate-500 shadow-sm outline-none transition focus:border-brand-600 focus:ring-4 focus:ring-brand-600/10 disabled:cursor-not-allowed disabled:bg-slate-100';
+const labelClass = 'block text-sm font-bold text-slate-900';
+
+// Chrome compiles `pattern` with the RegExp `v` flag, where ( ) and - must be
+// escaped inside a character class. Passed as an expression because a literal
+// attribute would have its backslashes stripped by the template compiler.
+const whatsappPattern = String.raw`[0-9+\(\)\- ]{8,20}`;
+
+// Known at build time: with no lead API the form still collects the same
+// context, but delivers it over WhatsApp instead of storing it first.
+const leadApiConfigured = Boolean(import.meta.env.PUBLIC_LEAD_API_BASE_URL?.trim());
+const submitText = leadApiConfigured ? 'Simpan & lanjut ke WhatsApp' : 'Lanjut ke WhatsApp';
+const assuranceText = leadApiConfigured
+  ? 'Data dikirim lebih dulu agar konsultasi tidak dimulai dari nol.'
+  : 'Ringkasan jawabanmu ikut terkirim agar konsultasi tidak dimulai dari nol.';
+---
+
+<div class="lead-form-shell bg-white p-5 sm:p-7 lg:p-8 rounded-2xl">
+  <div class="mb-6 flex items-start justify-between gap-4">
+    <div>
+      <p class="text-sm font-bold text-brand-700">Konsultasi gratis • ±1 menit</p>
+      <h3 class="mt-1 text-2xl font-black tracking-tight text-slate-950">Ceritakan tujuanmu</h3>
+    </div>
+    <div class="shrink-0 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700" aria-live="polite">
+      <span id="lead-step-label">Langkah 1/2</span>
+    </div>
+  </div>
+
+  <form id="lead-form" novalidate>
+    <input type="hidden" name="submission_id" />
+    <input type="hidden" name="source_cta" value="consultation_section" />
+
+    <fieldset data-lead-step="1" class="space-y-5">
+      <legend class="sr-only">Data kontak dan minat program</legend>
+
+      <div>
+        <label class={labelClass} for="lead-name">Nama lengkap</label>
+        <input class={inputClass} id="lead-name" name="name" type="text" autocomplete="name" maxlength="100" placeholder="Nama yang biasa dipanggil" required />
+      </div>
+
+      <div>
+        <label class={labelClass} for="lead-whatsapp">Nomor WhatsApp</label>
+        <input class={inputClass} id="lead-whatsapp" name="whatsapp_number" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" pattern={whatsappPattern} placeholder="Contoh: 0812 3456 7890" aria-describedby="lead-whatsapp-help" required />
+        <p id="lead-whatsapp-help" class="mt-1.5 text-xs leading-relaxed text-slate-600">Pastikan nomor aktif agar konsultan dapat menindaklanjuti.</p>
+      </div>
+
+      <div>
+        <label class={labelClass} for="lead-domicile">Domisili</label>
+        <input class={inputClass} id="lead-domicile" name="domicile" type="text" autocomplete="address-level2" maxlength="100" placeholder="Kota / kabupaten" required />
+      </div>
+
+      <div>
+        <label class={labelClass} for="lead-program">Program yang diminati</label>
+        <select class={inputClass} id="lead-program" name="program_interest" required>
+          <option value="undecided">Belum yakin, perlu rekomendasi</option>
+          <option value="basic">Basic — Maintenance</option>
+          <option value="advanced">Advance — General Repair</option>
+          <option value="professional">Professional — Level 1 & 2</option>
+        </select>
+      </div>
+
+      <button type="button" data-lead-next class="btn-primary min-h-12 w-full px-6 py-3.5 text-base">
+        Lanjutkan
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+      </button>
+    </fieldset>
+
+    <fieldset data-lead-step="2" class="space-y-5" hidden>
+      <legend class="sr-only">Tujuan dan kesiapan mengikuti program</legend>
+
+      <div>
+        <label class={labelClass} for="lead-activity">Aktivitas saat ini</label>
+        <select class={inputClass} id="lead-activity" name="activity" required>
+          <option value="" selected disabled>Pilih aktivitas</option>
+          <option value="student">Pelajar / baru lulus</option>
+          <option value="job_seeker">Sedang mencari kerja</option>
+          <option value="mechanic">Mekanik</option>
+          <option value="employee">Karyawan bidang lain</option>
+          <option value="workshop_owner">Pemilik / calon pemilik bengkel</option>
+          <option value="other">Lainnya</option>
+        </select>
+      </div>
+
+      <div>
+        <label class={labelClass} for="lead-goal">Tujuan utama</label>
+        <select class={inputClass} id="lead-goal" name="goal" required>
+          <option value="" selected disabled>Pilih tujuan</option>
+          <option value="mechanic_career">Bekerja sebagai mekanik</option>
+          <option value="upskill">Meningkatkan skill mekanik</option>
+          <option value="open_workshop">Persiapan membuka bengkel</option>
+          <option value="automotive_knowledge">Menambah pengetahuan otomotif</option>
+          <option value="consultation">Masih ingin konsultasi</option>
+        </select>
+      </div>
+
+      <div>
+        <label class={labelClass} for="lead-timeline">Kapan ingin mulai?</label>
+        <select class={inputClass} id="lead-timeline" name="timeline" required>
+          <option value="" selected disabled>Pilih rencana waktu</option>
+          <option value="nearest_batch">Batch terdekat</option>
+          <option value="one_to_three_months">1–3 bulan</option>
+          <option value="three_to_six_months">3–6 bulan</option>
+          <option value="considering">Masih mempertimbangkan</option>
+        </select>
+      </div>
+
+      <div>
+        <label class={labelClass} for="lead-investment">Kesiapan investasi program</label>
+        <select class={inputClass} id="lead-investment" name="investment_readiness" required>
+          <option value="" selected disabled>Pilih yang paling sesuai</option>
+          <option value="ready">Siap untuk program mulai Rp5 juta</option>
+          <option value="installment">Memerlukan opsi cicilan</option>
+          <option value="family_discussion">Perlu diskusi dengan orang tua / keluarga</option>
+          <option value="researching">Masih mencari informasi</option>
+        </select>
+      </div>
+
+      <label class="flex cursor-pointer items-start gap-3 rounded-xl bg-slate-50 p-4 text-sm leading-relaxed text-slate-700">
+        <input class="mt-0.5 h-5 w-5 shrink-0 accent-brand-600" type="checkbox" name="consent" required />
+        <span>Saya setuju data ini digunakan Pitcar Academy untuk menghubungi saya dan memberikan informasi program.</span>
+      </label>
+
+      <div class="flex flex-col-reverse gap-3 sm:flex-row">
+        <button type="button" data-lead-back class="min-h-12 rounded-full px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-slate-300 sm:w-auto">Kembali</button>
+        <button type="submit" data-lead-submit class="btn-primary min-h-12 flex-1 px-6 py-3.5 text-base">
+          <span data-submit-label>{submitText}</span>
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </button>
+      </div>
+    </fieldset>
+
+    <div id="lead-status" class="mt-5 hidden rounded-xl p-4 text-sm leading-relaxed" role="status" aria-live="polite"></div>
+
+    <div id="lead-fallback-actions" class="mt-4 hidden flex-col gap-3 sm:flex-row">
+      <button type="button" data-lead-retry class="min-h-11 rounded-full bg-slate-950 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-slate-800">Coba simpan lagi</button>
+      <button type="button" data-lead-whatsapp class="hidden min-h-11 items-center justify-center rounded-full bg-[#107C41] px-5 py-2.5 text-center text-sm font-bold text-white transition hover:bg-[#0B6535] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-300">Lanjut via WhatsApp</button>
+      <button type="button" data-lead-copy class="min-h-11 rounded-full border border-slate-300 px-5 py-2.5 text-sm font-bold text-slate-800 transition hover:bg-slate-50">Salin ringkasan</button>
+    </div>
+  </form>
+
+  <p class="mt-5 flex items-center gap-2 text-xs leading-relaxed text-slate-600">
+    <svg aria-hidden="true" class="shrink-0 text-emerald-700" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+    {assuranceText}
+  </p>
+</div>
+
+<script>
+  import {
+    buildWhatsAppMessage,
+    LEAD_API_CONFIGURED,
+    LeadSubmissionError,
+    normalizeWhatsappNumber,
+    resolveWhatsAppUrl,
+    submitLead,
+    type LeadPayload,
+    type LeadResponse,
+  } from '../lib/leads';
+
+  const form = document.querySelector<HTMLFormElement>('#lead-form');
+  const firstStep = form?.querySelector<HTMLFieldSetElement>('[data-lead-step="1"]');
+  const secondStep = form?.querySelector<HTMLFieldSetElement>('[data-lead-step="2"]');
+  const stepLabel = document.querySelector<HTMLElement>('#lead-step-label');
+  const status = document.querySelector<HTMLElement>('#lead-status');
+  const fallbackActions = document.querySelector<HTMLElement>('#lead-fallback-actions');
+  const submitButton = form?.querySelector<HTMLButtonElement>('[data-lead-submit]');
+  const submitLabel = form?.querySelector<HTMLElement>('[data-submit-label]');
+  const whatsappButton = form?.querySelector<HTMLButtonElement>('[data-lead-whatsapp]');
+  const retryButton = form?.querySelector<HTMLButtonElement>('[data-lead-retry]');
+  const storageMode = LEAD_API_CONFIGURED ? 'api' : 'direct';
+  const deliveryMode = LEAD_API_CONFIGURED ? 'api' : 'whatsapp_direct';
+  const defaultSubmitLabel = form?.querySelector<HTMLElement>('[data-submit-label]')?.textContent
+    ?? 'Lanjut ke WhatsApp';
+  let whatsappFallbackUrl: string | null = null;
+  const pendingKey = 'pitcar_academy_pending_lead_v1';
+  const pendingCtaKey = 'pitcar_academy_pending_cta_v1';
+  let pendingPayload: LeadPayload | null = null;
+  let latestResponse: LeadResponse | undefined;
+  let formStarted = false;
+
+  function createSubmissionId(): string {
+    return globalThis.crypto?.randomUUID?.() ?? `web-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  }
+
+  function setStep(step: 1 | 2): void {
+    if (!firstStep || !secondStep || !stepLabel) return;
+    firstStep.hidden = step !== 1;
+    secondStep.hidden = step !== 2;
+    stepLabel.textContent = `Langkah ${step}/2`;
+    const target = step === 1 ? firstStep : secondStep;
+    target.querySelector<HTMLElement>('input, select')?.focus({ preventScroll: true });
+  }
+
+  function showStatus(message: string, tone: 'success' | 'warning' | 'error'): void {
+    if (!status) return;
+    const tones = {
+      success: 'bg-emerald-50 text-emerald-900',
+      warning: 'bg-amber-50 text-amber-950',
+      error: 'bg-red-50 text-red-900',
+    };
+    status.className = `mt-5 rounded-xl p-4 text-sm leading-relaxed ${tones[tone]}`;
+    status.textContent = message;
+  }
+
+  function setSubmitting(isSubmitting: boolean): void {
+    if (!submitButton || !submitLabel || !form) return;
+    submitButton.disabled = isSubmitting;
+    submitButton.setAttribute('aria-busy', String(isSubmitting));
+    submitLabel.textContent = isSubmitting ? 'Menyiapkan data…' : defaultSubmitLabel;
+    form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLButtonElement>('input, select, button').forEach((control) => {
+      if (control !== submitButton) control.disabled = isSubmitting;
+    });
+  }
+
+  function validateStep(fieldset: HTMLFieldSetElement | undefined, step: 1 | 2): boolean {
+    if (!fieldset) return false;
+    const controls = [...fieldset.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input, select')];
+    for (const control of controls) {
+      if (!control.checkValidity()) {
+        // A hidden fieldset cannot show a validation bubble or take focus.
+        if (fieldset.hidden) setStep(step);
+        control.reportValidity();
+        control.focus();
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function buildPayload(): LeadPayload {
+    if (!form) throw new Error('Form tidak tersedia.');
+    const values = new FormData(form);
+    const params = new URLSearchParams(window.location.search);
+    const storedAttribution = window.getLeadAttribution?.();
+    return {
+      submission_id: String(values.get('submission_id') || createSubmissionId()),
+      name: String(values.get('name') || '').trim(),
+      whatsapp_number: normalizeWhatsappNumber(String(values.get('whatsapp_number') || '')),
+      domicile: String(values.get('domicile') || '').trim(),
+      activity: String(values.get('activity') || ''),
+      goal: String(values.get('goal') || ''),
+      timeline: String(values.get('timeline') || ''),
+      investment_readiness: String(values.get('investment_readiness') || ''),
+      program_interest: String(values.get('program_interest') || 'undecided'),
+      source_cta: String(values.get('source_cta') || 'consultation_section'),
+      source: 'website',
+      consent_at: new Date().toISOString(),
+      attribution: {
+        landing_page: storedAttribution?.landing_page || window.location.href,
+        referrer: storedAttribution ? storedAttribution.referrer : (document.referrer || null),
+        utm_source: storedAttribution?.utm_source ?? params.get('utm_source'),
+        utm_medium: storedAttribution?.utm_medium ?? params.get('utm_medium'),
+        utm_campaign: storedAttribution?.utm_campaign ?? params.get('utm_campaign'),
+        utm_content: storedAttribution?.utm_content ?? params.get('utm_content'),
+        utm_term: storedAttribution?.utm_term ?? params.get('utm_term'),
+      },
+    };
+  }
+
+  function getAnalyticsContext(payload?: LeadPayload): Record<string, string | null> {
+    const params = new URLSearchParams(window.location.search);
+    const programSelect = form?.elements.namedItem('program_interest') as HTMLSelectElement | null;
+    const sourceInput = form?.elements.namedItem('source_cta') as HTMLInputElement | null;
+    return {
+      delivery_mode: deliveryMode,
+      source_cta: payload?.source_cta || sourceInput?.value || 'consultation_section',
+      program_interest: payload?.program_interest || programSelect?.value || 'undecided',
+      utm_source: payload?.attribution.utm_source ?? params.get('utm_source'),
+      utm_medium: payload?.attribution.utm_medium ?? params.get('utm_medium'),
+      utm_campaign: payload?.attribution.utm_campaign ?? params.get('utm_campaign'),
+      utm_content: payload?.attribution.utm_content ?? params.get('utm_content'),
+      utm_term: payload?.attribution.utm_term ?? params.get('utm_term'),
+    };
+  }
+
+  function trackEvent(
+    name: string,
+    payload?: LeadPayload,
+    extra: Record<string, string | number | boolean | null | undefined> = {},
+  ): void {
+    window.trackFunnelEvent?.(name, { ...getAnalyticsContext(payload), ...extra });
+  }
+
+  function persistPending(payload: LeadPayload): boolean {
+    try {
+      localStorage.setItem(pendingKey, JSON.stringify({ payload, saved_at: Date.now() }));
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function clearPending(): void {
+    try {
+      localStorage.removeItem(pendingKey);
+    } catch {
+      // A successful API response remains valid even if browser storage is unavailable.
+    }
+    pendingPayload = null;
+  }
+
+  function configureFallback(payload: LeadPayload, response?: LeadResponse, allowRetry = true): void {
+    if (!fallbackActions || !whatsappButton) return;
+    whatsappFallbackUrl = resolveWhatsAppUrl(payload, response, { storage: storageMode });
+    fallbackActions.classList.remove('hidden');
+    fallbackActions.classList.add('flex');
+    retryButton?.classList.toggle('hidden', !allowRetry);
+    whatsappButton.classList.toggle('hidden', !whatsappFallbackUrl);
+    whatsappButton.classList.toggle('inline-flex', Boolean(whatsappFallbackUrl));
+  }
+
+  function restorePending(): void {
+    if (!form) return;
+    try {
+      const raw = localStorage.getItem(pendingKey);
+      if (!raw) return;
+      const stored = JSON.parse(raw) as { payload?: LeadPayload; saved_at?: number };
+      if (!stored.payload || !stored.saved_at || Date.now() - stored.saved_at > 7 * 24 * 60 * 60 * 1000) {
+        clearPending();
+        return;
+      }
+      pendingPayload = stored.payload;
+      for (const [name, value] of Object.entries(stored.payload)) {
+        if (typeof value !== 'string') continue;
+        const control = form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | null;
+        if (control) control.value = value;
+      }
+      showStatus('Ada data konsultasi dari percobaan sebelumnya yang belum tersimpan. Periksa kembali lalu coba kirim.', 'warning');
+      configureFallback(stored.payload);
+    } catch {
+      clearPending();
+    }
+  }
+
+  function restorePendingCta(): void {
+    if (!form) return;
+    try {
+      const raw = sessionStorage.getItem(pendingCtaKey);
+      if (!raw) return;
+      sessionStorage.removeItem(pendingCtaKey);
+      const cta = JSON.parse(raw) as { source_cta?: string; program_interest?: string };
+      const sourceInput = form.elements.namedItem('source_cta') as HTMLInputElement | null;
+      const programSelect = form.elements.namedItem('program_interest') as HTMLSelectElement | null;
+      if (cta.source_cta && sourceInput) sourceInput.value = cta.source_cta;
+      if (cta.program_interest && cta.program_interest !== 'undecided' && programSelect) {
+        programSelect.value = cta.program_interest;
+      }
+    } catch {
+      // Keep form defaults if session storage is unavailable or malformed.
+    }
+  }
+
+  if (form) {
+    const submissionId = form.elements.namedItem('submission_id') as HTMLInputElement;
+    submissionId.value = createSubmissionId();
+    restorePending();
+    restorePendingCta();
+
+    if ('IntersectionObserver' in window) {
+      const formObserver = new IntersectionObserver((entries, observer) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        trackEvent('lead_form_view');
+        observer.disconnect();
+      }, { threshold: 0.2 });
+      formObserver.observe(form);
+    } else {
+      trackEvent('lead_form_view');
+    }
+
+    const markFormStarted = () => {
+      if (formStarted) return;
+      formStarted = true;
+      trackEvent('lead_form_start');
+    };
+    form.addEventListener('input', markFormStarted, { once: true });
+    form.addEventListener('change', markFormStarted, { once: true });
+
+    form.querySelector('[data-lead-next]')?.addEventListener('click', () => {
+      if (!validateStep(firstStep ?? undefined, 1)) return;
+      trackEvent('lead_form_step_1_complete');
+      setStep(2);
+    });
+    form.querySelector('[data-lead-back]')?.addEventListener('click', () => setStep(1));
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!validateStep(firstStep ?? undefined, 1) || !validateStep(secondStep ?? undefined, 2)) return;
+
+      const payload = buildPayload();
+      pendingPayload = payload;
+      latestResponse = undefined;
+      trackEvent('lead_submit', payload);
+      setSubmitting(true);
+      fallbackActions?.classList.add('hidden');
+      fallbackActions?.classList.remove('flex');
+      showStatus(
+        LEAD_API_CONFIGURED
+          ? 'Menyimpan data konsultasi sebelum membuka WhatsApp…'
+          : 'Menyiapkan ringkasan konsultasi…',
+        'success',
+      );
+
+      if (!LEAD_API_CONFIGURED) {
+        // No lead API deployed yet. Failing here would be worse than the plain
+        // WhatsApp flow this form replaced, so hand over the full summary.
+        const directUrl = resolveWhatsAppUrl(payload, undefined, { storage: 'direct' });
+        if (directUrl) {
+          clearPending();
+          pendingPayload = payload;
+          showStatus('Ringkasan konsultasi siap. Mengarahkan ke WhatsApp…', 'success');
+          trackEvent('lead_submit_success', payload, { lead_code: null });
+          window.gtag?.('event', 'generate_lead', { ...getAnalyticsContext(payload), lead_code: null });
+          trackEvent('whatsapp_open', payload, { lead_code: null });
+          window.setTimeout(() => window.location.assign(directUrl), 350);
+        } else {
+          persistPending(payload);
+          showStatus('Nomor Education Consultant belum dikonfigurasi. Salin ringkasan di bawah lalu kirimkan ke tim Pitcar Academy.', 'warning');
+          configureFallback(payload, undefined, false);
+          trackEvent('lead_submit_failed', payload, { error_status: null, retryable: false });
+          setSubmitting(false);
+        }
+        return;
+      }
+
+      try {
+        latestResponse = await submitLead(payload);
+        clearPending();
+        const qualification = latestResponse.qualification ? ` • ${latestResponse.qualification}` : '';
+        showStatus(`Data tersimpan dengan kode ${latestResponse.lead_code}${qualification}. Mengarahkan ke WhatsApp…`, 'success');
+        trackEvent('lead_submit_success', payload, {
+          lead_code: latestResponse.lead_code,
+          qualification: latestResponse.qualification,
+        });
+        window.gtag?.('event', 'generate_lead', {
+          ...getAnalyticsContext(payload),
+          lead_code: latestResponse.lead_code,
+          qualification: latestResponse.qualification,
+        });
+        const url = resolveWhatsAppUrl(payload, latestResponse, { storage: storageMode });
+        if (url) {
+          trackEvent('whatsapp_open', payload, {
+            lead_code: latestResponse.lead_code,
+            qualification: latestResponse.qualification,
+          });
+          window.setTimeout(() => window.location.assign(url), 350);
+        } else {
+          showStatus(`Data tersimpan dengan kode ${latestResponse.lead_code}. Tautan WhatsApp belum dikonfigurasi; salin ringkasan untuk melanjutkan secara manual.`, 'warning');
+          pendingPayload = payload;
+          configureFallback(payload, latestResponse, false);
+        }
+      } catch (error) {
+        const savedLocally = persistPending(payload);
+        const errorMessage = error instanceof LeadSubmissionError
+          ? error.message
+          : 'Sistem lead sedang tidak dapat dihubungi.';
+        const recoveryMessage = savedLocally
+          ? 'Salinan disimpan di perangkat ini; coba lagi atau lanjutkan ke WhatsApp dengan ringkasan yang sudah dibuat.'
+          : 'Browser tidak dapat menyimpan salinan; coba lagi atau salin ringkasan sebelum meninggalkan halaman.';
+        const retryable = error instanceof LeadSubmissionError ? error.retryable : true;
+        showStatus(`Data belum masuk ke database. ${errorMessage} ${recoveryMessage}`, 'warning');
+        configureFallback(payload, undefined, retryable);
+        trackEvent('lead_submit_failed', payload, {
+          error_status: error instanceof LeadSubmissionError ? error.status : null,
+          retryable,
+        });
+      } finally {
+        setSubmitting(false);
+      }
+    });
+
+    whatsappButton?.addEventListener('click', () => {
+      if (whatsappFallbackUrl) window.location.assign(whatsappFallbackUrl);
+    });
+    form.querySelector('[data-lead-retry]')?.addEventListener('click', () => form.requestSubmit());
+    form.querySelector('[data-lead-copy]')?.addEventListener('click', async () => {
+      if (!pendingPayload) return;
+      try {
+        await navigator.clipboard.writeText(buildWhatsAppMessage(pendingPayload, latestResponse, { storage: storageMode }));
+        showStatus('Ringkasan berhasil disalin. Tempelkan saat menghubungi konsultan.', 'success');
+      } catch {
+        showStatus('Ringkasan belum dapat disalin otomatis. Coba lagi atau gunakan tombol WhatsApp jika tersedia.', 'warning');
+      }
+    });
+  }
+
+  document.addEventListener('click', (event) => {
+    const trigger = (event.target as Element | null)?.closest<HTMLElement>('[data-lead-cta]');
+    if (!trigger || !form) return;
+    const program = trigger.dataset.programInterest;
+    const source = trigger.dataset.sourceCta;
+    const programSelect = form.elements.namedItem('program_interest') as HTMLSelectElement | null;
+    const sourceInput = form.elements.namedItem('source_cta') as HTMLInputElement | null;
+    if (program && programSelect) programSelect.value = program;
+    if (source && sourceInput) sourceInput.value = source;
+  });
+</script>

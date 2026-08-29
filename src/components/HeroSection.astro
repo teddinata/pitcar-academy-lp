@@ -1,13 +1,4 @@
 ---
-interface Props {
-  whatsappNumber?: string;
-  whatsappMessage?: string;
-}
-import { whatsappConfig } from "../content.config";
-const {
-  whatsappNumber = whatsappConfig.phoneNumber,
-  whatsappMessage = encodeURIComponent("Halo Pitcar Academy, saya tertarik dengan program pelatihan mekanik."),
-} = Astro.props;
 ---
 
 <section
@@ -22,15 +13,11 @@ const {
 
   <!-- Bold Glow Orbs -->
   <div
-    class="absolute top-20 -left-40 w-[500px] h-[500px] bg-brand-600/30 rounded-full blur-[150px] pointer-events-none z-0"
+    class="absolute top-20 -left-40 hidden w-[500px] h-[500px] rounded-full bg-brand-600/25 blur-[120px] pointer-events-none z-0 sm:block"
   >
   </div>
   <div
-    class="absolute bottom-10 -right-40 w-[500px] h-[500px] bg-brand-800/25 rounded-full blur-[150px] pointer-events-none z-0"
-  >
-  </div>
-  <div
-    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-900/10 rounded-full blur-[200px] pointer-events-none z-0"
+    class="absolute bottom-10 -right-40 hidden w-[500px] h-[500px] rounded-full bg-brand-800/20 blur-[120px] pointer-events-none z-0 md:block"
   >
   </div>
 
@@ -59,11 +46,11 @@ const {
 
   <!-- Main Container -->
   <div
-    class="container-custom max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-36 pb-28 md:pt-40 md:pb-32 lg:pt-44 lg:pb-36"
+    class="container-custom max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-32 pb-20 md:pt-40 md:pb-28 lg:pt-44 lg:pb-32"
   >
     <div class="grid lg:grid-cols-12 gap-10 lg:gap-14 items-center">
       <!-- LEFT: Copy & CTAs -->
-      <div class="lg:col-span-7 animate-fade-in-up">
+      <div class="lg:col-span-7">
         <!-- Badge -->
         <div
           class="inline-flex items-center gap-2.5 bg-white/[0.06] backdrop-blur-xl border border-brand-400/30 px-5 py-2.5 rounded-full mb-8 shadow-lg"
@@ -81,14 +68,14 @@ const {
         >
           Bangun Skill. Dapatkan Pengalaman.<br class="hidden sm:block" />
           <span
-            class="bg-gradient-to-r from-brand-400 to-brand-300 bg-clip-text text-transparent italic"
+            class="text-brand-300 italic"
             >Mulai Kariermu</span
           > di Dunia Otomotif<span class="text-primary">.</span>
         </h1>
 
         <!-- Subheadline -->
         <p
-          class="text-slate-300 text-base sm:text-lg lg:text-xl leading-relaxed mb-10 max-w-2xl font-normal"
+          class="text-slate-300 text-base sm:text-lg lg:text-xl leading-relaxed mb-8 max-w-2xl font-normal"
         >
           Belajar mekanik mobil bukan hanya tentang teori. Di Pitcar Academy,
           kamu belajar melalui <strong class="text-white font-semibold"
@@ -99,46 +86,46 @@ const {
         </p>
 
         <!-- Feature Checklist -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10">
+        <div class="grid grid-cols-2 gap-2.5 mb-8 sm:gap-3">
           <div
-            class="flex items-center gap-3 bg-white/[0.04] border border-white/10 px-4 py-3 rounded-xl backdrop-blur-sm"
+            class="flex items-center gap-2.5 bg-white/[0.04] border border-white/10 px-3 py-3 rounded-xl sm:px-4"
           >
             <div
               class="w-7 h-7 rounded-lg bg-brand-600/20 text-brand-400 flex items-center justify-center shrink-0"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
-            <span class="text-sm font-semibold text-slate-100">Belajar dari Praktisi Bengkel</span>
+            <span class="text-xs font-semibold leading-snug text-slate-100 sm:text-sm">Belajar dari Praktisi Bengkel</span>
           </div>
           <div
-            class="flex items-center gap-3 bg-white/[0.04] border border-white/10 px-4 py-3 rounded-xl backdrop-blur-sm"
+            class="flex items-center gap-2.5 bg-white/[0.04] border border-white/10 px-3 py-3 rounded-xl sm:px-4"
           >
             <div
               class="w-7 h-7 rounded-lg bg-brand-600/20 text-brand-400 flex items-center justify-center shrink-0"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
-            <span class="text-sm font-semibold text-slate-100">Praktik Intensif & Alat Modern</span>
+            <span class="text-xs font-semibold leading-snug text-slate-100 sm:text-sm">Praktik Intensif & Alat Modern</span>
           </div>
           <div
-            class="flex items-center gap-3 bg-white/[0.04] border border-white/10 px-4 py-3 rounded-xl backdrop-blur-sm"
+            class="flex items-center gap-2.5 bg-white/[0.04] border border-white/10 px-3 py-3 rounded-xl sm:px-4"
           >
             <div
               class="w-7 h-7 rounded-lg bg-brand-600/20 text-brand-400 flex items-center justify-center shrink-0"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
-            <span class="text-sm font-semibold text-slate-100">2 Bulan OJT di Bengkel PITCAR</span>
+            <span class="text-xs font-semibold leading-snug text-slate-100 sm:text-sm">2 Bulan OJT di Bengkel PITCAR</span>
           </div>
           <div
-            class="flex items-center gap-3 bg-white/[0.04] border border-white/10 px-4 py-3 rounded-xl backdrop-blur-sm"
+            class="flex items-center gap-2.5 bg-white/[0.04] border border-white/10 px-3 py-3 rounded-xl sm:px-4"
           >
             <div
               class="w-7 h-7 rounded-lg bg-brand-600/20 text-brand-400 flex items-center justify-center shrink-0"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
-            <span class="text-sm font-semibold text-slate-100">Sertifikat Resmi & Rekrutmen</span>
+            <span class="text-xs font-semibold leading-snug text-slate-100 sm:text-sm">Sertifikat & Kesempatan Rekrutmen</span>
           </div>
         </div>
 
@@ -147,14 +134,16 @@ const {
           class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4"
         >
           <a
-            href="#cta"
+            href="#konsultasi"
+            data-lead-cta
+            data-source-cta="hero_primary"
             class="btn-primary text-base sm:text-lg px-8 py-4 shadow-xl"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M5 12h14"></path>
               <path d="m12 5 7 7-7 7"></path>
             </svg>
-            Daftar Sekarang
+            Konsultasi Program Gratis
           </a>
           <a
             href="#packages"
@@ -167,7 +156,7 @@ const {
       </div>
 
       <!-- RIGHT: Visual Card -->
-      <div class="lg:col-span-5 relative animate-fade-in-up stagger-3">
+      <div class="lg:col-span-5 relative">
         <div class="relative mx-auto max-w-sm lg:max-w-none">
           <!-- Red glow ring behind image -->
           <div
@@ -177,16 +166,16 @@ const {
 
           <!-- Image Card -->
           <div
-            class="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-slate-900 group"
+            class="relative rounded-2xl overflow-hidden border border-white/10 bg-slate-900 group"
           >
             <img
-              src="/mechanic-hero.png"
+              src="/mechanic-hero.webp"
               alt="Mekanik profesional Pitcar Academy melakukan diagnosa mesin mobil"
               class="w-full aspect-[3/4] sm:aspect-[4/4.5] lg:aspect-[3/4] object-cover object-top filter contrast-[1.08] group-hover:scale-[1.03] transition-transform duration-700"
               loading="eager"
               fetchpriority="high"
-              width="600"
-              height="800"
+              width="720"
+              height="720"
             />
             <!-- Bottom gradient -->
             <div
@@ -218,7 +207,7 @@ const {
 
           <!-- Float Badge Top Right -->
           <div
-            class="absolute -top-3 -right-3 bg-slate-950/90 backdrop-blur-xl border border-brand-500/40 p-3 rounded-xl shadow-2xl flex items-center gap-2.5 animate-float z-20"
+            class="absolute -top-3 -right-3 bg-slate-950/90 backdrop-blur-xl border border-brand-500/40 p-3 rounded-xl shadow-lg flex items-center gap-2.5 animate-float z-20"
           >
             <div
               class="w-8 h-8 bg-brand-600/20 text-brand-400 rounded-lg flex items-center justify-center shrink-0"
@@ -237,7 +226,7 @@ const {
 
           <!-- Float Badge Bottom Left -->
           <div
-            class="absolute -bottom-3 -left-3 bg-slate-950/90 backdrop-blur-xl border border-white/20 p-3 rounded-xl shadow-2xl flex items-center gap-2.5 animate-float z-20"
+            class="absolute -bottom-3 -left-3 bg-slate-950/90 backdrop-blur-xl border border-white/20 p-3 rounded-xl shadow-lg flex items-center gap-2.5 animate-float z-20"
             style="animation-delay: 1.5s;"
           >
             <div

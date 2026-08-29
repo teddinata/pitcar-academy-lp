@@ -1,284 +1,52 @@
 ---
-interface Props {
-  whatsappNumber?: string;
-  whatsappMessage?: string;
-  whatsappNumberDisplay?: string;
-}
-
-import { whatsappConfig } from "../content.config";
-const {
-  whatsappNumber = whatsappConfig.phoneNumber,
-  whatsappMessage = encodeURIComponent('Halo Pitcar Academy, saya ingin mendaftar program pelatihan mekanik Batch Perdana!'),
-  whatsappNumberDisplay = '+62 851-9095-0381',
-} = Astro.props;
-
 const year = new Date().getFullYear();
+const homePrefix = Astro.url.pathname === '/' ? '' : '/';
+const consultationHref = `${homePrefix}#konsultasi`;
+const whatsappDisplay = import.meta.env.PUBLIC_EDUCATION_CONSULTANT_WHATSAPP_DISPLAY;
 ---
 
-<footer class="bg-slate-950 text-slate-300 border-t border-slate-800/80">
-  <!-- CTA Banner -->
-  <div class="border-b border-slate-800/80 bg-slate-900/50">
-    <div
-      class="container-custom max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16"
-    >
-      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-        <div>
-          <h3
-            class="text-white text-2xl md:text-3xl font-extrabold mb-2 tracking-tight"
-          >
-            Siap Memulai Karier Sebagai Mekanik Profesional?
-          </h3>
-          <p
-            class="text-slate-300 max-w-xl text-base font-normal leading-relaxed"
-          >
-            Daftar sekarang dan wujudkan impianmu menjadi mekanik bersertifikat
-            bersama Pitcar Academy.
-          </p>
-        </div>
-        <a
-          href="#cta"
-          class="btn-primary shrink-0 px-7 py-3.5"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M5 12h14"></path>
-            <path d="m12 5 7 7-7 7"></path>
-          </svg>
-          Daftar Sekarang
+<footer class="border-t border-slate-800 bg-slate-950 text-slate-300">
+  <div class="container-custom py-12 lg:py-14">
+    <div class="grid gap-10 md:grid-cols-[1.4fr_0.8fr_0.8fr]">
+      <div class="max-w-lg">
+        <a href="/" class="inline-flex items-center gap-3" aria-label="Beranda Pitcar Academy">
+          <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+          </span>
+          <span class="text-xl font-black tracking-tight text-white">PITCAR <span class="text-brand-500">ACADEMY</span></span>
+        </a>
+        <p class="mt-4 max-w-md text-sm leading-relaxed text-slate-400">
+          Pelatihan mekanik yang menghubungkan teori, praktik intensif, dan pengalaman di lingkungan bengkel PITCAR.
+        </p>
+        <a href={consultationHref} data-lead-cta data-source-cta="footer_consultation" class="mt-6 inline-flex min-h-11 items-center gap-2 rounded-full bg-brand-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/40">
+          Konsultasi Program Gratis
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
         </a>
       </div>
-    </div>
-  </div>
 
-  <!-- Footer Content -->
-  <div class="container-custom py-12 lg:py-16">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-      <!-- Brand -->
-      <div class="lg:col-span-1">
-        <div class="flex items-center gap-3 mb-4">
-          <div
-            class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center shadow-md"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-6 h-6 text-white"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path
-                d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"
-              ></path>
-            </svg>
-          </div>
-          <div>
-            <span
-              class="text-white font-bold text-xl tracking-tight font-heading"
-              >PITCAR</span
-            ><span class="text-primary font-bold text-xl ml-1 font-heading"
-              >ACADEMY</span
-            >
-          </div>
-        </div>
-        <p class="text-sm text-slate-400 leading-relaxed mb-6 font-normal">
-          Belajar • Praktik • Siap Kerja<br />Program pelatihan mekanik
-          profesional dengan kurikulum terstruktur.
-        </p>
-        <div class="flex gap-3">
-          <!-- Instagram -->
-          <a
-            href="#"
-            aria-label="Instagram"
-            class="w-10 h-10 bg-slate-900 border border-slate-800 hover:bg-red-600 hover:border-red-600 text-slate-300 hover:text-white rounded-xl flex items-center justify-center transition-all"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              ><rect x="2" y="2" width="20" height="20" rx="5" ry="5"
-              ></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"
-              ></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg
-            >
-          </a>
-          <!-- YouTube -->
-          <a
-            href="#"
-            aria-label="YouTube"
-            class="w-10 h-10 bg-slate-900 border border-slate-800 hover:bg-red-600 hover:border-red-600 text-slate-300 hover:text-white rounded-xl flex items-center justify-center transition-all"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              ><path
-                d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.43z"
-              ></path><polygon
-                points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"
-              ></polygon></svg
-            >
-          </a>
-          <!-- TikTok -->
-          <a
-            href="#"
-            aria-label="TikTok"
-            class="w-10 h-10 bg-slate-900 border border-slate-800 hover:bg-red-600 hover:border-red-600 text-slate-300 hover:text-white rounded-xl flex items-center justify-center transition-all"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              ><path
-                d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15.2a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.73a8.19 8.19 0 0 0 4.76 1.52V6.8a4.84 4.84 0 0 1-1-.11z"
-              ></path></svg
-            >
-          </a>
-        </div>
-      </div>
-
-      <!-- Programs -->
-      <div>
-        <h4
-          class="text-white font-extrabold text-base mb-4 uppercase tracking-wider"
-        >
-          Program Belajar
-        </h4>
-        <ul class="space-y-3">
-          <li>
-            <a
-              href="#packages"
-              class="text-sm font-normal text-slate-300 hover:text-white transition-colors"
-              >Basic - Maintenance EFI</a>
-          </li>
-          <li>
-            <a
-              href="#packages"
-              class="text-sm font-normal text-slate-300 hover:text-white transition-colors"
-              >Advance - General Repair</a>
-          </li>
-          <li>
-            <a
-              href="#packages"
-              class="text-sm font-normal text-slate-300 hover:text-white transition-colors"
-              >Professional - Level 1 & 2</a>
-          </li>
+      <nav aria-label="Tautan program">
+        <h2 class="text-sm font-extrabold text-white">Jelajahi</h2>
+        <ul class="mt-4 space-y-3 text-sm">
+          <li><a class="transition hover:text-white" href={`${homePrefix}#packages`}>Program & biaya</a></li>
+          <li><a class="transition hover:text-white" href={`${homePrefix}#advantages`}>Cara belajar</a></li>
+          <li><a class="transition hover:text-white" href={`${homePrefix}#faq`}>Pertanyaan umum</a></li>
+          <li><a class="transition hover:text-white" href="/faq/">FAQ lengkap</a></li>
         </ul>
-      </div>
+      </nav>
 
-      <!-- Resources -->
       <div>
-        <h4
-          class="text-white font-extrabold text-base mb-4 uppercase tracking-wider"
-        >
-          Informasi
-        </h4>
-        <ul class="space-y-3">
-          <li>
-            <a
-              href="#about"
-              class="text-sm font-normal text-slate-300 hover:text-white transition-colors"
-              >Tentang Kami</a>
-          </li>
-          <li>
-            <a
-              href="#advantages"
-              class="text-sm font-normal text-slate-300 hover:text-white transition-colors"
-              >Keunggulan</a>
-          </li>
-          <li>
-            <a
-              href="#faq"
-              class="text-sm font-normal text-slate-300 hover:text-white transition-colors"
-              >FAQ</a>
-          </li>
-          <li>
-            <a
-              href="https://pitcar.co.id"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-sm font-normal text-slate-300 hover:text-white transition-colors"
-              >Pitcar.co.id</a>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Contact -->
-      <div>
-        <h4
-          class="text-white font-extrabold text-base mb-4 uppercase tracking-wider"
-        >
-          Kontak
-        </h4>
-        <ul class="space-y-3 text-sm">
-          <li class="flex items-start gap-2.5 text-slate-300">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              class="mt-0.5 shrink-0 text-red-500"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              ><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"
-              ></path><circle cx="12" cy="10" r="3"></circle></svg
-            >
-            <span>Bengkel Pitcar Service<br />Purwokerto</span>
-          </li>
-          <li class="flex items-center gap-2.5 text-slate-300">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="shrink-0 text-red-500"
-              ><path
-                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"
-              ></path></svg
-            >
-            <span>{whatsappNumberDisplay}</span>
-          </li>
-        </ul>
+        <h2 class="text-sm font-extrabold text-white">Lokasi</h2>
+        <p class="mt-4 text-sm leading-relaxed text-slate-400">Bengkel Pitcar Service<br />Purwokerto</p>
+        {whatsappDisplay && <p class="mt-3 text-sm text-slate-300">WhatsApp: {whatsappDisplay}</p>}
+        <a class="mt-4 inline-block text-sm font-semibold text-slate-300 underline decoration-slate-600 underline-offset-4 transition hover:text-white" href="https://pitcar.co.id" target="_blank" rel="noopener noreferrer">Kunjungi Pitcar Service</a>
       </div>
     </div>
   </div>
 
-  <!-- Bottom Bar -->
-  <div class="border-t border-slate-800/80 bg-slate-950">
-    <div
-      class="container-custom max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-medium text-slate-400"
-    >
-      <p>&copy; {year} Pitcar Academy. All rights reserved.</p>
-      <p>
-        A part of <a
-          href="https://pitcar.co.id"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-slate-300 hover:text-white font-semibold transition-colors"
-          >Pitcar Group</a>
-      </p>
+  <div class="border-t border-slate-800">
+    <div class="container-custom flex flex-col gap-2 py-5 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+      <p>&copy; {year} Pitcar Academy.</p>
+      <p>Learn. Grow. Build Your Future.</p>
     </div>
   </div>
 </footer>

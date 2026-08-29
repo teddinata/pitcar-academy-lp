@@ -4,7 +4,6 @@
 
 interface Props {
   faqs: Array<{ question: string; answer: string }>;
-  whatsappNumber?: string;
 }
 
 const { faqs } = Astro.props;
@@ -19,7 +18,7 @@ const { faqs } = Astro.props;
         FAQ
       </span>
       <h2 class="heading-primary mb-5">
-        Pertanyaan Yang Sering <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent italic">Ditanyakan</span>
+        Pertanyaan Yang Sering <span class="text-primary italic">Ditanyakan</span>
       </h2>
       <p class="section-subtitle">Temukan jawaban untuk pertanyaan umum seputar program pelatihan kami.</p>
     </div>
@@ -29,14 +28,16 @@ const { faqs } = Astro.props;
       {faqs.map((faq, index) => (
         <div class="faq-item bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200 overflow-hidden">
           <button
+            type="button"
             class="w-full flex items-center justify-between p-5 sm:p-6 text-left focus-visible:outline-none hover:bg-slate-50/80 transition-colors"
             data-faq-index={index}
             aria-expanded="false"
+            aria-controls={`faq-answer-${index}`}
           >
             <span class="font-bold text-slate-900 text-base sm:text-lg pr-4">{faq.question}</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="faq-chevron shrink-0 text-slate-500 transition-transform duration-300" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="faq-chevron shrink-0 text-slate-500 transition-transform duration-300" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
-          <div class="faq-answer-content max-h-0 overflow-hidden transition-all duration-300" data-faq-index={index}>
+          <div id={`faq-answer-${index}`} class="faq-answer-content max-h-0 overflow-hidden transition-all duration-300" data-faq-index={index} aria-hidden="true">
             <div class="px-5 sm:px-6 pb-6 pt-1 text-slate-700 text-sm sm:text-base leading-relaxed border-t border-slate-100">
               {faq.answer}
             </div>
@@ -49,7 +50,7 @@ const { faqs } = Astro.props;
     <div class="text-center mt-14 p-8 bg-slate-900 rounded-2xl border border-slate-800 max-w-xl mx-auto shadow-xl">
       <h3 class="text-xl font-black text-white mb-2">Masih punya pertanyaan lain?</h3>
       <p class="text-slate-300 text-sm mb-4">Tim konsultan pendidikan kami siap membantu memberikan informasi lebih detail.</p>
-      <p class="text-sm text-slate-400">💬 Gunakan tombol WhatsApp di pojok kanan bawah layar untuk bertanya langsung.</p>
+      <a href={Astro.url.pathname === '/' ? '#konsultasi' : '/#konsultasi'} data-lead-cta data-source-cta="faq_consultation" class="inline-flex min-h-11 items-center justify-center rounded-full bg-brand-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/40">Konsultasi dengan tim kami</a>
     </div>
   </div>
 </section>
@@ -75,6 +76,7 @@ const { faqs } = Astro.props;
             content.classList.toggle('open');
             chevron.classList.toggle('rotated');
             button.setAttribute('aria-expanded', String(content.classList.contains('open')));
+            content.setAttribute('aria-hidden', String(!content.classList.contains('open')));
           }
         });
       }
