@@ -51,7 +51,11 @@ cp .env.example .env
 npm run dev        # http://localhost:4321
 ```
 
-Node 18.20.8+ is required (Astro 5). The lead API lives in `backend/`:
+Node 18.20.8+ is required (Astro 5) — Node 16 stops the dev server outright.
+Full local setup, including seeding the dashboard with sample leads, is in
+[docs/local-development.md](docs/local-development.md).
+
+The lead API lives in `backend/`:
 
 ```bash
 cd backend && composer install && php artisan migrate && php artisan serve
