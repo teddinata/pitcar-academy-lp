@@ -8,61 +8,47 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: 'var(--aw-color-primary, rgb(204 0 0))',
-        secondary: 'var(--aw-color-secondary, rgb(170 0 0))',
-        accent: 'var(--aw-color-accent, rgb(204 0 0))',
-        heading: 'var(--aw-color-text-heading, rgb(0 0 0))',
-        default: 'var(--aw-color-text-default, rgb(16 16 16))',
-        muted: 'var(--aw-color-text-muted, rgb(16 16 16 / 66%))',
-        page: 'var(--aw-color-bg-page, rgb(255 255 255))',
-        'brand': {
-          50:  '#fff1f1',
+        // Semantic tokens. Sections alternate between `ink` and `paper`; every
+        // other colour is defined relative to which of the two it sits on.
+        ink: {
+          DEFAULT: '#0A0A0A', // dark section background
+          soft: '#141414',    // raised card on a dark section
+          line: '#262626',    // hairline on a dark section
+        },
+        paper: {
+          DEFAULT: '#FAFAF9', // light section background
+          soft: '#F5F5F4',    // raised card on a light section
+          line: '#E7E5E4',    // hairline on a light section
+        },
+        // #CC0000 only reaches 3.36:1 on ink, so accent TEXT on dark uses
+        // brand-400. #CC0000 stays for CTA fills (white on it is 5.89:1) and
+        // for accent text on paper (5.64:1).
+        brand: {
+          50: '#fff1f1',
           100: '#ffe0e0',
           200: '#ffc7c7',
           300: '#ff9e9e',
-          400: '#ff6464',
+          400: '#ff6464', // accent text on ink
           500: '#ff2d2d',
-          600: '#cc0000',  // Main brand color
-          700: '#aa0000',  // Darker brand red (#AA0000)
+          600: '#cc0000', // CTA fill, accent text on paper
+          700: '#aa0000', // CTA hover
           800: '#990000',
           900: '#7a0000',
           950: '#440000',
         },
       },
       fontFamily: {
+        // Barlow Condensed carries the industrial, workshop-signage character
+        // the headlines need; Inter stays for body because it is already
+        // self-hosted and is a neutral grotesk that pairs with it cleanly.
+        display: ["'Barlow Condensed'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
         sans: ["'Inter Variable'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        heading: ["'Inter Variable'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
+      maxWidth: {
+        prose: '68ch', // keeps body copy inside the 65-75 character band
       },
       lineHeight: {
-        tighter: '1.15',
-      },
-      animation: {
-        fade: 'fadeInUp 1s both',
-        'bounce-subtle': 'bounceSubtle 2s infinite',
-        float: 'floatAnim 3s ease-in-out infinite',
-        wobble: 'wobble 1.5s ease-in-out infinite',
-      },
-      keyframes: {
-        fadeInUp: {
-          '0%': { opacity: '0', transform: 'translateY(2rem)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
-        bounceSubtle: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-6px)' },
-        },
-        floatAnim: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-10px)' },
-        },
-        wobble: {
-          '0%, 100%': { transform: 'scale(1) rotate(0deg)' },
-          '10%': { transform: 'scale(1.05) rotate(-3deg)' },
-          '20%': { transform: 'scale(1.05) rotate(3deg)' },
-          '30%': { transform: 'scale(1.05) rotate(-3deg)' },
-          '40%': { transform: 'scale(1.05) rotate(3deg)' },
-          '50%': { transform: 'scale(1) rotate(0deg)' },
-        },
+        tighter: '1.02',
       },
     },
   },

@@ -1,52 +1,62 @@
 ---
-const year = new Date().getFullYear();
 const homePrefix = Astro.url.pathname === '/' ? '' : '/';
 const consultationHref = `${homePrefix}#konsultasi`;
 const whatsappDisplay = import.meta.env.PUBLIC_EDUCATION_CONSULTANT_WHATSAPP_DISPLAY;
+const year = new Date().getFullYear();
+
+const links = [
+  { href: `${homePrefix}#metode`, label: 'Metode belajar' },
+  { href: `${homePrefix}#program`, label: 'Program & biaya' },
+  { href: `${homePrefix}#perjalanan`, label: 'Perjalanan belajar' },
+  { href: '/faq/', label: 'FAQ' },
+];
 ---
 
-<footer class="border-t border-slate-800 bg-slate-950 text-slate-300">
-  <div class="container-custom py-12 lg:py-14">
-    <div class="grid gap-10 md:grid-cols-[1.4fr_0.8fr_0.8fr]">
-      <div class="max-w-lg">
-        <a href="/" class="inline-flex items-center gap-3" aria-label="Beranda Pitcar Academy">
-          <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
-            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
-          </span>
-          <span class="text-xl font-black tracking-tight text-white">PITCAR <span class="text-brand-500">ACADEMY</span></span>
-        </a>
-        <p class="mt-4 max-w-md text-sm leading-relaxed text-slate-400">
-          Pelatihan mekanik yang menghubungkan teori, praktik intensif, dan pengalaman di lingkungan bengkel PITCAR.
+<footer class="border-t rule-ink bg-ink text-paper">
+  <div class="shell py-16 md:py-20">
+    <div class="grid gap-12 md:grid-cols-12 md:gap-8">
+      <div class="md:col-span-6">
+        <p class="font-display text-2xl font-bold leading-none">
+          <span class="text-paper">PITCAR</span><span class="text-brand-400">ACADEMY</span>
         </p>
-        <a href={consultationHref} data-lead-cta data-source-cta="footer_consultation" class="mt-6 inline-flex min-h-11 items-center gap-2 rounded-full bg-brand-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/40">
+        <p class="lead mt-5 max-w-prose text-muted-ink">
+          Pelatihan mekanik dengan praktik intensif dan pengalaman langsung di
+          ekosistem bengkel PITCAR.
+        </p>
+        <a href={consultationHref} data-lead-cta data-source-cta="footer_consultation" class="btn btn-primary mt-8">
           Konsultasi Program Gratis
-          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
         </a>
       </div>
 
-      <nav aria-label="Tautan program">
-        <h2 class="text-sm font-extrabold text-white">Jelajahi</h2>
-        <ul class="mt-4 space-y-3 text-sm">
-          <li><a class="transition hover:text-white" href={`${homePrefix}#packages`}>Program & biaya</a></li>
-          <li><a class="transition hover:text-white" href={`${homePrefix}#advantages`}>Cara belajar</a></li>
-          <li><a class="transition hover:text-white" href={`${homePrefix}#faq`}>Pertanyaan umum</a></li>
-          <li><a class="transition hover:text-white" href="/faq/">FAQ lengkap</a></li>
+      <nav class="md:col-span-3" aria-label="Tautan halaman">
+        <h2 class="text-xs font-bold uppercase tracking-[0.14em] text-muted-ink">Halaman</h2>
+        <ul class="mt-5 space-y-3">
+          {links.map((link) => (
+            <li>
+              <a class="text-stone-300 transition-colors hover:text-paper" href={link.href}>{link.label}</a>
+            </li>
+          ))}
         </ul>
       </nav>
 
-      <div>
-        <h2 class="text-sm font-extrabold text-white">Lokasi</h2>
-        <p class="mt-4 text-sm leading-relaxed text-slate-400">Bengkel Pitcar Service<br />Purwokerto</p>
-        {whatsappDisplay && <p class="mt-3 text-sm text-slate-300">WhatsApp: {whatsappDisplay}</p>}
-        <a class="mt-4 inline-block text-sm font-semibold text-slate-300 underline decoration-slate-600 underline-offset-4 transition hover:text-white" href="https://pitcar.co.id" target="_blank" rel="noopener noreferrer">Kunjungi Pitcar Service</a>
+      <div class="md:col-span-3">
+        <h2 class="text-xs font-bold uppercase tracking-[0.14em] text-muted-ink">Kontak</h2>
+        <ul class="mt-5 space-y-3 text-stone-300">
+          {whatsappDisplay && <li>WhatsApp {whatsappDisplay}</li>}
+          <li>
+            <a class="transition-colors hover:text-paper" href="https://pitcar.co.id" rel="noopener noreferrer" target="_blank">
+              pitcar.co.id
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
 
-  <div class="border-t border-slate-800">
-    <div class="container-custom flex flex-col gap-2 py-5 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
-      <p>&copy; {year} Pitcar Academy.</p>
-      <p>Learn. Grow. Build Your Future.</p>
+  <div class="border-t rule-ink">
+    <div class="shell flex flex-col gap-2 py-5 text-xs text-stone-400 sm:flex-row sm:items-center sm:justify-between">
+      <p>© {year} Pitcar Academy. Bagian dari ekosistem PITCAR.</p>
+      <p>Sertifikat kelulusan program, bukan sertifikasi kompetensi nasional.</p>
     </div>
   </div>
 </footer>

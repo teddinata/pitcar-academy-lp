@@ -2,25 +2,34 @@
 const href = Astro.url.pathname === '/' ? '#konsultasi' : '/#konsultasi';
 ---
 
+<!-- Brand red, not WhatsApp green: this opens the consultation form, and a
+     green button would promise a chat that does not start yet. -->
 <a
   href={href}
   data-lead-cta
   data-source-cta="floating_consultation"
   data-floating-consultation
-  class="pointer-events-none fixed bottom-4 right-4 z-40 inline-flex h-12 w-12 translate-y-2 items-center justify-center gap-2 rounded-full bg-[#107C41] text-sm font-extrabold text-white opacity-0 shadow-[0_4px_8px_rgba(0,0,0,0.24)] transition duration-200 hover:bg-[#0B6535] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-300 sm:bottom-6 sm:right-6 sm:h-auto sm:w-auto sm:min-h-12 sm:px-5 sm:py-3"
+  class="btn btn-primary pointer-events-none fixed bottom-4 right-4 z-40 translate-y-2 px-5 py-3 text-sm opacity-0 shadow-lg transition duration-200 sm:bottom-6 sm:right-6"
 >
-  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path><path d="M8 9h8"></path><path d="M8 13h5"></path></svg>
-  <span class="sr-only sm:not-sr-only">Konsultasi gratis</span>
+  <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path><path d="M8 9h8"></path><path d="M8 13h5"></path></svg>
+  Konsultasi gratis
 </a>
 
 <script>
   const floatingButton = document.querySelector<HTMLElement>('[data-floating-consultation]');
-  const heroCta = document.querySelector<HTMLElement>('[data-source-cta="hero_primary"]');
-  const consultationSection = document.querySelector<HTMLElement>('#konsultasi');
+  // Watch every consultation CTA on the page, not just the hero: the revamped
+  // page has one in most sections, and a floating button that sits on top of
+  // the card it duplicates is worse than no floating button.
+  const anchors = [
+    ...document.querySelectorAll<HTMLElement>('[data-lead-cta]:not([data-floating-consultation])'),
+    ...document.querySelectorAll<HTMLElement>('#konsultasi'),
+  ];
   const visibility = new Map<Element, boolean>();
 
   function updateFloatingButton() {
     if (!floatingButton) return;
+    // Hidden whenever a real CTA is already on screen, so it never competes
+    // with the form it points at.
     const shouldHide = [...visibility.values()].some(Boolean);
     floatingButton.classList.toggle('opacity-0', shouldHide);
     floatingButton.classList.toggle('pointer-events-none', shouldHide);
@@ -35,7 +44,6 @@ const href = Astro.url.pathname === '/' ? '#konsultasi' : '/#konsultasi';
       entries.forEach((entry) => visibility.set(entry.target, entry.isIntersecting));
       updateFloatingButton();
     }, { threshold: 0.05 });
-    if (heroCta) observer.observe(heroCta);
-    if (consultationSection) observer.observe(consultationSection);
+    anchors.forEach((anchor) => observer.observe(anchor));
   }
 </script>

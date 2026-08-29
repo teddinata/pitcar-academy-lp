@@ -1,0 +1,24 @@
+---
+import { programFacts } from '../content.config';
+---
+
+<section class="band band-paper border-t rule-paper" aria-labelledby="facts-title">
+  <div class="shell">
+    <div class="max-w-3xl">
+      <p class="eyebrow text-accent-paper">Detail program</p>
+      <h2 id="facts-title" class="display-2 mt-6">Rp5 juta ini dapat apa saja?</h2>
+      <p class="lead mt-5 text-muted-paper">
+        Semakin besar biayanya, semakin wajar kamu ingin tahu detailnya lebih dulu.
+      </p>
+    </div>
+
+    <dl class="mt-12 border-t rule-paper">
+      {programFacts.map((fact) => (
+        <div class="grid gap-1 border-b rule-paper py-4 sm:grid-cols-3 sm:gap-8 sm:py-5">
+          <dt class="text-sm font-bold uppercase tracking-wider text-muted-paper">{fact.label}</dt>
+          <dd class="sm:col-span-2">{fact.value}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>

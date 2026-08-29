@@ -13,6 +13,8 @@ interface Props {
   image?: string | URL;
   canonical?: string | URL;
   preloadImage?: string;
+  /** Viewports where `preloadImage` is actually the LCP element. */
+  preloadImageMedia?: string;
   structuredData?: Record<string, unknown>[];
   gaId?: string;
 }
@@ -23,6 +25,7 @@ const {
   image = '/og-image.jpg',
   canonical = Astro.url.pathname,
   preloadImage,
+  preloadImageMedia = '(min-width: 1024px)',
   structuredData = [],
   gaId = import.meta.env.PUBLIC_GA_ID,
 } = Astro.props;
@@ -39,7 +42,12 @@ const {
     <meta name="theme-color" content="#080808" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
+    {/* Only fetched where the image is the LCP. On phones the hero image sits
+        below the fold and the H1 is the LCP, so a high-priority image preload
+        there would compete with the font that heading needs. */}
+    {preloadImage && (
+      <link rel="preload" as="image" href={preloadImage} fetchpriority="high" media={preloadImageMedia} />
+    )}
 
     <!-- SEO -->
     <SeoHead

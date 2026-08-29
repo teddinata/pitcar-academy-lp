@@ -1,20 +1,25 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeroSection from '../components/HeroSection.astro';
-import AboutSection from '../components/AboutSection.astro';
-import AdvantageSection from '../components/AdvantageSection.astro';
-import DifferentiatorSection from '../components/DifferentiatorSection.astro';
+import TrustNumbersSection from '../components/TrustNumbersSection.astro';
+import ProblemSection from '../components/ProblemSection.astro';
+import MethodSection from '../components/MethodSection.astro';
+import CapabilitiesSection from '../components/CapabilitiesSection.astro';
+import WorkshopSection from '../components/WorkshopSection.astro';
+import TrainersSection from '../components/TrainersSection.astro';
+import JourneySection from '../components/JourneySection.astro';
 import PackagesSection from '../components/PackagesSection.astro';
-import CareerPathSection from '../components/CareerPathSection.astro';
-import TargetAudienceSection from '../components/TargetAudienceSection.astro';
-import EcosystemGallerySection from '../components/EcosystemGallerySection.astro';
+import FoundingBatchSection from '../components/FoundingBatchSection.astro';
+import CareerSection from '../components/CareerSection.astro';
+import ParentsSection from '../components/ParentsSection.astro';
+import ProgramFactsSection from '../components/ProgramFactsSection.astro';
 import FaqSection from '../components/FaqSection.astro';
 import CtaSection from '../components/CtaSection.astro';
 import { faqs, packages } from '../content.config';
 
 const site = Astro.site ?? new URL('https://academy.pitcar.co.id');
 const pageUrl = new URL('/', site).href;
-const packagesUrl = new URL('#packages', pageUrl).href;
+const programsUrl = new URL('#program', pageUrl).href;
 const consultationUrl = new URL('#konsultasi', pageUrl).href;
 const organizationId = new URL('/#organization', site).href;
 const structuredData = [
@@ -30,7 +35,7 @@ const structuredData = [
         '@type': 'Course',
         name: `${pkg.level} — ${pkg.name}`,
         description: pkg.description,
-        url: packagesUrl,
+        url: programsUrl,
         provider: { '@id': organizationId },
         offers: {
           '@type': 'Offer',
@@ -61,14 +66,21 @@ const structuredData = [
   preloadImage="/mechanic-hero.webp"
   structuredData={structuredData}
 >
+  {/* Dark and light bands alternate so a long page keeps a readable rhythm
+      without needing extra colour or decoration. */}
   <HeroSection />
-  <AboutSection />
-  <AdvantageSection />
-  <DifferentiatorSection />
+  <TrustNumbersSection />
+  <ProblemSection />
+  <MethodSection />
+  <CapabilitiesSection />
+  <WorkshopSection />
+  <TrainersSection />
+  <JourneySection />
   <PackagesSection />
-  <CareerPathSection />
-  <TargetAudienceSection />
-  <EcosystemGallerySection />
+  <FoundingBatchSection />
+  <CareerSection />
+  <ParentsSection />
+  <ProgramFactsSection />
   <FaqSection faqs={faqs} />
   <CtaSection />
 </BaseLayout>

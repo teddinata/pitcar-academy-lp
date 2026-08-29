@@ -1,38 +1,25 @@
 ---
+import { packages } from '../content.config';
 import PackageCard from './PackageCard.astro';
-import { packages } from '../content.config.ts';
-
 ---
 
-<section
-  id="packages"
-  class="section-padding bg-slate-950 overflow-hidden"
-  aria-label="Program Pelatihan"
->
-  <div class="container-custom">
-    <div class="headline-container">
-      <span
-        class="inline-flex items-center gap-2 bg-white/[0.06] text-brand-300 font-bold text-xs uppercase tracking-wider px-4 py-2 rounded-full border border-white/10 mb-5"
-      >
-        <span class="w-2 h-2 rounded-full bg-primary"></span>
-        Pilih Program Sesuai Tujuanmu
-      </span>
-      <h2 class="heading-primary text-white mb-5">
-        Program Pelatihan <span
-          class="text-brand-300"
-          >Pitcar Academy</span>
-      </h2>
-      <p class="section-subtitle">
-        Dari fundamental maintenance hingga general repair lengkap + 2 bulan
-        OJT bengkel.
+<section id="program" class="band band-paper border-t rule-paper scroll-mt-28" aria-labelledby="packages-title">
+  <div class="shell">
+    <div class="max-w-3xl">
+      <p class="eyebrow text-accent-paper">Program</p>
+      <h2 id="packages-title" class="display-2 mt-6">Pilih jalur yang sesuai dengan tujuanmu.</h2>
+      <p class="lead mt-5 text-muted-paper">
+        Tiga program dengan kedalaman berbeda. Kalau belum yakin, konsultan kami
+        akan membantu memilihkan berdasarkan latar belakang dan targetmu.
       </p>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {
-        packages.map((pkg) => (
-          <PackageCard pkg={pkg} />
-        ))
-      }
+
+    <div class="mt-14 grid gap-6 lg:grid-cols-3 lg:items-start">
+      {packages.map((pkg) => <PackageCard pkg={pkg} />)}
     </div>
+
+    <p class="mt-8 text-sm text-muted-paper">
+      Tersedia opsi pembayaran bertahap. Diskusikan saat konsultasi.
+    </p>
   </div>
 </section>

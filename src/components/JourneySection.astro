@@ -1,0 +1,27 @@
+---
+import { studentJourney } from '../content.config';
+---
+
+<section id="perjalanan" class="band band-paper border-t rule-paper scroll-mt-28" aria-labelledby="journey-title">
+  <div class="shell">
+    <div class="max-w-3xl">
+      <p class="eyebrow text-accent-paper">Perjalanan belajar</p>
+      <h2 id="journey-title" class="display-2 mt-6">Kalau saya masuk, saya akan melakukan apa?</h2>
+      <p class="lead mt-5 text-muted-paper">
+        Enam fase dari hari pertama sampai kelulusan.
+      </p>
+    </div>
+
+    <ol class="mt-14 border-t rule-paper">
+      {studentJourney.map((phase) => (
+        <li class="grid gap-2 border-b rule-paper py-7 sm:grid-cols-12 sm:gap-8 sm:py-8">
+          <span class="font-display text-sm font-semibold uppercase tracking-[0.14em] text-accent-paper sm:col-span-2 sm:pt-1.5">
+            {phase.phase}
+          </span>
+          <h3 class="display-3 sm:col-span-4">{phase.title}</h3>
+          <p class="leading-relaxed text-muted-paper sm:col-span-6">{phase.description}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

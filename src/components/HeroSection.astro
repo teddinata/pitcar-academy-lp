@@ -1,261 +1,68 @@
 ---
+const trustChips = [
+  'Praktik langsung',
+  'Trainer praktisi',
+  'OJT di bengkel',
+  'Assessment kompetensi',
+  'Career opportunity',
+];
 ---
 
-<section
-  class="relative min-h-screen flex items-center bg-slate-950 overflow-hidden"
-  aria-label="Hero"
->
-  <!-- Deep Background -->
-  <div
-    class="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 z-0"
-  >
-  </div>
-
-  <!-- Bold Glow Orbs -->
-  <div
-    class="absolute top-20 -left-40 hidden w-[500px] h-[500px] rounded-full bg-brand-600/25 blur-[120px] pointer-events-none z-0 sm:block"
-  >
-  </div>
-  <div
-    class="absolute bottom-10 -right-40 hidden w-[500px] h-[500px] rounded-full bg-brand-800/20 blur-[120px] pointer-events-none z-0 md:block"
-  >
-  </div>
-
-  <!-- Subtle Grid Texture -->
-  <div class="absolute inset-0 opacity-[0.07] z-0 pointer-events-none">
-    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <pattern
-          id="hero-grid"
-          x="0"
-          y="0"
-          width="40"
-          height="40"
-          patternUnits="userSpaceOnUse"
-        >
-          <path
-            d="M 40 0 L 0 0 0 40"
-            fill="none"
-            stroke="white"
-            stroke-width="0.5"></path>
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#hero-grid)"></rect>
-    </svg>
-  </div>
-
-  <!-- Main Container -->
-  <div
-    class="container-custom max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-32 pb-20 md:pt-40 md:pb-28 lg:pt-44 lg:pb-32"
-  >
-    <div class="grid lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-      <!-- LEFT: Copy & CTAs -->
+<section class="band-ink relative overflow-hidden pt-28 pb-16 sm:pt-32 md:pt-40 md:pb-24" aria-labelledby="hero-title">
+  <div class="shell">
+    <div class="grid gap-12 lg:grid-cols-12 lg:gap-16 lg:items-center">
+      <!-- Copy -->
       <div class="lg:col-span-7">
-        <!-- Badge -->
-        <div
-          class="inline-flex items-center gap-2.5 bg-white/[0.06] backdrop-blur-xl border border-brand-400/30 px-5 py-2.5 rounded-full mb-8 shadow-lg"
-        >
-          <span class="w-2 h-2 bg-brand-500 rounded-full animate-pulse"></span>
-          <span
-            class="text-brand-300 text-xs sm:text-sm font-bold tracking-wider uppercase"
-            >Batch Perdana Oktober 2026 • Kuota Terbatas</span
-          >
-        </div>
+        <p class="eyebrow text-accent-ink">Pitcar Academy</p>
 
-        <!-- Headline -->
-        <h1
-          class="hero-title text-white mb-7 text-glow-white"
-        >
-          Bangun Skill. Dapatkan Pengalaman.<br class="hidden sm:block" />
-          <span
-            class="text-brand-300 italic"
-            >Mulai Kariermu</span
-          > di Dunia Otomotif<span class="text-primary">.</span>
+        <h1 id="hero-title" class="display-1 mt-6 max-w-[15ch] text-paper">
+          Belajar mekanik di bengkel nyata.
+          <span class="block text-muted-ink">Bukan hanya di ruang kelas.</span>
         </h1>
 
-        <!-- Subheadline -->
-        <p
-          class="text-slate-300 text-base sm:text-lg lg:text-xl leading-relaxed mb-8 max-w-2xl font-normal"
-        >
-          Belajar mekanik mobil bukan hanya tentang teori. Di Pitcar Academy,
-          kamu belajar melalui <strong class="text-white font-semibold"
-            >teori & praktik intensif</strong
-          >, dilanjutkan dengan <strong class="text-brand-400 font-semibold"
-            >2 bulan On The Job Training (OJT)</strong
-          > di ekosistem bengkel PITCAR yang sudah terbukti berjalan.
+        <p class="lead mt-7 max-w-prose text-stone-300">
+          Bangun kompetensi mekanik melalui teori, praktik intensif, dan pengalaman
+          langsung di ekosistem bengkel PITCAR.
         </p>
 
-        <!-- Feature Checklist -->
-        <div class="grid grid-cols-2 gap-2.5 mb-8 sm:gap-3">
-          <div
-            class="flex items-center gap-2.5 bg-white/[0.04] border border-white/10 px-3 py-3 rounded-xl sm:px-4"
-          >
-            <div
-              class="w-7 h-7 rounded-lg bg-brand-600/20 text-brand-400 flex items-center justify-center shrink-0"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            </div>
-            <span class="text-xs font-semibold leading-snug text-slate-100 sm:text-sm">Belajar dari Praktisi Bengkel</span>
-          </div>
-          <div
-            class="flex items-center gap-2.5 bg-white/[0.04] border border-white/10 px-3 py-3 rounded-xl sm:px-4"
-          >
-            <div
-              class="w-7 h-7 rounded-lg bg-brand-600/20 text-brand-400 flex items-center justify-center shrink-0"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            </div>
-            <span class="text-xs font-semibold leading-snug text-slate-100 sm:text-sm">Praktik Intensif & Alat Modern</span>
-          </div>
-          <div
-            class="flex items-center gap-2.5 bg-white/[0.04] border border-white/10 px-3 py-3 rounded-xl sm:px-4"
-          >
-            <div
-              class="w-7 h-7 rounded-lg bg-brand-600/20 text-brand-400 flex items-center justify-center shrink-0"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            </div>
-            <span class="text-xs font-semibold leading-snug text-slate-100 sm:text-sm">2 Bulan OJT di Bengkel PITCAR</span>
-          </div>
-          <div
-            class="flex items-center gap-2.5 bg-white/[0.04] border border-white/10 px-3 py-3 rounded-xl sm:px-4"
-          >
-            <div
-              class="w-7 h-7 rounded-lg bg-brand-600/20 text-brand-400 flex items-center justify-center shrink-0"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            </div>
-            <span class="text-xs font-semibold leading-snug text-slate-100 sm:text-sm">Sertifikat & Kesempatan Rekrutmen</span>
-          </div>
-        </div>
+        <ul class="mt-9 flex flex-wrap gap-x-6 gap-y-3">
+          {trustChips.map((chip) => (
+            <li class="flex items-center gap-2.5 text-sm font-semibold text-stone-300">
+              <svg aria-hidden="true" class="h-4 w-4 shrink-0 text-brand-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              {chip}
+            </li>
+          ))}
+        </ul>
 
-        <!-- CTAs -->
-        <div
-          class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4"
-        >
-          <a
-            href="#konsultasi"
-            data-lead-cta
-            data-source-cta="hero_primary"
-            class="btn-primary text-base sm:text-lg px-8 py-4 shadow-xl"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M5 12h14"></path>
-              <path d="m12 5 7 7-7 7"></path>
-            </svg>
+        <div class="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <a href="#konsultasi" data-lead-cta data-source-cta="hero_primary" class="btn btn-primary">
             Konsultasi Program Gratis
+            <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
           </a>
-          <a
-            href="#packages"
-            class="inline-flex items-center justify-center gap-2.5 bg-white/[0.06] hover:bg-white/[0.12] text-white font-bold px-7 py-4 rounded-xl text-base sm:text-lg transition-all duration-300 border border-white/15 shadow-lg backdrop-blur-sm group"
-          >
-            Lihat Paket Belajar
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="group-hover:translate-x-1 transition-transform" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-          </a>
+          <a href="#program" class="btn btn-ghost-ink">Lihat Program &amp; Kurikulum</a>
         </div>
+
+        <p class="mt-5 text-sm text-muted-ink">Gratis, tanpa kewajiban mendaftar.</p>
       </div>
 
-      <!-- RIGHT: Visual Card -->
-      <div class="lg:col-span-5 relative">
-        <div class="relative mx-auto max-w-sm lg:max-w-none">
-          <!-- Red glow ring behind image -->
-          <div
-            class="absolute -inset-4 bg-gradient-to-br from-brand-600/20 via-transparent to-brand-900/15 rounded-[2rem] blur-2xl pointer-events-none"
-          >
-          </div>
-
-          <!-- Image Card -->
-          <div
-            class="relative rounded-2xl overflow-hidden border border-white/10 bg-slate-900 group"
-          >
-            <img
-              src="/mechanic-hero.webp"
-              alt="Mekanik profesional Pitcar Academy melakukan diagnosa mesin mobil"
-              class="w-full aspect-[3/4] sm:aspect-[4/4.5] lg:aspect-[3/4] object-cover object-top filter contrast-[1.08] group-hover:scale-[1.03] transition-transform duration-700"
-              loading="eager"
-              fetchpriority="high"
-              width="720"
-              height="720"
-            />
-            <!-- Bottom gradient -->
-            <div
-              class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent pointer-events-none"
-            >
-            </div>
-
-            <!-- Bottom Banner -->
-            <div
-              class="absolute bottom-4 left-4 right-4 bg-slate-950/80 backdrop-blur-xl p-4 rounded-xl border border-white/10 shadow-xl"
-            >
-              <div class="flex items-center gap-3">
-                <div
-                  class="w-10 h-10 bg-gradient-to-br from-brand-600 to-brand-800 rounded-lg flex items-center justify-center text-white shrink-0 font-black text-xs shadow-lg"
-                >
-                  PRO
-                </div>
-                <div>
-                  <div class="font-extrabold text-white text-sm leading-tight">
-                    Mekanik Handal & Profesional
-                  </div>
-                  <div class="text-[11px] text-slate-400 font-medium mt-0.5">
-                    Spesialis EFI, Tune-Up & General Repair
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Float Badge Top Right -->
-          <div
-            class="absolute -top-3 -right-3 bg-slate-950/90 backdrop-blur-xl border border-brand-500/40 p-3 rounded-xl shadow-lg flex items-center gap-2.5 animate-float z-20"
-          >
-            <div
-              class="w-8 h-8 bg-brand-600/20 text-brand-400 rounded-lg flex items-center justify-center shrink-0"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
-            </div>
-            <div>
-              <div class="text-[11px] font-black text-white leading-tight">
-                Pitcar Certified
-              </div>
-              <div class="text-[10px] text-brand-300 font-bold">
-                Sertifikasi Resmi
-              </div>
-            </div>
-          </div>
-
-          <!-- Float Badge Bottom Left -->
-          <div
-            class="absolute -bottom-3 -left-3 bg-slate-950/90 backdrop-blur-xl border border-white/20 p-3 rounded-xl shadow-lg flex items-center gap-2.5 animate-float z-20"
-            style="animation-delay: 1.5s;"
-          >
-            <div
-              class="w-8 h-8 bg-brand-600/20 text-brand-400 rounded-lg flex items-center justify-center shrink-0"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-            </div>
-            <div>
-              <div class="text-[11px] font-black text-white leading-tight">
-                Siap Kerja
-              </div>
-              <div class="text-[10px] text-slate-300 font-bold">
-                Peluang Penyaluran Kerja
-              </div>
-            </div>
-          </div>
-        </div>
+      <!-- Visual -->
+      <div class="lg:col-span-5">
+        <figure class="relative">
+          <img
+            src="/mechanic-hero.webp"
+            alt="Mekanik Pitcar Academy melakukan diagnosa mesin kendaraan di area kerja bengkel"
+            width="720"
+            height="720"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+            class="aspect-[4/5] w-full object-cover object-top sm:aspect-square lg:aspect-[4/5]"
+          />
+          <figcaption class="mt-4 flex items-start gap-3 border-l-2 border-brand-600 pl-4 text-sm leading-relaxed text-muted-ink">
+            Peserta belajar di lingkungan bengkel yang melayani kendaraan customer setiap hari.
+          </figcaption>
+        </figure>
       </div>
-    </div>
-  </div>
-
-  <!-- Scroll indicator -->
-  <div
-    class="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-none z-10 hidden md:block"
-  >
-    <div
-      class="w-6 h-10 rounded-full border-2 border-white/20 flex items-start justify-center p-1.5"
-    >
-      <div class="w-1.5 h-3 bg-white/40 rounded-full animate-bounce"></div>
     </div>
   </div>
 </section>
