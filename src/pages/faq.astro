@@ -1,15 +1,24 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import FaqSection from '../components/FaqSection.astro';
-import { faqs, whatsappConfig } from '../content.config.ts';
+import { faqs } from '../content.config';
 
-const whatsappNumber = whatsappConfig.phoneNumber;
+const structuredData = [{
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+}];
 ---
 
 <BaseLayout
-  title="FAQ - Pertanyaan Umum | Pitcar Academy"
+  title="FAQ Program Pelatihan Mekanik | Pitcar Academy"
   description="Jawaban untuk pertanyaan umum seputar program pelatihan mekanik Pitcar Academy: durasi, biaya, metode belajar, dan peluang karier."
-  whatsappNumber={whatsappNumber}
+  canonical="/faq/"
+  structuredData={structuredData}
 >
   {/* Header */}
   <div class="hero-gradient pt-32 pb-20 md:pt-40 md:pb-28 border-b border-slate-800">
@@ -24,5 +33,5 @@ const whatsappNumber = whatsappConfig.phoneNumber;
   </div>
 
   {/* FAQ Section */}
-  <FaqSection whatsappNumber={whatsappNumber} faqs={faqs} />
+  <FaqSection faqs={faqs} />
 </BaseLayout>

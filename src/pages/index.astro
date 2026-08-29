@@ -1,152 +1,74 @@
 ---
-// Main Landing Page — Pitcar Academy (Aligned with draft-revision.md)
-import BaseLayout from "../layouts/BaseLayout.astro";
-import HeroSection from "../components/HeroSection.astro";
-import AboutSection from "../components/AboutSection.astro";
-import AdvantageSection from "../components/AdvantageSection.astro";
-import DifferentiatorSection from "../components/DifferentiatorSection.astro";
-import PackagesSection from "../components/PackagesSection.astro";
-import CareerPathSection from "../components/CareerPathSection.astro";
-import TargetAudienceSection from "../components/TargetAudienceSection.astro";
-import EcosystemGallerySection from "../components/EcosystemGallerySection.astro";
-import FaqSection from "../components/FaqSection.astro";
-import CtaSection from "../components/CtaSection.astro";
-import { faqs, whatsappConfig } from "../content.config.ts";
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroSection from '../components/HeroSection.astro';
+import AboutSection from '../components/AboutSection.astro';
+import AdvantageSection from '../components/AdvantageSection.astro';
+import DifferentiatorSection from '../components/DifferentiatorSection.astro';
+import PackagesSection from '../components/PackagesSection.astro';
+import CareerPathSection from '../components/CareerPathSection.astro';
+import TargetAudienceSection from '../components/TargetAudienceSection.astro';
+import EcosystemGallerySection from '../components/EcosystemGallerySection.astro';
+import FaqSection from '../components/FaqSection.astro';
+import CtaSection from '../components/CtaSection.astro';
+import { faqs, packages } from '../content.config';
 
-const whatsappNumber = whatsappConfig.phoneNumber;
-const heroMessage = encodeURIComponent(
-  "Halo Pitcar Academy, saya tertarik dengan program pelatihan mekanik Batch Perdana (Oktober 2026). Bisa info lebih lanjut?",
-);
+const site = Astro.site ?? new URL('https://academy.pitcar.co.id');
+const pageUrl = new URL('/', site).href;
+const packagesUrl = new URL('#packages', pageUrl).href;
+const consultationUrl = new URL('#konsultasi', pageUrl).href;
+const organizationId = new URL('/#organization', site).href;
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Program Pelatihan Mekanik Pitcar Academy',
+    url: pageUrl,
+    itemListElement: packages.map((pkg, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'Course',
+        name: `${pkg.level} — ${pkg.name}`,
+        description: pkg.description,
+        url: packagesUrl,
+        provider: { '@id': organizationId },
+        offers: {
+          '@type': 'Offer',
+          price: pkg.price,
+          priceCurrency: 'IDR',
+          availability: 'https://schema.org/LimitedAvailability',
+          url: consultationUrl,
+        },
+      },
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+    })),
+  },
+];
 ---
 
 <BaseLayout
-  title="Pitcar Academy | Belajar Mekanik Langsung dari Ekosistem Bengkel Nyata"
-  description="Program pelatihan & sertifikasi mekanik mobil Pitcar Academy. Teori & praktik intensif + 2 Bulan OJT di lingkungan bengkel PITCAR."
-  whatsappNumber={whatsappNumber}
+  title="Kursus Mekanik dengan Praktik Bengkel Nyata | Pitcar Academy"
+  description="Pelatihan mekanik dengan praktik intensif dan 2 bulan OJT di ekosistem bengkel PITCAR. Konsultasikan program yang cocok untukmu."
+  canonical="/"
+  preloadImage="/mechanic-hero.webp"
+  structuredData={structuredData}
 >
-  {/* Hero Section — Primary CTA #1 */}
-  <HeroSection whatsappNumber={whatsappNumber} whatsappMessage={heroMessage} />
-
-  {/* About / Intro Section — Bukan Sekadar Belajar di Kelas */}
+  <HeroSection />
   <AboutSection />
-
-
-  {/* Advantage Section — USP Section */}
   <AdvantageSection />
-
-  {/* Differentiator Section — Skill -> Experience -> Character -> Career */}
   <DifferentiatorSection />
-
-  {/* Packages Section */}
-  <PackagesSection whatsappNumber={whatsappNumber} />
-
-  {/* Career Section — Dari Academy Menuju Dunia Kerja */}
+  <PackagesSection />
   <CareerPathSection />
-
-  {/* Target Audience Section — Siapa yang cocok? */}
-  <TargetAudienceSection whatsappNumber={whatsappNumber} />
-
-  {/* Ecosystem Gallery Section — Belajar Langsung dari Ekosistem PITCAR */}
+  <TargetAudienceSection />
   <EcosystemGallerySection />
-
-  {/* FAQ Section */}
   <FaqSection faqs={faqs} />
-
-  {/* Bottom CTA — Final conversion push */}
-  <CtaSection whatsappNumber={whatsappNumber} />
+  <CtaSection />
 </BaseLayout>
-
-<!-- Structured Data: Course per package -->
-<script type="application/ld+json" is:inline>
-  {
-    "@context": "https://schema.org",
-    "@type": "Course",
-    "name": "Program Pelatihan Mekanik Pitcar Academy",
-    "description": "Program pelatihan & sertifikasi mekanik mobil profesional dengan 2 bulan OJT di lingkungan bengkel PITCAR.",
-    "provider": {
-      "@type": "EducationalOrganization",
-      "name": "Pitcar Academy"
-    },
-    "offers": [
-      {
-        "@type": "Offer",
-        "name": "Mechanic Level 1 — Maintenance",
-        "price": "5000000",
-        "priceCurrency": "IDR",
-        "description": "Maintenance Mobil Bensin EFI + 2 Bulan OJT"
-      },
-      {
-        "@type": "Offer",
-        "name": "Mechanic Level 2 — General Repair",
-        "price": "5000000",
-        "priceCurrency": "IDR",
-        "description": "General Repair Mobil EFI + 2 Bulan OJT"
-      },
-      {
-        "@type": "Offer",
-        "name": "Mechanic Level 1 + Level 2 Professional",
-        "price": "8500000",
-        "priceCurrency": "IDR",
-        "description": "Maintenance & General Repair + 2 Bulan OJT"
-      }
-    ]
-  }
-</script>
-
-<!-- FAQPage Schema -->
-<script type="application/ld+json" is:inline>
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "Apakah harus lulusan SMK Otomotif?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Tidak. Program Basic dapat diikuti peserta yang ingin memulai fundamental otomotif dari awal."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Apa perbedaan Basic dan Advance?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Basic berfokus pada Maintenance, sedangkan Advance berfokus pada General Repair."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Saya ingin belajar keduanya. Program mana yang sebaiknya dipilih?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Program Professional mencakup Level 1 dan Level 2 dengan total 208 jam pembelajaran dan 2 bulan OJT."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Di mana OJT dilakukan?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "OJT dilakukan di lingkungan bengkel yang ditentukan oleh jaringan Pitcar Academy."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Apakah setelah lulus pasti bekerja di PITCAR?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Tidak ada jaminan penempatan kerja. Namun peserta dengan kompetensi, attitude, dan performa yang memenuhi standar dapat memperoleh kesempatan mengikuti proses rekrutmen sesuai kebutuhan jaringan PITCAR."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Apakah bisa mencicil biaya pendidikan?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Skema dan pilihan pembayaran dapat ditanyakan langsung kepada tim pendaftaran kami via WhatsApp."
-        }
-      }
-    ]
-  }
-</script>

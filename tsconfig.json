@@ -6,5 +6,6 @@
       "@/*": ["src/*"],
       "@/content/*": ["src/content/*"]
     }
-  }
+  },
+  "exclude": ["dist", "backend"]
 }

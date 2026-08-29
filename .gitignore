@@ -9,6 +9,9 @@ node_modules/
 .env.*
 !.env.example
 
+# Local tooling state
+.impeccable/
+
 # IDE
 .vscode/
 .idea/

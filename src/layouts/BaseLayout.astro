@@ -4,59 +4,60 @@ import Footer from '../components/Footer.astro';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
 import SeoHead from '../components/SeoHead.astro';
 import GoogleAnalytics from '../components/GoogleAnalytics.astro';
+import FunnelAnalytics from '../components/FunnelAnalytics.astro';
 import '../styles/global.css';
 
 interface Props {
   title: string;
   description: string;
-  image?: string;
-  canonical?: string;
-  whatsappNumber?: string;
+  image?: string | URL;
+  canonical?: string | URL;
+  preloadImage?: string;
+  structuredData?: Record<string, unknown>[];
   gaId?: string;
 }
 
-import { whatsappConfig } from "../content.config";
 const {
   title,
   description,
-  image = '/og-image.png',
-  canonical = '/',
-  whatsappNumber = whatsappConfig.phoneNumber,
-  gaId = 'G-FNT01JRZN7',
+  image = '/og-image.jpg',
+  canonical = Astro.url.pathname,
+  preloadImage,
+  structuredData = [],
+  gaId = import.meta.env.PUBLIC_GA_ID,
 } = Astro.props;
-
-const siteUrl = Astro.site || 'https://academy.pitcar.co.id';
 ---
 
 <!doctype html>
-<html lang="id" class="scroll-smooth">
+<html lang="id">
   <head>
     <!-- Google Analytics -->
     <GoogleAnalytics id={gaId} />
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#080808" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
+    {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
 
     <!-- SEO -->
     <SeoHead
       title={title}
       description={description}
-      image={`${siteUrl}${image}`}
-      url={`${siteUrl}${canonical}`}
+      image={image}
+      url={canonical}
+      structuredData={structuredData}
     />
-
-    <!-- Preconnect for performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   </head>
   <body class="bg-page text-default antialiased tracking-tight selection:bg-primary/30 selection:text-white">
-    <Header whatsappNumber={whatsappNumber} />
+    <FunnelAnalytics />
+    <a class="skip-link" href="#main-content">Lewati ke konten utama</a>
+    <Header />
     <main id="main-content">
       <slot />
     </main>
-    <Footer whatsappNumber={whatsappNumber} />
-    <WhatsAppButton number={whatsappNumber} />
+    <Footer />
+    <WhatsAppButton />
   </body>
 </html>

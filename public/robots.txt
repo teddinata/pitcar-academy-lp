@@ -1,8 +1,0 @@
-# Pitcar Academy Landing Page
-# Allow all crawlers
-User-agent: *
-Allow: /
-Disallow: /admin/
-
-# Sitemap
-Sitemap: https://academy.pitcar.co.id/sitemap.xml
