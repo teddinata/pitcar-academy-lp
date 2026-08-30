@@ -132,6 +132,15 @@ These are design rules here because breaking them creates business risk:
   mess availability, schedule details — must be confirmed before publishing,
   and can be hidden by setting `publish: false` without touching a component.
 
+## Header
+
+Opaque, never translucent. A 95%-opaque bar with `backdrop-blur` let whatever
+was scrolling underneath ghost through it, which reads as a smudge rather than
+a navigation bar and made both the nav text and the content behind it harder
+to read. It now sits on a solid `ground` with a hairline, and gains a shadow
+once the page has scrolled past 8px so it separates from the content sliding
+under it.
+
 ## Measured
 
 Local production build, Lighthouse: mobile 99/100/100/100, desktop
@@ -140,6 +149,14 @@ Local production build, Lighthouse: mobile 99/100/100/100, desktop
 
 Every text node on both pages was swept for contrast **in both themes** — a
 Lighthouse run only measures the theme it happens to load, so the dark palette
-needs its own check. `scripts` for that sweep live with the E2E harness.
+needs its own check.
+
+Contrast maths alone is not enough: it reads declared colours and walks up for
+a background, so it cannot see text rendered over an image, behind a
+translucent layer, or inside a collapsed panel. A second sweep screenshots
+every text element and measures the luminance range of the actual pixels, with
+`<details>` opened, the mobile menu revealed, the form status shown and the
+fallback buttons unhidden first. 326 elements per theme, and an element whose
+rendered range falls under 40 is treated as unreadable.
 
 Production numbers will differ — network and hosting are not in this measurement.

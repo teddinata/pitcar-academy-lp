@@ -33,7 +33,7 @@ const consultationHref = `${homePrefix}#konsultasi`;
     </a>
   )}
 
-  <div class="border-b border-line bg-ground/95 backdrop-blur">
+  <div id="site-nav" class="border-b border-line bg-ground transition-shadow duration-200">
     <nav class="shell flex h-16 items-center justify-between gap-6 md:h-20" aria-label="Navigasi utama">
       <a href={homePrefix || '/'} class="flex items-baseline gap-1.5 font-display text-xl font-bold leading-none tracking-tight md:text-2xl">
         <span class="text-body">PITCAR</span><span class="text-accent">ACADEMY</span>
@@ -43,7 +43,7 @@ const consultationHref = `${homePrefix}#konsultasi`;
         {navLinks.map((link) => (
           <a
             href={link.href}
-            class="text-sm font-semibold text-muted transition-colors hover:text-body"
+            class="text-sm font-semibold text-body/80 transition-colors hover:text-body"
           >
             {link.label}
           </a>
@@ -86,6 +86,15 @@ const consultationHref = `${homePrefix}#konsultasi`;
 </header>
 
 <script>
+  // A shadow only once the page has scrolled: it separates the bar from the
+  // content sliding under it without adding weight at rest.
+  const nav = document.getElementById('site-nav');
+  if (nav) {
+    const setElevation = () => nav.classList.toggle('shadow-lg', window.scrollY > 8);
+    setElevation();
+    window.addEventListener('scroll', setElevation, { passive: true });
+  }
+
   const btn = document.getElementById('mobile-menu-btn');
   const menu = document.getElementById('mobile-menu');
   const iconOpen = document.getElementById('menu-icon-open');
