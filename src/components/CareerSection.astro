@@ -9,27 +9,27 @@ const path = [
 ];
 ---
 
-<section class="band band-ink border-t rule-ink" aria-labelledby="career-title">
+<section class="band border-t border-line" aria-labelledby="career-title">
   <div class="shell">
     <div class="max-w-3xl">
-      <p class="eyebrow text-accent-ink">Setelah lulus</p>
-      <h2 id="career-title" class="display-2 mt-6 text-paper">Career opportunity</h2>
+      <p class="eyebrow text-accent">Setelah lulus</p>
+      <h2 id="career-title" class="display-2 mt-6 text-body">Career opportunity</h2>
     </div>
 
-    <ol class="mt-12 grid gap-px border rule-ink bg-ink-line sm:grid-cols-2 lg:grid-cols-4">
+    <ol class="mt-12 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
       {path.map((item, index) => (
-        <li class="bg-ink px-6 py-8">
-          <span class="font-display text-sm font-semibold uppercase tracking-[0.14em] text-accent-ink">
+        <li class="bg-ground px-6 py-8">
+          <span class="font-display text-sm font-semibold uppercase tracking-[0.14em] text-accent">
             {String(index + 1).padStart(2, '0')}
           </span>
-          <h3 class="display-3 mt-2 text-paper">{item.step}</h3>
-          <p class="mt-2 text-sm leading-relaxed text-muted-ink">{item.detail}</p>
+          <h3 class="display-3 mt-2 text-body">{item.step}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-muted">{item.detail}</p>
         </li>
       ))}
     </ol>
 
     <!-- Worded as an opportunity, not a job guarantee. -->
-    <p class="lead mt-12 max-w-prose border-l-2 border-brand-600 pl-6 text-stone-300">
+    <p class="lead mt-12 max-w-prose border-l-2 border-accent-fill pl-6 text-muted">
       {careerStatement}
     </p>
   </div>

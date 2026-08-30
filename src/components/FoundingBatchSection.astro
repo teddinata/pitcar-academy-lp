@@ -5,13 +5,13 @@ const visible = foundingBatchBenefits.filter((benefit) => benefit.publish);
 ---
 
 {visible.length > 0 && (
-  <section class="band band-ink" aria-labelledby="founding-title">
+  <section class="band band-alt border-t border-line" aria-labelledby="founding-title">
     <div class="shell">
       <div class="grid gap-12 lg:grid-cols-12 lg:gap-16">
         <div class="lg:col-span-5">
-          <p class="eyebrow text-accent-ink">Batch perdana</p>
-          <h2 id="founding-title" class="display-2 mt-6 text-paper">Founding Batch 2026</h2>
-          <p class="lead mt-5 text-muted-ink">
+          <p class="eyebrow text-accent">Batch perdana</p>
+          <h2 id="founding-title" class="display-2 mt-6 text-body">Founding Batch 2026</h2>
+          <p class="lead mt-5 text-muted">
             Kelompok pertama yang menjalani program ini mendapat perlakuan berbeda —
             bukan karena diskon, tetapi karena jumlahnya dibatasi.
           </p>
@@ -19,9 +19,9 @@ const visible = foundingBatchBenefits.filter((benefit) => benefit.publish);
 
         <ul class="lg:col-span-7">
           {visible.map((benefit) => (
-            <li class="border-t rule-ink py-7 first:border-t-0 first:pt-0 lg:first:pt-2">
-              <h3 class="display-3 text-paper">{benefit.title}</h3>
-              <p class="mt-2 max-w-prose leading-relaxed text-muted-ink">{benefit.description}</p>
+            <li class="border-t border-line py-7 first:border-t-0 first:pt-0 lg:first:pt-2">
+              <h3 class="display-3 text-body">{benefit.title}</h3>
+              <p class="mt-2 max-w-prose leading-relaxed text-muted">{benefit.description}</p>
             </li>
           ))}
         </ul>

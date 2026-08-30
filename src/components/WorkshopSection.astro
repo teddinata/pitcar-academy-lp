@@ -2,14 +2,14 @@
 import { facilities } from '../content.config';
 ---
 
-<section class="band band-ink" aria-labelledby="workshop-title">
+<section class="band band-alt border-t border-line" aria-labelledby="workshop-title">
   <div class="shell">
     <div class="max-w-3xl">
-      <p class="eyebrow text-accent-ink">Lingkungan belajar</p>
-      <h2 id="workshop-title" class="display-2 mt-6 text-paper">
+      <p class="eyebrow text-accent">Lingkungan belajar</p>
+      <h2 id="workshop-title" class="display-2 mt-6 text-body">
         Belajar dengan tools yang digunakan di bengkel.
       </h2>
-      <p class="lead mt-5 text-muted-ink">
+      <p class="lead mt-5 text-muted">
         Bukan hanya demo. Peserta berlatih memahami prosedur kerja menggunakan
         peralatan yang relevan dengan pekerjaan mekanik sehari-hari.
       </p>
@@ -64,11 +64,11 @@ import { facilities } from '../content.config';
       </figure>
     </div>
 
-    <dl class="mt-14 grid gap-x-10 gap-y-8 border-t rule-ink pt-12 sm:grid-cols-2 lg:grid-cols-3">
+    <dl class="mt-14 grid gap-x-10 gap-y-8 border-t border-line pt-12 sm:grid-cols-2 lg:grid-cols-3">
       {facilities.map((item) => (
         <div>
-          <dt class="display-3 text-paper">{item.title}</dt>
-          <dd class="mt-2 text-sm leading-relaxed text-muted-ink">{item.description}</dd>
+          <dt class="display-3 text-body">{item.title}</dt>
+          <dd class="mt-2 text-sm leading-relaxed text-muted">{item.description}</dd>
         </div>
       ))}
     </dl>

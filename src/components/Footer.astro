@@ -12,14 +12,14 @@ const links = [
 ];
 ---
 
-<footer class="border-t rule-ink bg-ink text-paper">
+<footer class="border-t border-line bg-ground text-body">
   <div class="shell py-16 md:py-20">
     <div class="grid gap-12 md:grid-cols-12 md:gap-8">
       <div class="md:col-span-6">
         <p class="font-display text-2xl font-bold leading-none">
-          <span class="text-paper">PITCAR</span><span class="text-brand-400">ACADEMY</span>
+          <span class="text-body">PITCAR</span><span class="text-accent">ACADEMY</span>
         </p>
-        <p class="lead mt-5 max-w-prose text-muted-ink">
+        <p class="lead mt-5 max-w-prose text-muted">
           Pelatihan mekanik dengan praktik intensif dan pengalaman langsung di
           ekosistem bengkel PITCAR.
         </p>
@@ -29,22 +29,22 @@ const links = [
       </div>
 
       <nav class="md:col-span-3" aria-label="Tautan halaman">
-        <h2 class="text-xs font-bold uppercase tracking-[0.14em] text-muted-ink">Halaman</h2>
+        <h2 class="text-xs font-bold uppercase tracking-[0.14em] text-muted">Halaman</h2>
         <ul class="mt-5 space-y-3">
           {links.map((link) => (
             <li>
-              <a class="text-stone-300 transition-colors hover:text-paper" href={link.href}>{link.label}</a>
+              <a class="text-muted transition-colors hover:text-body" href={link.href}>{link.label}</a>
             </li>
           ))}
         </ul>
       </nav>
 
       <div class="md:col-span-3">
-        <h2 class="text-xs font-bold uppercase tracking-[0.14em] text-muted-ink">Kontak</h2>
-        <ul class="mt-5 space-y-3 text-stone-300">
+        <h2 class="text-xs font-bold uppercase tracking-[0.14em] text-muted">Kontak</h2>
+        <ul class="mt-5 space-y-3 text-muted">
           {whatsappDisplay && <li>WhatsApp {whatsappDisplay}</li>}
           <li>
-            <a class="transition-colors hover:text-paper" href="https://pitcar.co.id" rel="noopener noreferrer" target="_blank">
+            <a class="transition-colors hover:text-body" href="https://pitcar.co.id" rel="noopener noreferrer" target="_blank">
               pitcar.co.id
             </a>
           </li>
@@ -53,8 +53,8 @@ const links = [
     </div>
   </div>
 
-  <div class="border-t rule-ink">
-    <div class="shell flex flex-col gap-2 py-5 text-xs text-stone-400 sm:flex-row sm:items-center sm:justify-between">
+  <div class="border-t border-line">
+    <div class="shell flex flex-col gap-2 py-5 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
       <p>© {year} Pitcar Academy. Bagian dari ekosistem PITCAR.</p>
       <p>Sertifikat kelulusan program, bukan sertifikasi kompetensi nasional.</p>
     </div>

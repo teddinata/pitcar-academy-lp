@@ -34,12 +34,24 @@ const {
 <!doctype html>
 <html lang="id">
   <head>
+    <meta charset="UTF-8" />
+    <script is:inline>
+      // Runs before paint. Light is the default; only an explicit choice
+      // stored by the toggle switches to dark.
+      try {
+        if (localStorage.getItem('pitcar-theme') === 'dark') {
+          document.documentElement.classList.add('dark');
+        }
+      } catch (error) {
+        // Blocked storage just means the default theme.
+      }
+    </script>
+
     <!-- Google Analytics -->
     <GoogleAnalytics id={gaId} />
 
-    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#080808" />
+    <meta id="theme-color" name="theme-color" content="#FAFAF9" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     {/* Only fetched where the image is the LCP. On phones the hero image sits
@@ -58,7 +70,7 @@ const {
       structuredData={structuredData}
     />
   </head>
-  <body class="bg-page text-default antialiased tracking-tight selection:bg-primary/30 selection:text-white">
+  <body class="antialiased">
     <FunnelAnalytics />
     <a class="skip-link" href="#main-content">Lewati ke konten utama</a>
     <Header />

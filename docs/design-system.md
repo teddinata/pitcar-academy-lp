@@ -16,35 +16,47 @@ Rejected: gradients, glows, glassmorphism, and the display-serif direction the
 tooling first suggested — a high-fashion serif on a mechanic training page
 reads as costume, not credibility.
 
-## Colour
+## Colour and theme
 
-Two grounds, one accent. Sections alternate so a 15-section page keeps a
-rhythm without spending more colour.
+One uniform ground per theme, switched by a toggle. **Light is the default**;
+`.dark` on `<html>` flips every token. There are no `dark:` utilities anywhere
+in the components — a colour is defined once, so it cannot end up flipped in
+one place and not another. That failure mode is not hypothetical: the pre-
+revamp code had `darkMode: 'media'` firing `dark:` utilities while the
+background stayed white, giving every dark-mode phone user 1.48:1 body text.
 
-| Token | Value | Use |
-| --- | --- | --- |
-| `ink` | `#0A0A0A` | Dark section ground |
-| `ink-soft` | `#141414` | Raised card on dark |
-| `ink-line` | `#262626` | Hairline on dark |
-| `paper` | `#FAFAF9` | Light section ground |
-| `paper-soft` | `#F5F5F4` | Raised card on light |
-| `paper-line` | `#E7E5E4` | Hairline on light |
-| `brand-600` | `#CC0000` | CTA fill; accent text on paper |
-| `brand-700` | `#AA0000` | CTA hover |
-| `brand-400` | `#FF6464` | Accent text on ink |
+| Token | Light | Dark | Use |
+| --- | --- | --- | --- |
+| `ground` | `#FAFAF9` | `#0A0A0A` | Page and section background |
+| `ground-alt` | `#F3F3F1` | `#121212` | Alternate section, 2% step |
+| `surface` | `#FFFFFF` | `#161616` | Cards, form |
+| `line` | `#E7E5E4` | `#2A2A2A` | Hairlines |
+| `body` | `#0A0A0A` | `#FAFAF9` | Primary text — 18.96:1 both ways |
+| `muted` | `#57534E` | `#A8A29E` | Secondary text — 7.30 / 7.85 |
+| `faint` | `#A8A29E` | `#57534E` | **Decoration only, never text** |
+| `accent` | `#CC0000` | `#FF6464` | Accent text — 5.64 / 6.84 |
+| `accent-fill` | `#CC0000` | `#CC0000` | CTA background, white on it 5.89 |
 
-**The rule that matters:** `#CC0000` is only **3.36:1** on `#0A0A0A`, which
-fails AA for normal text. Accent text on a dark section must use `brand-400`
-(6.9:1). `#CC0000` stays valid as a CTA fill — white on it is 5.89:1 — and as
-accent text on paper (5.64:1). Helper classes `.text-accent-ink` and
-`.text-accent-paper` encode this so it is not decided per component.
+**The rule that matters:** `#CC0000` is only **3.36:1** on near-black, so the
+accent *text* token flips to `#FF6464` in dark. The accent *fill* does not
+flip, because white on `#CC0000` passes in both themes. Two tokens, because
+they solve two different problems.
 
-Verified pairs: ink on paper 18.96 · muted on paper 7.30 · muted on ink 7.85 ·
-white on brand-600 5.89.
+`faint` exists for decorative marks only. A migration that mapped the footer
+legal line onto it dropped that text to 2.41:1 — caught by the contrast sweep,
+not by eye.
 
-Red is reserved for **actions and emphasis only**. The announcement bar is dark
-with a small red marker rather than a red band, because a red bar above a red
-button spends the accent twice and weakens the button.
+Red is reserved for **actions and emphasis only**. The announcement bar carries
+a small red marker rather than a red band, because a red bar above a red button
+spends the accent twice and weakens the button.
+
+### Separating sections without dark bands
+
+With one ground, alternating dark/light bands are gone, so sections separate by
+a 2% `ground-alt` tint plus a hairline. Strict alternation, every boundary
+ruled. Emphasis that previously relied on inverting a surface — the flagship
+package card, the consultation form — now uses an accent edge (`.card-featured`)
+instead, because an inverted card disappears on a uniform ground.
 
 ## Typography
 
@@ -63,11 +75,12 @@ Scale is fluid via `clamp()`: `.display-1` (hero), `.display-2` (section),
 
 `.shell` — max 80rem, responsive gutters.
 `.band` — vertical rhythm, identical everywhere so sections read as one system.
-`.band-ink` / `.band-paper` — the two grounds.
+`.band-alt` — the tinted alternate ground.
 
-Section order alternates: hero and trust (ink), problem/method/capabilities
-(paper), workshop (ink), trainers/journey/programs (paper), founding batch and
-career (ink), parents/facts/FAQ (paper), consultation (ink).
+The theme is applied by an inline script in `<head>` before first paint, so a
+dark-mode visitor never sees a white flash. The choice is stored in
+`localStorage` under `pitcar-theme`; with nothing stored the page is light,
+regardless of the OS setting.
 
 ## Rules held throughout
 
@@ -106,7 +119,11 @@ These are design rules here because breaking them creates business risk:
 ## Measured
 
 Local production build, Lighthouse: mobile 99/100/100/100, desktop
-100/100/100/100, FAQ 99/100/100/100. CLS 0. No horizontal overflow and no
-sub-44px targets at 320/375/414/768/1024/1280/1440/1920px.
+100/100/100/100. CLS 0. No horizontal overflow and no sub-44px targets at
+320/375/414/768/1024/1280/1440/1920px.
+
+Every text node on both pages was swept for contrast **in both themes** — a
+Lighthouse run only measures the theme it happens to load, so the dark palette
+needs its own check. `scripts` for that sweep live with the E2E harness.
 
 Production numbers will differ — network and hosting are not in this measurement.

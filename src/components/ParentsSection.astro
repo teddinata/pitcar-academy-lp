@@ -2,33 +2,33 @@
 import { parentReadiness, parentStatement } from '../content.config';
 ---
 
-<section class="band band-paper" aria-labelledby="parents-title">
+<section class="band band-alt border-t border-line" aria-labelledby="parents-title">
   <div class="shell">
     <div class="grid gap-12 lg:grid-cols-12 lg:gap-16">
       <div class="lg:col-span-5">
-        <p class="eyebrow text-accent-paper">Untuk ayah &amp; ibu</p>
+        <p class="eyebrow text-accent">Untuk ayah &amp; ibu</p>
         <h2 id="parents-title" class="display-2 mt-6">
           Bukan hanya belajar memperbaiki mobil.
         </h2>
-        <p class="lead mt-5 text-muted-paper">
+        <p class="lead mt-5 text-muted">
           Kami membantu membangun kesiapan kerja — kebiasaan yang terbawa ke
           pekerjaan pertama, apa pun bengkelnya.
         </p>
-        <a href="#konsultasi" data-lead-cta data-source-cta="parents_consultation" class="btn btn-ghost-paper mt-8">
+        <a href="#konsultasi" data-lead-cta data-source-cta="parents_consultation" class="btn btn-ghost mt-8">
           Konsultasi untuk anak Anda
         </a>
       </div>
 
       <div class="lg:col-span-7">
-        <ul class="grid gap-px border rule-paper bg-paper-line sm:grid-cols-2">
+        <ul class="grid gap-px border border-line bg-line sm:grid-cols-2">
           {parentReadiness.map((item) => (
-            <li class="flex items-center gap-3 bg-paper px-5 py-4">
-              <svg aria-hidden="true" class="h-4 w-4 shrink-0 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <li class="flex items-center gap-3 bg-ground px-5 py-4">
+              <svg aria-hidden="true" class="h-4 w-4 shrink-0 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
               <span class="font-semibold">{item}</span>
             </li>
           ))}
         </ul>
-        <p class="mt-8 max-w-prose leading-relaxed text-muted-paper">{parentStatement}</p>
+        <p class="mt-8 max-w-prose leading-relaxed text-muted">{parentStatement}</p>
       </div>
     </div>
   </div>

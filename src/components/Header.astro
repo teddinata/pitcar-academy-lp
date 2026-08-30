@@ -1,4 +1,6 @@
 ---
+import ThemeToggle from './ThemeToggle.astro';
+
 const homePrefix = Astro.url.pathname === '/' ? '' : '/';
 
 const navLinks = [
@@ -11,35 +13,38 @@ const consultationHref = `${homePrefix}#konsultasi`;
 ---
 
 <header class="fixed inset-x-0 top-0 z-50">
-  <p class="flex items-center justify-center gap-2.5 border-b border-ink-line bg-ink px-4 py-2.5 text-center text-xs font-semibold text-stone-300 sm:text-sm">
-    <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" aria-hidden="true"></span>
+  <p class="flex items-center justify-center gap-2.5 border-b border-line bg-ground px-4 py-2.5 text-center text-xs font-semibold text-muted sm:text-sm">
+    <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-accent-fill" aria-hidden="true"></span>
     Founding Batch 2026 — pendaftaran konsultasi dibuka
   </p>
 
-  <div class="border-b border-ink-line bg-ink/95 backdrop-blur">
+  <div class="border-b border-line bg-ground/95 backdrop-blur">
     <nav class="shell flex h-16 items-center justify-between gap-6 md:h-20" aria-label="Navigasi utama">
       <a href={homePrefix || '/'} class="flex items-baseline gap-1.5 font-display text-xl font-bold leading-none tracking-tight md:text-2xl">
-        <span class="text-paper">PITCAR</span><span class="text-brand-400">ACADEMY</span>
+        <span class="text-body">PITCAR</span><span class="text-accent">ACADEMY</span>
       </a>
 
       <div class="hidden items-center gap-8 lg:flex">
         {navLinks.map((link) => (
           <a
             href={link.href}
-            class="text-sm font-semibold text-stone-300 transition-colors hover:text-paper"
+            class="text-sm font-semibold text-muted transition-colors hover:text-body"
           >
             {link.label}
           </a>
         ))}
+        <ThemeToggle />
         <a href={consultationHref} data-lead-cta data-source-cta="header_desktop" class="btn btn-primary min-h-11 px-5 py-2.5 text-sm">
           Konsultasi Gratis
         </a>
       </div>
 
+      <div class="flex items-center gap-2 lg:hidden">
+        <ThemeToggle />
       <button
         id="mobile-menu-btn"
         type="button"
-        class="-mr-2 inline-flex h-11 w-11 items-center justify-center text-stone-300 transition-colors hover:text-paper lg:hidden"
+        class="-mr-2 inline-flex h-11 w-11 items-center justify-center text-muted transition-colors hover:text-body lg:hidden"
         aria-label="Buka menu navigasi"
         aria-controls="mobile-menu"
         aria-expanded="false"
@@ -47,13 +52,14 @@ const consultationHref = `${homePrefix}#konsultasi`;
         <svg aria-hidden="true" id="menu-icon-open" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
         <svg aria-hidden="true" id="menu-icon-close" class="hidden h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 18L18 6M6 6l12 12"></path></svg>
       </button>
+      </div>
     </nav>
   </div>
 
-  <div id="mobile-menu" class="hidden border-b border-ink-line bg-ink lg:hidden">
+  <div id="mobile-menu" class="hidden border-b border-line bg-ground lg:hidden">
     <div class="shell space-y-1 py-4">
       {navLinks.map((link) => (
-        <a href={link.href} class="mobile-nav-link block py-3 text-base font-semibold text-stone-200 transition-colors hover:text-paper">
+        <a href={link.href} class="mobile-nav-link block py-3 text-base font-semibold text-muted transition-colors hover:text-body">
           {link.label}
         </a>
       ))}

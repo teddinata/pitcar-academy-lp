@@ -5,25 +5,25 @@ const visible = trustNumbers.filter((item) => item.publish);
 ---
 
 {visible.length > 0 && (
-  <section class="band-ink border-t rule-ink py-14 md:py-20" aria-labelledby="trust-title">
+  <section class="band band-alt border-t border-line py-14 md:py-20" aria-labelledby="trust-title">
     <div class="shell">
-      <h2 id="trust-title" class="display-3 max-w-2xl text-paper">
+      <h2 id="trust-title" class="display-3 max-w-2xl text-body">
         Belajar dari ekosistem bengkel yang benar-benar beroperasi.
       </h2>
 
-      <dl class="mt-10 grid gap-px border rule-ink bg-ink-line sm:grid-cols-3">
+      <dl class="mt-10 grid gap-px border border-line bg-line sm:grid-cols-3">
         {visible.map((item) => (
-          <div class="bg-ink px-6 py-8">
+          <div class="bg-ground px-6 py-8">
             <dt class="sr-only">{item.label}</dt>
             <dd>
-              <span class="block font-display text-5xl font-bold leading-none text-brand-400 md:text-6xl">{item.value}</span>
-              <span class="mt-3 block text-sm leading-relaxed text-stone-300">{item.label}</span>
+              <span class="block font-display text-5xl font-bold leading-none text-accent md:text-6xl">{item.value}</span>
+              <span class="mt-3 block text-sm leading-relaxed text-muted">{item.label}</span>
             </dd>
           </div>
         ))}
       </dl>
 
-      <p class="lead mt-10 max-w-prose text-muted-ink">{trustStatement}</p>
+      <p class="lead mt-10 max-w-prose text-muted">{trustStatement}</p>
     </div>
   </section>
 )}

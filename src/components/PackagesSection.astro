@@ -3,12 +3,12 @@ import { packages } from '../content.config';
 import PackageCard from './PackageCard.astro';
 ---
 
-<section id="program" class="band band-paper border-t rule-paper scroll-mt-28" aria-labelledby="packages-title">
+<section id="program" class="band border-t border-line scroll-mt-28" aria-labelledby="packages-title">
   <div class="shell">
     <div class="max-w-3xl">
-      <p class="eyebrow text-accent-paper">Program</p>
+      <p class="eyebrow text-accent">Program</p>
       <h2 id="packages-title" class="display-2 mt-6">Pilih jalur yang sesuai dengan tujuanmu.</h2>
-      <p class="lead mt-5 text-muted-paper">
+      <p class="lead mt-5 text-muted">
         Tiga program dengan kedalaman berbeda. Kalau belum yakin, konsultan kami
         akan membantu memilihkan berdasarkan latar belakang dan targetmu.
       </p>
@@ -18,7 +18,7 @@ import PackageCard from './PackageCard.astro';
       {packages.map((pkg) => <PackageCard pkg={pkg} />)}
     </div>
 
-    <p class="mt-8 text-sm text-muted-paper">
+    <p class="mt-8 text-sm text-muted">
       Tersedia opsi pembayaran bertahap. Diskusikan saat konsultasi.
     </p>
   </div>

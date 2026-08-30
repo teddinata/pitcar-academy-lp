@@ -7,16 +7,16 @@ const { faqs } = Astro.props;
 const consultationHref = Astro.url.pathname === '/' ? '#konsultasi' : '/#konsultasi';
 ---
 
-<section id="faq" class="band band-paper border-t rule-paper scroll-mt-28" aria-labelledby="faq-title">
+<section id="faq" class="band band-alt border-t border-line scroll-mt-28" aria-labelledby="faq-title">
   <div class="shell">
     <div class="grid gap-12 lg:grid-cols-12 lg:gap-16">
       <div class="lg:col-span-4">
-        <p class="eyebrow text-accent-paper">FAQ</p>
+        <p class="eyebrow text-accent">FAQ</p>
         <h2 id="faq-title" class="display-2 mt-6">Pertanyaan yang sering muncul</h2>
-        <p class="lead mt-5 text-muted-paper">
+        <p class="lead mt-5 text-muted">
           Belum terjawab? Tanyakan langsung ke Education Consultant.
         </p>
-        <a href={consultationHref} data-lead-cta data-source-cta="faq_consultation" class="btn btn-ghost-paper mt-7">
+        <a href={consultationHref} data-lead-cta data-source-cta="faq_consultation" class="btn btn-ghost mt-7">
           Konsultasi Program Gratis
         </a>
       </div>
@@ -24,20 +24,20 @@ const consultationHref = Astro.url.pathname === '/' ? '#konsultasi' : '/#konsult
       <!-- Native <details>: keyboard and screen-reader behaviour for free, no
            JavaScript, and no max-height that could clip a long answer. -->
       <div class="lg:col-span-8">
-        <div class="border-t rule-paper">
+        <div class="border-t border-line">
           {faqs.map((faq) => (
-            <details name="faq" class="faq group border-b rule-paper">
+            <details name="faq" class="faq group border-b border-line">
               <summary
-                class="flex cursor-pointer list-none items-start justify-between gap-6 py-5 text-lg font-semibold leading-snug transition-colors hover:text-accent-paper"
+                class="flex cursor-pointer list-none items-start justify-between gap-6 py-5 text-lg font-semibold leading-snug transition-colors hover:text-accent"
               >
                 {faq.question}
                 <svg
                   aria-hidden="true"
-                  class="mt-1 h-5 w-5 shrink-0 text-muted-paper transition-transform duration-200 group-open:rotate-45"
+                  class="mt-1 h-5 w-5 shrink-0 text-muted transition-transform duration-200 group-open:rotate-45"
                   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
                 ><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
               </summary>
-              <p class="max-w-prose pb-6 leading-relaxed text-muted-paper">{faq.answer}</p>
+              <p class="max-w-prose pb-6 leading-relaxed text-muted">{faq.answer}</p>
             </details>
           ))}
         </div>
