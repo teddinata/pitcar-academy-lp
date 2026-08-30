@@ -40,7 +40,7 @@ class LeadSecurityTest extends TestCase
         $this->assertNotSame(100, $lead->score);
         $this->assertNotSame('PA-1999-000001', $lead->lead_code);
         $this->assertNotSame('converted', $lead->status);
-        $this->assertSame('2026-02', $lead->scoring_version);
+        $this->assertSame('2026-03', $lead->scoring_version);
         $this->assertSame('6281234567890', $lead->whatsapp_normalized);
         $this->assertSame($consultant->id, $lead->assigned_consultant_id);
     }

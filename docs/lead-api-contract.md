@@ -148,4 +148,21 @@ payload yang terlalu besar, dan `5xx` untuk gangguan server. Pada timeout, error
 - Terapkan rate limiting, spam protection, logging tanpa menulis PII mentah secara berlebihan, dan retention policy sesuai kebijakan bisnis.
 - Jika CRM/notification gagal setelah insert database, tetap kembalikan lead yang sudah tersimpan dan retry integrasi melalui queue.
 
-Contoh rule awal yang dapat diuji bisnis (bukan rule final): timeline dekat, kesiapan investasi, tujuan karier yang jelas, dan program interest spesifik menambah score. Threshold dan definisi `qualified` tetap menjadi keputusan sales/marketing dan harus dikelola backend.
+## Scoring
+
+Tiga sinyal dari form: kesiapan (maks 40), tujuan (maks 30), program (maks 30).
+Bobotnya diskalakan agar jawaban terbaik berjumlah tepat **100** — field-nya
+bernama `score` dan akan dibaca sebagai persentase entah memang begitu atau
+tidak, jadi plafon 80 membuat lead sempurna terlihat kurang.
+
+Poin tetap menjumlah persis ke skor yang disimpan, sehingga `scoring_reasons`
+bisa dibaca consultant sebagai penjelasan angkanya.
+
+Threshold: `hot` >= 85, `qualified` >= 70, `nurture` >= 55. Tiga pertanyaan
+hanya menghasilkan 23 skor berbeda, jadi band-nya tidak bisa jatuh di angka
+bulat tanpa merusak sebaran. Angka ini memberi hot 14% / qualified 33% /
+nurture 39% / low 14%.
+
+**Semua angka di atas masih menunggu persetujuan sales.** Ubah di
+`config/leads.php` dan naikkan `LEAD_SCORING_VERSION` agar skor lama tetap
+dapat dijelaskan.

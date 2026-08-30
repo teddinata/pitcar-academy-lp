@@ -56,20 +56,20 @@ class StoreLeadTest extends TestCase
         Queue::fake();
 
         $this->postJson('/api/leads', $this->leadPayload([
-            'readiness' => 'nearest_batch',         // 30
-            'goal' => 'mechanic_career',            // 25
-            'program_interest' => 'professional',   // 25
+            'readiness' => 'nearest_batch',         // 40
+            'goal' => 'mechanic_career',            // 30
+            'program_interest' => 'professional',   // 30
         ]))->assertCreated()
-            ->assertJsonPath('score', 80)
+            ->assertJsonPath('score', 100)
             ->assertJsonPath('qualification', 'hot');
 
         $lead = Lead::sole();
 
-        $this->assertSame('2026-02', $lead->scoring_version);
+        $this->assertSame('2026-03', $lead->scoring_version);
         $this->assertNotNull($lead->scored_at);
         $this->assertCount(3, $lead->scoring_reasons);
         $this->assertContains(
-            ['rule' => 'readiness', 'value' => 'nearest_batch', 'points' => 30],
+            ['rule' => 'readiness', 'value' => 'nearest_batch', 'points' => 40],
             $lead->scoring_reasons
         );
     }

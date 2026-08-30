@@ -16,12 +16,12 @@ class LeadScorerTest extends TestCase
     public function test_it_sums_the_configured_rules(): void
     {
         $result = $this->scorer()->score([
-            'readiness' => 'nearest_batch',       // 30
-            'goal' => 'mechanic_career',          // 25
-            'program_interest' => 'undecided',    // 10
+            'readiness' => 'nearest_batch',       // 40
+            'goal' => 'mechanic_career',          // 30
+            'program_interest' => 'undecided',    // 12
         ]);
 
-        $this->assertSame(65, $result['score']);
+        $this->assertSame(82, $result['score']);
         $this->assertSame('qualified', $result['qualification']);
     }
 
@@ -34,25 +34,27 @@ class LeadScorerTest extends TestCase
         ]);
 
         $this->assertSame([
-            ['rule' => 'readiness', 'value' => 'need_payment_plan', 'points' => 20],
-            ['rule' => 'goal', 'value' => 'mechanic_career', 'points' => 25],
-            ['rule' => 'program_interest', 'value' => 'basic', 'points' => 15],
+            ['rule' => 'readiness', 'value' => 'need_payment_plan', 'points' => 25],
+            ['rule' => 'goal', 'value' => 'mechanic_career', 'points' => 30],
+            ['rule' => 'program_interest', 'value' => 'basic', 'points' => 18],
         ], $result['reasons']);
 
-        $this->assertSame(60, array_sum(array_column($result['reasons'], 'points')));
+        // The reasons must add up to the stored score, or a consultant cannot
+        // tell where the number came from.
+        $this->assertSame($result['score'], array_sum(array_column($result['reasons'], 'points')));
     }
 
-    public function test_the_best_possible_answers_reach_hot(): void
+    public function test_the_best_possible_answers_reach_one_hundred(): void
     {
-        // The rules top out at 80, so `hot` must sit below that or nothing
-        // a visitor can actually answer would ever qualify.
+        // Weights are scaled to reach exactly the cap: a field named `score`
+        // gets read as a percentage, so a perfect lead has to show 100.
         $result = $this->scorer()->score([
-            'readiness' => 'nearest_batch',       // 30
-            'goal' => 'mechanic_career',          // 25
-            'program_interest' => 'professional', // 25
+            'readiness' => 'nearest_batch',       // 40
+            'goal' => 'mechanic_career',          // 30
+            'program_interest' => 'professional', // 30
         ]);
 
-        $this->assertSame(80, $result['score']);
+        $this->assertSame(100, $result['score']);
         $this->assertSame('hot', $result['qualification']);
     }
 
@@ -77,7 +79,7 @@ class LeadScorerTest extends TestCase
             'program_interest' => 'basic',
         ]);
 
-        $this->assertSame(15, $result['score']);
+        $this->assertSame(18, $result['score']);
         $this->assertSame('low_intent', $result['qualification']);
     }
 
@@ -92,13 +94,13 @@ class LeadScorerTest extends TestCase
     public static function thresholds(): array
     {
         return [
-            'top' => [80, 'hot'],
-            'hot boundary' => [70, 'hot'],
-            'just below hot' => [69, 'qualified'],
-            'qualified boundary' => [60, 'qualified'],
-            'just below qualified' => [59, 'nurture'],
-            'nurture boundary' => [45, 'nurture'],
-            'just below nurture' => [44, 'low_intent'],
+            'top' => [100, 'hot'],
+            'hot boundary' => [85, 'hot'],
+            'just below hot' => [84, 'qualified'],
+            'qualified boundary' => [70, 'qualified'],
+            'just below qualified' => [69, 'nurture'],
+            'nurture boundary' => [55, 'nurture'],
+            'just below nurture' => [54, 'low_intent'],
             'zero' => [0, 'low_intent'],
         ];
     }

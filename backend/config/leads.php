@@ -21,13 +21,19 @@ return [
     | Bump `version` whenever the numbers change: it is stored on every lead so
     | historic scores stay explainable and rescoring stays auditable.
     |
+    | Weights are scaled so the best possible answers total exactly 100. A
+    | field called `score` is read as a percentage whether or not it is one,
+    | and a ceiling of 80 makes a perfect lead look like it fell short. The
+    | points still sum to the stored score, so `scoring_reasons` stays additive
+    | and a consultant can see where the number came from.
+    |
     | These are the starting values from the product brief and are NOT final —
     | they need sign-off from the sales team before production.
     */
 
     'scoring' => [
-        'version' => env('LEAD_SCORING_VERSION', '2026-02'),
-        'cap' => 100, // headroom; the current rules top out at 80
+        'version' => env('LEAD_SCORING_VERSION', '2026-03'),
+        'cap' => 100, // the rules are weighted to reach exactly this
 
         'rules' => [
             // Three questions, three signals: what they want, why, and how
@@ -35,31 +41,34 @@ return [
             // timeline question were dropped from the form — a consultant can
             // ask those on WhatsApp without costing a conversion.
             'readiness' => [
-                'nearest_batch' => 30,
-                'family_discussion' => 20,
-                'need_payment_plan' => 20,
-                'exploring' => 10,
+                'nearest_batch' => 40,
+                'family_discussion' => 25,
+                'need_payment_plan' => 25,
+                'exploring' => 12,
             ],
             'goal' => [
-                'mechanic_career' => 25,
-                'upskill' => 20,
-                'open_workshop' => 20,
-                'automotive_knowledge' => 10,
-                'consultation' => 10,
+                'mechanic_career' => 30,
+                'upskill' => 25,
+                'open_workshop' => 25,
+                'automotive_knowledge' => 12,
+                'consultation' => 12,
             ],
             'program_interest' => [
-                'professional' => 25,
-                'advanced' => 20,
-                'basic' => 15,
-                'undecided' => 10,
+                'professional' => 30,
+                'advanced' => 25,
+                'basic' => 18,
+                'undecided' => 12,
             ],
         ],
 
         // Read as "score >= threshold" from the top down.
+        // Three questions yield only 23 distinct scores, so the bands cannot
+        // land on round numbers without distorting the split. These give
+        // hot 14% / qualified 33% / nurture 39% / low 14%.
         'qualifications' => [
-            'hot' => 70,
-            'qualified' => 60,
-            'nurture' => 45,
+            'hot' => 85,
+            'qualified' => 70,
+            'nurture' => 55,
             'low_intent' => 0,
         ],
     ],
