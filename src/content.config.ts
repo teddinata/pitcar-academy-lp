@@ -13,13 +13,15 @@ export interface PackageItem {
   priceDisplay: string;
   strikePriceDisplay?: string;
   /**
-   * One line explaining where `strikePriceDisplay` comes from. A crossed-out
-   * number with no stated origin is the thing buyers distrust.
+   * Steps down to the package price, each crossed out and labelled. Every
+   * figure here must be derivable from the other cards on the same screen —
+   * that is what stops it reading as invented. For Professional:
+   * Rp7.500.000 x 2 = Rp15.000.000 normal, Rp5.000.000 x 2 = Rp10.000.000
+   * at the current price.
    *
-   * !! VERIFY: the anchor must be a price the business genuinely charges or
-   * will charge. An anchor nobody has ever paid is not a discount.
+   * !! VERIFY whenever any price changes.
    */
-  strikePriceNote?: string;
+  priceLadder?: { label: string; value: string }[];
   savingsNote?: string;
   scarcityNote?: string;
   duration: string;
@@ -45,8 +47,8 @@ export const packages: PackageItem[] = [
     price: '5000000',
     priceDisplay: 'Rp 5.000.000',
     strikePriceDisplay: 'Rp 7.500.000',
-    savingsNote: 'Harga Founding Batch 2026',
-    scarcityNote: 'Berlaku selama kuota Founding Batch masih tersedia.',
+    savingsNote: 'Harga khusus angkatan pertama',
+    scarcityNote: 'Berlaku selama kuota angkatan pertama masih tersedia.',
     duration: '1 Bulan',
     hours: '104 Jam',
     ojt: '2 Bulan OJT Bengkel',
@@ -78,8 +80,8 @@ export const packages: PackageItem[] = [
     price: '5000000',
     priceDisplay: 'Rp 5.000.000',
     strikePriceDisplay: 'Rp 7.500.000',
-    savingsNote: 'Harga Founding Batch 2026',
-    scarcityNote: 'Berlaku selama kuota Founding Batch masih tersedia.',
+    savingsNote: 'Harga khusus angkatan pertama',
+    scarcityNote: 'Berlaku selama kuota angkatan pertama masih tersedia.',
     duration: '1 Bulan',
     hours: '104 Jam',
     ojt: '2 Bulan OJT Bengkel',
@@ -110,10 +112,12 @@ export const packages: PackageItem[] = [
       'Mencakup seluruh materi Level 1 & Level 2 untuk menguasai kompetensi mekanik secara menyeluruh.',
     price: '8500000',
     priceDisplay: 'Rp 8.500.000',
-    strikePriceDisplay: 'Rp 15.000.000',
-    strikePriceNote: 'harga 2 program jika diambil terpisah',
-    savingsNote: 'Hemat Rp6.500.000 — Founding Batch 2026',
-    scarcityNote: 'Berlaku selama kuota Founding Batch masih tersedia.',
+    priceLadder: [
+      { label: 'Harga normal 2 program', value: 'Rp 15.000.000' },
+      { label: 'Beli terpisah sekarang', value: 'Rp 10.000.000' },
+    ],
+    savingsNote: 'Hemat Rp6.500.000 dari harga normal',
+    scarcityNote: 'Berlaku selama kuota angkatan pertama masih tersedia.',
     duration: '2 Bulan',
     hours: '208 Jam',
     ojt: '2 Bulan OJT Bengkel',
@@ -196,7 +200,7 @@ export const faqs: FaqItem[] = [
   {
     question: 'Saya ingin belajar keduanya. Program mana yang sebaiknya dipilih?',
     answer:
-      'Program Professional mencakup Level 1 dan Level 2 sekaligus, total 208 jam pembelajaran dan 2 bulan OJT. Dibanding mengambil Basic dan Advance terpisah pada harga Founding Batch, Professional lebih hemat Rp1.500.000; dibanding harga normal kedua program, hemat Rp6.500.000.',
+      'Program Professional mencakup Level 1 dan Level 2 sekaligus, total 208 jam pembelajaran dan 2 bulan OJT. Dibanding mengambil Basic dan Advance terpisah pada harga angkatan pertama, Professional lebih hemat Rp1.500.000; dibanding harga normal kedua program, hemat Rp6.500.000.',
   },
   {
     question: 'Di mana OJT dilakukan?',
@@ -451,12 +455,12 @@ export const foundingBatchBenefits: BatchBenefit[] = [
   {
     title: 'Mess gratis untuk kuota pertama',
     description:
-      'Tempat tinggal bagi peserta luar kota yang memenuhi kriteria, selama kuota Founding Batch masih tersedia.',
+      'Tempat tinggal bagi peserta luar kota yang memenuhi kriteria, selama kuota angkatan pertama masih tersedia.',
     publish: true,
   },
   {
-    title: 'Harga Founding Batch',
-    description: 'Investasi khusus peserta batch perdana, sebelum harga program disesuaikan.',
+    title: 'Harga khusus angkatan pertama',
+    description: 'Harga yang hanya berlaku untuk angkatan pertama, sebelum biaya program disesuaikan.',
     publish: true,
   },
   {
