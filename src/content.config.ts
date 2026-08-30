@@ -257,20 +257,22 @@ export const faqs: FaqItem[] = [
  * !! VERIFY: the saving figure must match the package cards.
  */
 export interface Announcement {
+  /** Decorative only — rendered aria-hidden so screen readers skip it. */
+  emoji?: string;
   /** The offer. Lead with the number, not an adjective. */
   text: string;
-  /** Why now. Keep it quota-based unless a dated cutoff has a real owner. */
-  urgency: string;
   cta: string;
   href: string;
   publish: boolean;
 }
 
 export const announcement: Announcement = {
-  // The saving figure is the hard sell. "Harga hemat khusus" asks for trust;
-  // "Hemat Rp6.500.000" does the persuading by itself.
-  text: 'PROMO FOUNDING BATCH 2026: Hemat Rp6.500.000',
-  urgency: 'Kuota batch perdana terbatas — harga naik setelah ditutup!',
+  emoji: '🔥',
+  // "hingga 43%" is the ceiling, not the norm: Professional is 43.3%
+  // (15jt -> 8,5jt), Basic and Advance are 33.3% (7,5jt -> 5jt). Recheck this
+  // figure whenever a price changes — it is the one claim on the page a
+  // prospect can verify with a calculator.
+  text: 'HANYA UNTUK BATCH PERDANA 2026 — Hemat hingga 43% hanya untuk peserta angkatan pertama!',
   cta: 'Ambil sekarang',
   href: '#konsultasi',
   publish: true,
