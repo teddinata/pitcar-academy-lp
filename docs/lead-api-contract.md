@@ -38,10 +38,8 @@ Body:
   "name": "Budi",
   "whatsapp_number": "6281234567890",
   "domicile": "Purwokerto",
-  "activity": "job_seeker",
   "goal": "mechanic_career",
-  "timeline": "nearest_batch",
-  "investment_readiness": "installment",
+  "readiness": "need_payment_plan",
   "program_interest": "basic",
   "source_cta": "package_basic",
   "source": "website",
@@ -60,11 +58,31 @@ Body:
 
 Enum yang saat ini dikirim frontend:
 
-- `activity`: `student`, `job_seeker`, `mechanic`, `employee`, `workshop_owner`, `other`
-- `goal`: `mechanic_career`, `upskill`, `open_workshop`, `automotive_knowledge`, `consultation`
-- `timeline`: `nearest_batch`, `one_to_three_months`, `three_to_six_months`, `considering`
-- `investment_readiness`: `ready`, `installment`, `family_discussion`, `researching`
+- `goal`: `mechanic_career`, `upskill`, `open_workshop`, `automotive_knowledge`
+- `readiness`: `nearest_batch`, `family_discussion`, `need_payment_plan`, `exploring`
 - `program_interest`: `basic`, `advanced`, `professional`, `undecided`
+
+### Short form (sejak 2026-08)
+
+Form dipangkas dari 8 field menjadi 6 — tiga diketik, tiga tinggal tap —
+karena tujuan landing page adalah memasukkan sebanyak mungkin orang ke funnel,
+bukan menyelesaikan qualification di halaman pertama.
+
+Yang dihapus dan alasannya:
+
+- `activity` — nice-to-have, bukan penentu konversi. Education Consultant bisa
+  menanyakannya gratis di WhatsApp.
+- `timeline` dan `investment_readiness` — digabung menjadi satu pertanyaan
+  `readiness`. Menanyakan kesiapan finansial di halaman pertama membuat lead
+  mundur sebelum sempat mengobrol.
+
+Ketiganya masih **diterima** backend sebagai `nullable`, supaya landing page
+lama yang masih ter-cache di browser pengunjung tidak mendadak kena `422`.
+Kolomnya tetap ada di database agar lead lama tidak kehilangan data.
+
+Sisa qualification dikerjakan saat percakapan: skor awal dihitung dari form,
+lalu diperbarui consultant setelah bicara. Itu lebih sehat daripada memaksa
+satu form panjang menilai kualitas lead di muka.
 
 `submission_id` harus memiliki unique index atau idempotency handling. Retry dari browser menggunakan ID yang sama agar gangguan jaringan tidak membuat lead duplikat.
 

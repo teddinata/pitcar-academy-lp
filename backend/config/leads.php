@@ -26,50 +26,40 @@ return [
     */
 
     'scoring' => [
-        'version' => env('LEAD_SCORING_VERSION', '2026-01'),
-        'cap' => 100,
+        'version' => env('LEAD_SCORING_VERSION', '2026-02'),
+        'cap' => 100, // headroom; the current rules top out at 80
 
         'rules' => [
-            'timeline' => [
-                'nearest_batch' => 25,
-                'one_to_three_months' => 15,
-                'three_to_six_months' => 8,
-                'considering' => 5,
-            ],
-            'investment_readiness' => [
-                'ready' => 25,
-                'installment' => 15,
-                'family_discussion' => 8,
-                'researching' => 5,
+            // Three questions, three signals: what they want, why, and how
+            // close they are to deciding. Current activity and a separate
+            // timeline question were dropped from the form — a consultant can
+            // ask those on WhatsApp without costing a conversion.
+            'readiness' => [
+                'nearest_batch' => 30,
+                'family_discussion' => 20,
+                'need_payment_plan' => 20,
+                'exploring' => 10,
             ],
             'goal' => [
-                'mechanic_career' => 20,
+                'mechanic_career' => 25,
+                'upskill' => 20,
                 'open_workshop' => 20,
-                'upskill' => 12,
-                'automotive_knowledge' => 5,
-                'consultation' => 5,
-            ],
-            'activity' => [
-                'workshop_owner' => 20,
-                'mechanic' => 15,
-                'job_seeker' => 12,
-                'student' => 8,
-                'employee' => 8,
-                'other' => 5,
+                'automotive_knowledge' => 10,
+                'consultation' => 10,
             ],
             'program_interest' => [
-                'basic' => 10,
-                'advanced' => 10,
-                'professional' => 10,
-                'undecided' => 0,
+                'professional' => 25,
+                'advanced' => 20,
+                'basic' => 15,
+                'undecided' => 10,
             ],
         ],
 
         // Read as "score >= threshold" from the top down.
         'qualifications' => [
-            'hot' => 80,
+            'hot' => 70,
             'qualified' => 60,
-            'nurture' => 40,
+            'nurture' => 45,
             'low_intent' => 0,
         ],
     ],

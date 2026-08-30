@@ -34,6 +34,7 @@ class StoreLeadTest extends TestCase
         $this->assertSame('instagram', $lead->utm_source);
         $this->assertSame('batch_october', $lead->utm_campaign);
         $this->assertSame('package_basic', $lead->source_cta);
+        $this->assertSame('need_payment_plan', $lead->readiness);
         $this->assertNotNull($lead->consent_at);
     }
 
@@ -55,22 +56,20 @@ class StoreLeadTest extends TestCase
         Queue::fake();
 
         $this->postJson('/api/leads', $this->leadPayload([
-            'timeline' => 'nearest_batch',          // 25
-            'investment_readiness' => 'ready',      // 25
-            'goal' => 'mechanic_career',            // 20
-            'activity' => 'mechanic',               // 15
-            'program_interest' => 'basic',          // 10
+            'readiness' => 'nearest_batch',         // 30
+            'goal' => 'mechanic_career',            // 25
+            'program_interest' => 'professional',   // 25
         ]))->assertCreated()
-            ->assertJsonPath('score', 95)
+            ->assertJsonPath('score', 80)
             ->assertJsonPath('qualification', 'hot');
 
         $lead = Lead::sole();
 
-        $this->assertSame('2026-01', $lead->scoring_version);
+        $this->assertSame('2026-02', $lead->scoring_version);
         $this->assertNotNull($lead->scored_at);
-        $this->assertCount(5, $lead->scoring_reasons);
+        $this->assertCount(3, $lead->scoring_reasons);
         $this->assertContains(
-            ['rule' => 'timeline', 'value' => 'nearest_batch', 'points' => 25],
+            ['rule' => 'readiness', 'value' => 'nearest_batch', 'points' => 30],
             $lead->scoring_reasons
         );
     }

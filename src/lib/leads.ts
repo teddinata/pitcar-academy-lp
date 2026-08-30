@@ -13,10 +13,9 @@ export interface LeadPayload {
   name: string;
   whatsapp_number: string;
   domicile: string;
-  activity: string;
   goal: string;
-  timeline: string;
-  investment_readiness: string;
+  /** Replaces the old timeline + investment questions with one. */
+  readiness: string;
   program_interest: string;
   source_cta: string;
   source: 'website';
@@ -127,35 +126,18 @@ export async function submitLead(payload: LeadPayload): Promise<LeadResponse> {
   }
 }
 
-const activityLabels: Record<string, string> = {
-  student: 'Pelajar / baru lulus',
-  job_seeker: 'Sedang mencari kerja',
-  mechanic: 'Mekanik',
-  employee: 'Karyawan bidang lain',
-  workshop_owner: 'Pemilik / calon pemilik bengkel',
-  other: 'Lainnya',
-};
-
 const goalLabels: Record<string, string> = {
-  mechanic_career: 'Bekerja sebagai mekanik',
+  mechanic_career: 'Berkarier sebagai mekanik',
   upskill: 'Meningkatkan skill mekanik',
-  open_workshop: 'Membuka bengkel',
-  automotive_knowledge: 'Menambah pengetahuan otomotif',
-  consultation: 'Masih ingin konsultasi',
+  open_workshop: 'Membuka / mengembangkan bengkel',
+  automotive_knowledge: 'Belajar otomotif lebih serius',
 };
 
-const timelineLabels: Record<string, string> = {
-  nearest_batch: 'Batch terdekat',
-  one_to_three_months: '1–3 bulan',
-  three_to_six_months: '3–6 bulan',
-  considering: 'Masih mempertimbangkan',
-};
-
-const investmentLabels: Record<string, string> = {
-  ready: 'Siap untuk program mulai Rp5 juta',
-  installment: 'Memerlukan opsi cicilan',
+const readinessLabels: Record<string, string> = {
+  nearest_batch: 'Siap ikut batch terdekat',
   family_discussion: 'Perlu diskusi dengan orang tua / keluarga',
-  researching: 'Masih mencari informasi',
+  need_payment_plan: 'Perlu opsi pembayaran / cicilan',
+  exploring: 'Masih ingin memahami program',
 };
 
 const programLabels: Record<string, string> = {
@@ -193,11 +175,9 @@ export function buildWhatsAppMessage(
     `Nama: ${payload.name}`,
     `WhatsApp: ${payload.whatsapp_number}`,
     `Domisili: ${payload.domicile}`,
-    `Aktivitas: ${activityLabels[payload.activity] ?? payload.activity}`,
-    `Tujuan: ${goalLabels[payload.goal] ?? payload.goal}`,
-    `Rencana mulai: ${timelineLabels[payload.timeline] ?? payload.timeline}`,
-    `Kesiapan investasi: ${investmentLabels[payload.investment_readiness] ?? payload.investment_readiness}`,
     `Program diminati: ${programLabels[payload.program_interest] ?? payload.program_interest}`,
+    `Tujuan: ${goalLabels[payload.goal] ?? payload.goal}`,
+    `Kesiapan: ${readinessLabels[payload.readiness] ?? payload.readiness}`,
     '',
     'Mohon bantu rekomendasikan program dan langkah berikutnya. Terima kasih.',
   ];

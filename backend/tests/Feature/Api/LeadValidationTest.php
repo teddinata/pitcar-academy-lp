@@ -31,10 +31,11 @@ class LeadValidationTest extends TestCase
             'whatsapp too short' => [['whatsapp_number' => '0812345'], 'whatsapp_number'],
             'whatsapp letters' => [['whatsapp_number' => 'not-a-number'], 'whatsapp_number'],
             'missing domicile' => [['domicile' => ''], 'domicile'],
-            'unknown activity' => [['activity' => 'astronaut'], 'activity'],
             'unknown goal' => [['goal' => 'world_domination'], 'goal'],
-            'unknown timeline' => [['timeline' => 'someday'], 'timeline'],
-            'unknown investment readiness' => [['investment_readiness' => 'rich'], 'investment_readiness'],
+            'missing readiness' => [['readiness' => null], 'readiness'],
+            'unknown readiness' => [['readiness' => 'someday'], 'readiness'],
+            'unknown legacy activity' => [['activity' => 'astronaut'], 'activity'],
+            'unknown legacy timeline' => [['timeline' => 'someday'], 'timeline'],
             'unknown program' => [['program_interest' => 'phd'], 'program_interest'],
             'unknown source' => [['source' => 'carrier_pigeon'], 'source'],
             'missing source cta' => [['source_cta' => null], 'source_cta'],
@@ -60,6 +61,30 @@ class LeadValidationTest extends TestCase
             ->assertJsonValidationErrors($field);
 
         $this->assertSame(0, Lead::count());
+    }
+
+    public function test_it_still_accepts_the_retired_fields_from_an_old_client(): void
+    {
+        // A cached landing page must keep working while it is still in the wild.
+        $this->postJson('/api/leads', $this->leadPayload([
+            'activity' => 'job_seeker',
+            'timeline' => 'nearest_batch',
+            'investment_readiness' => 'ready',
+        ]))->assertCreated();
+
+        $lead = Lead::sole();
+        $this->assertSame('job_seeker', $lead->activity);
+        $this->assertSame('nearest_batch', $lead->timeline);
+    }
+
+    public function test_the_short_form_payload_needs_no_activity_or_timeline(): void
+    {
+        $this->postJson('/api/leads', $this->leadPayload())->assertCreated();
+
+        $lead = Lead::sole();
+        $this->assertNull($lead->activity);
+        $this->assertNull($lead->timeline);
+        $this->assertNotNull($lead->readiness);
     }
 
     public function test_it_rejects_a_missing_attribution_object(): void

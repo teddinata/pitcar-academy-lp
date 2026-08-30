@@ -15,7 +15,8 @@ class LeadCsvExporter
     /** @var list<string> */
     private const HEADINGS = [
         'lead_code', 'created_at', 'name', 'whatsapp', 'domicile',
-        'activity', 'goal', 'timeline', 'investment_readiness', 'program_interest',
+        'program_interest', 'goal', 'readiness',
+        'activity', 'timeline', 'investment_readiness',
         'score', 'qualification', 'status', 'consultant',
         'follow_up_due_at', 'first_contacted_at', 'converted_at', 'lost_reason',
         'source_cta', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term',
@@ -43,11 +44,13 @@ class LeadCsvExporter
                         $lead->name,
                         $includeNumbers ? $lead->whatsapp_normalized : self::maskNumber($lead->whatsapp_normalized),
                         $lead->domicile,
-                        LeadOptions::label(LeadOptions::ACTIVITIES, $lead->activity),
-                        LeadOptions::label(LeadOptions::GOALS, $lead->goal),
-                        LeadOptions::label(LeadOptions::TIMELINES, $lead->timeline),
-                        LeadOptions::label(LeadOptions::INVESTMENT_READINESS, $lead->investment_readiness),
                         LeadOptions::label(LeadOptions::PROGRAMS, $lead->program_interest),
+                        LeadOptions::label(LeadOptions::GOALS, $lead->goal),
+                        $lead->readiness ? LeadOptions::label(LeadOptions::READINESS, $lead->readiness) : '',
+                        // Blank for anything captured by the short form.
+                        $lead->activity ? LeadOptions::label(LeadOptions::ACTIVITIES, $lead->activity) : '',
+                        $lead->timeline ? LeadOptions::label(LeadOptions::TIMELINES, $lead->timeline) : '',
+                        $lead->investment_readiness ? LeadOptions::label(LeadOptions::INVESTMENT_READINESS, $lead->investment_readiness) : '',
                         $lead->score,
                         $lead->qualification,
                         $lead->status,

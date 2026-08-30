@@ -69,6 +69,11 @@ class LeadsTable
                         default => 'info',
                     }),
 
+                TextColumn::make('readiness')
+                    ->label('Kesiapan')
+                    ->formatStateUsing(fn (?string $state) => $state ? LeadOptions::label(LeadOptions::READINESS, $state) : '—')
+                    ->toggleable(),
+
                 TextColumn::make('program_interest')
                     ->label('Program')
                     ->formatStateUsing(fn (string $state) => LeadOptions::label(LeadOptions::PROGRAMS, $state))
@@ -127,6 +132,11 @@ class LeadsTable
                     ->label('Program')
                     ->multiple()
                     ->options(LeadOptions::PROGRAMS),
+
+                SelectFilter::make('readiness')
+                    ->label('Kesiapan')
+                    ->multiple()
+                    ->options(LeadOptions::READINESS),
 
                 SelectFilter::make('assigned_consultant_id')
                     ->label('Consultant')

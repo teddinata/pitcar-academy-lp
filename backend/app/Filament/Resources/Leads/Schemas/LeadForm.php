@@ -60,14 +60,23 @@ class LeadForm
                         ->content(fn ($record) => $record?->domicile),
                     Placeholder::make('program_interest')->label('Program diminati')
                         ->content(fn ($record) => $record ? LeadOptions::label(LeadOptions::PROGRAMS, $record->program_interest) : null),
-                    Placeholder::make('activity')->label('Aktivitas')
-                        ->content(fn ($record) => $record ? LeadOptions::label(LeadOptions::ACTIVITIES, $record->activity) : null),
+                    Placeholder::make('activity')->label('Aktivitas (form lama)')
+                        ->content(fn ($record) => $record?->activity
+                            ? LeadOptions::label(LeadOptions::ACTIVITIES, $record->activity)
+                            : '—')
+                        ->visible(fn ($record) => filled($record?->activity)),
                     Placeholder::make('goal')->label('Tujuan')
                         ->content(fn ($record) => $record ? LeadOptions::label(LeadOptions::GOALS, $record->goal) : null),
-                    Placeholder::make('timeline')->label('Rencana mulai')
-                        ->content(fn ($record) => $record ? LeadOptions::label(LeadOptions::TIMELINES, $record->timeline) : null),
-                    Placeholder::make('investment_readiness')->label('Kesiapan investasi')
-                        ->content(fn ($record) => $record ? LeadOptions::label(LeadOptions::INVESTMENT_READINESS, $record->investment_readiness) : null),
+                    Placeholder::make('readiness')->label('Kesiapan mengikuti program')
+                        ->content(fn ($record) => $record?->readiness
+                            ? LeadOptions::label(LeadOptions::READINESS, $record->readiness)
+                            : '—'),
+                    // Only ever set on leads captured before the short form.
+                    Placeholder::make('timeline')->label('Rencana mulai (form lama)')
+                        ->content(fn ($record) => $record?->timeline
+                            ? LeadOptions::label(LeadOptions::TIMELINES, $record->timeline)
+                            : '—')
+                        ->visible(fn ($record) => filled($record?->timeline)),
                 ]),
 
             Section::make('Skor & atribusi')

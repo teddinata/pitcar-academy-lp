@@ -20,11 +20,25 @@ class LeadOptions
     ];
 
     public const GOALS = [
-        'mechanic_career' => 'Bekerja sebagai mekanik',
+        'mechanic_career' => 'Berkarier sebagai mekanik',
         'upskill' => 'Meningkatkan skill mekanik',
-        'open_workshop' => 'Membuka bengkel',
-        'automotive_knowledge' => 'Menambah pengetahuan otomotif',
+        'open_workshop' => 'Membuka / mengembangkan bengkel',
+        'automotive_knowledge' => 'Belajar otomotif lebih serius',
+        // Retained so leads captured before the short form still label correctly.
         'consultation' => 'Masih ingin konsultasi',
+    ];
+
+    /**
+     * One "how close are you to deciding" question, replacing the separate
+     * timeline and investment questions. Worded around readiness rather than
+     * budget: asking a school leaver about their finances on a landing page
+     * loses leads before a conversation can start.
+     */
+    public const READINESS = [
+        'nearest_batch' => 'Siap ikut batch terdekat',
+        'family_discussion' => 'Perlu diskusi dengan orang tua / keluarga',
+        'need_payment_plan' => 'Perlu opsi pembayaran / cicilan',
+        'exploring' => 'Masih ingin memahami program',
     ];
 
     public const TIMELINES = [

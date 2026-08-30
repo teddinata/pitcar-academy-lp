@@ -42,8 +42,8 @@ class LeadExportTest extends TestCase
         $this->assertStringContainsString('Budi', $csv);
         $this->assertStringContainsString('Purwokerto', $csv);
         // Enum keys are useless to sales; the export carries the labels.
-        $this->assertStringContainsString('Sedang mencari kerja', $csv);
-        $this->assertStringContainsString('Batch terdekat', $csv);
+        $this->assertStringContainsString('Berkarier sebagai mekanik', $csv);
+        $this->assertStringContainsString('Perlu opsi pembayaran / cicilan', $csv);
         $this->assertStringContainsString('instagram', $csv);
     }
 

@@ -10,137 +10,119 @@ const whatsappPattern = String.raw`[0-9+\(\)\- ]{8,20}`;
 // Known at build time: with no lead API the form still collects the same
 // context, but delivers it over WhatsApp instead of storing it first.
 const leadApiConfigured = Boolean(import.meta.env.PUBLIC_LEAD_API_BASE_URL?.trim());
-const submitText = leadApiConfigured ? 'Simpan & lanjut ke WhatsApp' : 'Lanjut ke WhatsApp';
+const submitText = 'Lanjut Konsultasi via WhatsApp';
 const assuranceText = leadApiConfigured
-  ? 'Data dikirim lebih dulu agar konsultasi tidak dimulai dari nol.'
+  ? 'Data hanya digunakan untuk konsultasi Pitcar Academy.'
   : 'Ringkasan jawabanmu ikut terkirim agar konsultasi tidak dimulai dari nol.';
+
+const programs = [
+  { value: 'basic', label: 'Basic' },
+  { value: 'advanced', label: 'Advance' },
+  { value: 'professional', label: 'Professional' },
+  { value: 'undecided', label: 'Belum tahu' },
+];
+
+const goals = [
+  { value: 'mechanic_career', label: 'Berkarier sebagai mekanik' },
+  { value: 'upskill', label: 'Meningkatkan skill mekanik' },
+  { value: 'open_workshop', label: 'Membuka / mengembangkan bengkel' },
+  { value: 'automotive_knowledge', label: 'Belajar otomotif lebih serius' },
+];
+
+// Readiness, not budget. Asking a school leaver about money on a landing page
+// loses the lead before a consultant can explain the payment options.
+const readiness = [
+  { value: 'nearest_batch', label: 'Siap ikut batch terdekat' },
+  { value: 'family_discussion', label: 'Perlu diskusi dengan orang tua / keluarga' },
+  { value: 'need_payment_plan', label: 'Perlu opsi pembayaran / cicilan' },
+  { value: 'exploring', label: 'Masih ingin memahami program' },
+];
 ---
 
 <div class="rounded-sm border border-line bg-surface p-5 text-body sm:p-7 lg:p-8">
-  <div class="mb-6 flex items-start justify-between gap-4">
-    <div>
-      <p class="eyebrow text-accent">Konsultasi gratis • ±1 menit</p>
-      <h3 class="display-3 mt-3">Ceritakan tujuanmu</h3>
-    </div>
-    <div class="shrink-0 rounded-sm bg-ground-alt px-3 py-1.5 text-xs font-bold text-muted" aria-live="polite">
-      <span id="lead-step-label">Langkah 1/2</span>
-    </div>
-  </div>
+  <p class="eyebrow">Konsultasi gratis</p>
+  <h3 class="display-3 mt-3">Ceritakan sedikit tentang kamu</h3>
+  <p class="mt-2 text-sm text-muted">Hanya butuh sekitar 30 detik.</p>
 
-  <form id="lead-form" novalidate>
+  <form id="lead-form" class="mt-7" novalidate>
     <input type="hidden" name="submission_id" />
     <input type="hidden" name="source_cta" value="consultation_section" />
 
-    <fieldset data-lead-step="1" class="space-y-5">
-      <legend class="sr-only">Data kontak dan minat program</legend>
-
+    <div class="space-y-5">
       <div>
         <label class={labelClass} for="lead-name">Nama lengkap</label>
-        <input class={inputClass} id="lead-name" name="name" type="text" autocomplete="name" maxlength="100" placeholder="Nama yang biasa dipanggil" required />
+        <input class={inputClass} id="lead-name" name="name" type="text" autocomplete="name" maxlength="100" placeholder="Nama kamu" required />
       </div>
 
       <div>
         <label class={labelClass} for="lead-whatsapp">Nomor WhatsApp</label>
-        <input class={inputClass} id="lead-whatsapp" name="whatsapp_number" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" pattern={whatsappPattern} placeholder="Contoh: 0812 3456 7890" aria-describedby="lead-whatsapp-help" required />
-        <p id="lead-whatsapp-help" class="mt-1.5 text-xs leading-relaxed text-muted">Pastikan nomor aktif agar konsultan dapat menindaklanjuti.</p>
+        <input class={inputClass} id="lead-whatsapp" name="whatsapp_number" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" pattern={whatsappPattern} placeholder="08xxxxxxxxxx" aria-describedby="lead-whatsapp-help" required />
+        <p id="lead-whatsapp-help" class="mt-1.5 text-xs leading-relaxed text-muted">Pastikan nomor aktif agar konsultan dapat menghubungi.</p>
       </div>
 
       <div>
         <label class={labelClass} for="lead-domicile">Domisili</label>
         <input class={inputClass} id="lead-domicile" name="domicile" type="text" autocomplete="address-level2" maxlength="100" placeholder="Kota / kabupaten" required />
       </div>
+    </div>
 
-      <div>
-        <label class={labelClass} for="lead-program">Program yang diminati</label>
-        <select class={inputClass} id="lead-program" name="program_interest" required>
-          <option value="undecided">Belum yakin, perlu rekomendasi</option>
-          <option value="basic">Basic — Maintenance</option>
-          <option value="advanced">Advance — General Repair</option>
-          <option value="professional">Professional — Level 1 & 2</option>
-        </select>
-      </div>
-
-      <button type="button" data-lead-next class="btn btn-primary w-full">
-        Lanjutkan
-        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-      </button>
-    </fieldset>
-
-    <fieldset data-lead-step="2" class="space-y-5" hidden>
-      <legend class="sr-only">Tujuan dan kesiapan mengikuti program</legend>
-
-      <div>
-        <label class={labelClass} for="lead-activity">Aktivitas saat ini</label>
-        <select class={inputClass} id="lead-activity" name="activity" required>
-          <option value="" selected disabled>Pilih aktivitas</option>
-          <option value="student">Pelajar / baru lulus</option>
-          <option value="job_seeker">Sedang mencari kerja</option>
-          <option value="mechanic">Mekanik</option>
-          <option value="employee">Karyawan bidang lain</option>
-          <option value="workshop_owner">Pemilik / calon pemilik bengkel</option>
-          <option value="other">Lainnya</option>
-        </select>
-      </div>
-
-      <div>
-        <label class={labelClass} for="lead-goal">Tujuan utama</label>
-        <select class={inputClass} id="lead-goal" name="goal" required>
-          <option value="" selected disabled>Pilih tujuan</option>
-          <option value="mechanic_career">Bekerja sebagai mekanik</option>
-          <option value="upskill">Meningkatkan skill mekanik</option>
-          <option value="open_workshop">Persiapan membuka bengkel</option>
-          <option value="automotive_knowledge">Menambah pengetahuan otomotif</option>
-          <option value="consultation">Masih ingin konsultasi</option>
-        </select>
-      </div>
-
-      <div>
-        <label class={labelClass} for="lead-timeline">Kapan ingin mulai?</label>
-        <select class={inputClass} id="lead-timeline" name="timeline" required>
-          <option value="" selected disabled>Pilih rencana waktu</option>
-          <option value="nearest_batch">Batch terdekat</option>
-          <option value="one_to_three_months">1–3 bulan</option>
-          <option value="three_to_six_months">3–6 bulan</option>
-          <option value="considering">Masih mempertimbangkan</option>
-        </select>
-      </div>
-
-      <div>
-        <label class={labelClass} for="lead-investment">Kesiapan investasi program</label>
-        <select class={inputClass} id="lead-investment" name="investment_readiness" required>
-          <option value="" selected disabled>Pilih yang paling sesuai</option>
-          <option value="ready">Siap untuk program mulai Rp5 juta</option>
-          <option value="installment">Memerlukan opsi cicilan</option>
-          <option value="family_discussion">Perlu diskusi dengan orang tua / keluarga</option>
-          <option value="researching">Masih mencari informasi</option>
-        </select>
-      </div>
-
-      <label class="flex cursor-pointer items-start gap-3 rounded-sm bg-ground-alt p-4 text-sm leading-relaxed text-muted">
-        <input class="mt-0.5 h-5 w-5 shrink-0 accent-[#CC0000]" type="checkbox" name="consent" required />
-        <span>Saya setuju data ini digunakan Pitcar Academy untuk menghubungi saya dan memberikan informasi program.</span>
-      </label>
-
-      <div class="flex flex-col-reverse gap-3 sm:flex-row">
-        <button type="button" data-lead-back class="btn btn-ghost sm:w-auto">Kembali</button>
-        <button type="submit" data-lead-submit class="btn btn-primary flex-1">
-          <span data-submit-label>{submitText}</span>
-          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-        </button>
+    <fieldset class="mt-8">
+      <legend class={labelClass}>Program yang kamu minati</legend>
+      <div class="mt-3 grid gap-2 sm:grid-cols-2">
+        {programs.map((option) => (
+          <div>
+            <input class="peer sr-only" type="radio" id={`program-${option.value}`} name="program_interest" value={option.value} required />
+            <label class="choice" for={`program-${option.value}`}>{option.label}</label>
+          </div>
+        ))}
       </div>
     </fieldset>
 
-    <div id="lead-status" class="mt-5 hidden rounded-xl p-4 text-sm leading-relaxed" role="status" aria-live="polite"></div>
+    <fieldset class="mt-8">
+      <legend class={labelClass}>Apa tujuan utama kamu?</legend>
+      <div class="mt-3 grid gap-2">
+        {goals.map((option) => (
+          <div>
+            <input class="peer sr-only" type="radio" id={`goal-${option.value}`} name="goal" value={option.value} required />
+            <label class="choice" for={`goal-${option.value}`}>{option.label}</label>
+          </div>
+        ))}
+      </div>
+    </fieldset>
+
+    <fieldset class="mt-8">
+      <legend class={labelClass}>Bagaimana kesiapan kamu mengikuti program?</legend>
+      <div class="mt-3 grid gap-2">
+        {readiness.map((option) => (
+          <div>
+            <input class="peer sr-only" type="radio" id={`readiness-${option.value}`} name="readiness" value={option.value} required />
+            <label class="choice" for={`readiness-${option.value}`}>{option.label}</label>
+          </div>
+        ))}
+      </div>
+    </fieldset>
+
+    <label class="mt-8 flex cursor-pointer items-start gap-3 rounded-sm bg-ground-alt p-4 text-sm leading-relaxed text-muted">
+      <input class="mt-0.5 h-5 w-5 shrink-0 accent-[#CC0000]" type="checkbox" name="consent" required />
+      <span>Saya setuju data ini digunakan Pitcar Academy untuk menghubungi saya dan memberikan informasi program.</span>
+    </label>
+
+    <button type="submit" data-lead-submit class="btn btn-primary mt-7 w-full">
+      <span data-submit-label>{submitText}</span>
+      <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+    </button>
+
+    <div id="lead-status" class="mt-5 hidden rounded-sm p-4 text-sm leading-relaxed" role="status" aria-live="polite"></div>
 
     <div id="lead-fallback-actions" class="mt-4 hidden flex-col gap-3 sm:flex-row">
-      <button type="button" data-lead-retry class="btn min-h-11 bg-ground px-5 py-2.5 text-sm text-white transition hover:bg-surface">Coba simpan lagi</button>
+      <button type="button" data-lead-retry class="btn min-h-11 bg-ground px-5 py-2.5 text-sm text-body ring-1 ring-line transition hover:bg-ground-alt">Coba simpan lagi</button>
       <button type="button" data-lead-whatsapp class="btn hidden min-h-11 bg-[#107C41] px-5 py-2.5 text-sm text-white transition hover:bg-[#0B6535]">Lanjut via WhatsApp</button>
       <button type="button" data-lead-copy class="btn btn-ghost min-h-11 px-5 py-2.5 text-sm">Salin ringkasan</button>
     </div>
   </form>
 
-  <p class="mt-5 flex items-center gap-2 text-xs leading-relaxed text-muted">
-    <svg aria-hidden="true" class="shrink-0 text-emerald-700" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+  <p class="mt-5 flex items-start gap-2 text-xs leading-relaxed text-muted">
+    <svg aria-hidden="true" class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
     {assuranceText}
   </p>
 </div>
@@ -158,37 +140,25 @@ const assuranceText = leadApiConfigured
   } from '../lib/leads';
 
   const form = document.querySelector<HTMLFormElement>('#lead-form');
-  const firstStep = form?.querySelector<HTMLFieldSetElement>('[data-lead-step="1"]');
-  const secondStep = form?.querySelector<HTMLFieldSetElement>('[data-lead-step="2"]');
-  const stepLabel = document.querySelector<HTMLElement>('#lead-step-label');
   const status = document.querySelector<HTMLElement>('#lead-status');
   const fallbackActions = document.querySelector<HTMLElement>('#lead-fallback-actions');
   const submitButton = form?.querySelector<HTMLButtonElement>('[data-lead-submit]');
   const submitLabel = form?.querySelector<HTMLElement>('[data-submit-label]');
   const whatsappButton = form?.querySelector<HTMLButtonElement>('[data-lead-whatsapp]');
   const retryButton = form?.querySelector<HTMLButtonElement>('[data-lead-retry]');
-  const storageMode = LEAD_API_CONFIGURED ? 'api' : 'direct';
-  const deliveryMode = LEAD_API_CONFIGURED ? 'api' : 'whatsapp_direct';
-  const defaultSubmitLabel = form?.querySelector<HTMLElement>('[data-submit-label]')?.textContent
-    ?? 'Lanjut ke WhatsApp';
-  let whatsappFallbackUrl: string | null = null;
   const pendingKey = 'pitcar_academy_pending_lead_v1';
   const pendingCtaKey = 'pitcar_academy_pending_cta_v1';
+  const storageMode = LEAD_API_CONFIGURED ? 'api' : 'direct';
+  const deliveryMode = LEAD_API_CONFIGURED ? 'api' : 'whatsapp_direct';
+  const defaultSubmitLabel = submitLabel?.textContent ?? 'Lanjut Konsultasi via WhatsApp';
   let pendingPayload: LeadPayload | null = null;
   let latestResponse: LeadResponse | undefined;
+  let whatsappFallbackUrl: string | null = null;
   let formStarted = false;
+  let contactComplete = false;
 
   function createSubmissionId(): string {
     return globalThis.crypto?.randomUUID?.() ?? `web-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  }
-
-  function setStep(step: 1 | 2): void {
-    if (!firstStep || !secondStep || !stepLabel) return;
-    firstStep.hidden = step !== 1;
-    secondStep.hidden = step !== 2;
-    stepLabel.textContent = `Langkah ${step}/2`;
-    const target = step === 1 ? firstStep : secondStep;
-    target.querySelector<HTMLElement>('input, select')?.focus({ preventScroll: true });
   }
 
   function showStatus(message: string, tone: 'success' | 'warning' | 'error'): void {
@@ -207,22 +177,24 @@ const assuranceText = leadApiConfigured
     submitButton.disabled = isSubmitting;
     submitButton.setAttribute('aria-busy', String(isSubmitting));
     submitLabel.textContent = isSubmitting ? 'Menyiapkan data…' : defaultSubmitLabel;
-    form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLButtonElement>('input, select, button').forEach((control) => {
+    form.querySelectorAll<HTMLInputElement | HTMLButtonElement>('input, button').forEach((control) => {
       if (control !== submitButton) control.disabled = isSubmitting;
     });
   }
 
-  function validateStep(fieldset: HTMLFieldSetElement | undefined, step: 1 | 2): boolean {
-    if (!fieldset) return false;
-    const controls = [...fieldset.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input, select')];
-    for (const control of controls) {
-      if (!control.checkValidity()) {
-        // A hidden fieldset cannot show a validation bubble or take focus.
-        if (fieldset.hidden) setStep(step);
-        control.reportValidity();
-        control.focus();
-        return false;
-      }
+  function validateForm(): boolean {
+    if (!form) return false;
+    for (const control of [...form.elements] as HTMLInputElement[]) {
+      if (typeof control.checkValidity !== 'function' || control.checkValidity()) continue;
+      // A radio group hides its inputs behind the pill labels, so scroll the
+      // group into view rather than trying to point at an sr-only element.
+      const anchor = control.type === 'radio'
+        ? control.closest('fieldset') ?? control
+        : control;
+      anchor.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      control.reportValidity();
+      if (control.type !== 'radio') control.focus();
+      return false;
     }
     return true;
   }
@@ -237,10 +209,8 @@ const assuranceText = leadApiConfigured
       name: String(values.get('name') || '').trim(),
       whatsapp_number: normalizeWhatsappNumber(String(values.get('whatsapp_number') || '')),
       domicile: String(values.get('domicile') || '').trim(),
-      activity: String(values.get('activity') || ''),
       goal: String(values.get('goal') || ''),
-      timeline: String(values.get('timeline') || ''),
-      investment_readiness: String(values.get('investment_readiness') || ''),
+      readiness: String(values.get('readiness') || ''),
       program_interest: String(values.get('program_interest') || 'undecided'),
       source_cta: String(values.get('source_cta') || 'consultation_section'),
       source: 'website',
@@ -259,12 +229,12 @@ const assuranceText = leadApiConfigured
 
   function getAnalyticsContext(payload?: LeadPayload): Record<string, string | null> {
     const params = new URLSearchParams(window.location.search);
-    const programSelect = form?.elements.namedItem('program_interest') as HTMLSelectElement | null;
+    const programField = form?.elements.namedItem('program_interest') as RadioNodeList | null;
     const sourceInput = form?.elements.namedItem('source_cta') as HTMLInputElement | null;
     return {
       delivery_mode: deliveryMode,
       source_cta: payload?.source_cta || sourceInput?.value || 'consultation_section',
-      program_interest: payload?.program_interest || programSelect?.value || 'undecided',
+      program_interest: payload?.program_interest || programField?.value || 'undecided',
       utm_source: payload?.attribution.utm_source ?? params.get('utm_source'),
       utm_medium: payload?.attribution.utm_medium ?? params.get('utm_medium'),
       utm_campaign: payload?.attribution.utm_campaign ?? params.get('utm_campaign'),
@@ -322,7 +292,8 @@ const assuranceText = leadApiConfigured
       pendingPayload = stored.payload;
       for (const [name, value] of Object.entries(stored.payload)) {
         if (typeof value !== 'string') continue;
-        const control = form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | null;
+        // Setting `value` on a RadioNodeList checks the matching radio.
+        const control = form.elements.namedItem(name) as HTMLInputElement | RadioNodeList | null;
         if (control) control.value = value;
       }
       showStatus('Ada data konsultasi dari percobaan sebelumnya yang belum tersimpan. Periksa kembali lalu coba kirim.', 'warning');
@@ -332,19 +303,21 @@ const assuranceText = leadApiConfigured
     }
   }
 
-  function restorePendingCta(): void {
+  function applyCta(sourceCta?: string, programInterest?: string): void {
     if (!form) return;
+    const sourceInput = form.elements.namedItem('source_cta') as HTMLInputElement | null;
+    const programField = form.elements.namedItem('program_interest') as RadioNodeList | null;
+    if (sourceCta && sourceInput) sourceInput.value = sourceCta;
+    if (programInterest && programField) programField.value = programInterest;
+  }
+
+  function restorePendingCta(): void {
     try {
       const raw = sessionStorage.getItem(pendingCtaKey);
       if (!raw) return;
       sessionStorage.removeItem(pendingCtaKey);
       const cta = JSON.parse(raw) as { source_cta?: string; program_interest?: string };
-      const sourceInput = form.elements.namedItem('source_cta') as HTMLInputElement | null;
-      const programSelect = form.elements.namedItem('program_interest') as HTMLSelectElement | null;
-      if (cta.source_cta && sourceInput) sourceInput.value = cta.source_cta;
-      if (cta.program_interest && cta.program_interest !== 'undecided' && programSelect) {
-        programSelect.value = cta.program_interest;
-      }
+      applyCta(cta.source_cta, cta.program_interest !== 'undecided' ? cta.program_interest : undefined);
     } catch {
       // Keep form defaults if session storage is unavailable or malformed.
     }
@@ -375,16 +348,23 @@ const assuranceText = leadApiConfigured
     form.addEventListener('input', markFormStarted, { once: true });
     form.addEventListener('change', markFormStarted, { once: true });
 
-    form.querySelector('[data-lead-next]')?.addEventListener('click', () => {
-      if (!validateStep(firstStep ?? undefined, 1)) return;
-      trackEvent('lead_form_step_1_complete');
-      setStep(2);
+    // The form is one step now, so this event marks the moment contact details
+    // are complete — the point where intent becomes reachable — rather than a
+    // page transition that no longer exists.
+    form.addEventListener('input', () => {
+      if (contactComplete) return;
+      const filled = ['name', 'whatsapp_number', 'domicile'].every((field) => {
+        const input = form.elements.namedItem(field) as HTMLInputElement | null;
+        return Boolean(input?.value.trim()) && (input?.checkValidity() ?? false);
+      });
+      if (!filled) return;
+      contactComplete = true;
+      trackEvent('lead_form_contact_complete');
     });
-    form.querySelector('[data-lead-back]')?.addEventListener('click', () => setStep(1));
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
-      if (!validateStep(firstStep ?? undefined, 1) || !validateStep(secondStep ?? undefined, 2)) return;
+      if (!validateForm()) return;
 
       const payload = buildPayload();
       pendingPayload = payload;
@@ -471,7 +451,7 @@ const assuranceText = leadApiConfigured
     whatsappButton?.addEventListener('click', () => {
       if (whatsappFallbackUrl) window.location.assign(whatsappFallbackUrl);
     });
-    form.querySelector('[data-lead-retry]')?.addEventListener('click', () => form.requestSubmit());
+    retryButton?.addEventListener('click', () => form.requestSubmit());
     form.querySelector('[data-lead-copy]')?.addEventListener('click', async () => {
       if (!pendingPayload) return;
       try {
@@ -486,11 +466,6 @@ const assuranceText = leadApiConfigured
   document.addEventListener('click', (event) => {
     const trigger = (event.target as Element | null)?.closest<HTMLElement>('[data-lead-cta]');
     if (!trigger || !form) return;
-    const program = trigger.dataset.programInterest;
-    const source = trigger.dataset.sourceCta;
-    const programSelect = form.elements.namedItem('program_interest') as HTMLSelectElement | null;
-    const sourceInput = form.elements.namedItem('source_cta') as HTMLInputElement | null;
-    if (program && programSelect) programSelect.value = program;
-    if (source && sourceInput) sourceInput.value = source;
+    applyCta(trigger.dataset.sourceCta, trigger.dataset.programInterest);
   });
 </script>

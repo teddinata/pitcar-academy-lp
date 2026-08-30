@@ -28,11 +28,15 @@ class StoreLeadRequest extends FormRequest
             'whatsapp_number' => ['required', 'string', 'max:20', new IndonesianWhatsAppNumber],
             'domicile' => ['required', 'string', 'max:100'],
 
-            'activity' => ['required', Rule::in(array_keys(LeadOptions::ACTIVITIES))],
             'goal' => ['required', Rule::in(array_keys(LeadOptions::GOALS))],
-            'timeline' => ['required', Rule::in(array_keys(LeadOptions::TIMELINES))],
-            'investment_readiness' => ['required', Rule::in(array_keys(LeadOptions::INVESTMENT_READINESS))],
+            'readiness' => ['required', Rule::in(array_keys(LeadOptions::READINESS))],
             'program_interest' => ['required', Rule::in(array_keys(LeadOptions::PROGRAMS))],
+
+            // Dropped from the short form but still accepted, so a client that
+            // has not been redeployed yet keeps working instead of 422-ing.
+            'activity' => ['nullable', Rule::in(array_keys(LeadOptions::ACTIVITIES))],
+            'timeline' => ['nullable', Rule::in(array_keys(LeadOptions::TIMELINES))],
+            'investment_readiness' => ['nullable', Rule::in(array_keys(LeadOptions::INVESTMENT_READINESS))],
 
             'source' => ['required', Rule::in(['website'])],
             'source_cta' => ['required', 'string', 'max:100'],

@@ -16,63 +16,68 @@ class LeadScorerTest extends TestCase
     public function test_it_sums_the_configured_rules(): void
     {
         $result = $this->scorer()->score([
-            'timeline' => 'nearest_batch',        // 25
-            'investment_readiness' => 'ready',    // 25
-            'goal' => 'mechanic_career',          // 20
-            'activity' => 'student',              // 8
-            'program_interest' => 'undecided',    // 0
+            'readiness' => 'nearest_batch',       // 30
+            'goal' => 'mechanic_career',          // 25
+            'program_interest' => 'undecided',    // 10
         ]);
 
-        $this->assertSame(78, $result['score']);
+        $this->assertSame(65, $result['score']);
         $this->assertSame('qualified', $result['qualification']);
     }
 
     public function test_it_records_a_reason_for_every_awarded_rule(): void
     {
         $result = $this->scorer()->score([
-            'timeline' => 'nearest_batch',
-            'investment_readiness' => 'installment',
+            'readiness' => 'need_payment_plan',
             'goal' => 'mechanic_career',
-            'activity' => 'other',
-            'program_interest' => 'undecided',
+            'program_interest' => 'basic',
         ]);
 
-        // program_interest scores zero and is left out rather than logged as noise.
         $this->assertSame([
-            ['rule' => 'timeline', 'value' => 'nearest_batch', 'points' => 25],
-            ['rule' => 'investment_readiness', 'value' => 'installment', 'points' => 15],
-            ['rule' => 'goal', 'value' => 'mechanic_career', 'points' => 20],
-            ['rule' => 'activity', 'value' => 'other', 'points' => 5],
+            ['rule' => 'readiness', 'value' => 'need_payment_plan', 'points' => 20],
+            ['rule' => 'goal', 'value' => 'mechanic_career', 'points' => 25],
+            ['rule' => 'program_interest', 'value' => 'basic', 'points' => 15],
         ], $result['reasons']);
 
-        $this->assertSame(65, array_sum(array_column($result['reasons'], 'points')));
+        $this->assertSame(60, array_sum(array_column($result['reasons'], 'points')));
+    }
+
+    public function test_the_best_possible_answers_reach_hot(): void
+    {
+        // The rules top out at 80, so `hot` must sit below that or nothing
+        // a visitor can actually answer would ever qualify.
+        $result = $this->scorer()->score([
+            'readiness' => 'nearest_batch',       // 30
+            'goal' => 'mechanic_career',          // 25
+            'program_interest' => 'professional', // 25
+        ]);
+
+        $this->assertSame(80, $result['score']);
+        $this->assertSame('hot', $result['qualification']);
     }
 
     public function test_it_caps_the_score(): void
     {
+        config(['leads.scoring.cap' => 50]);
+
         $result = $this->scorer()->score([
-            'timeline' => 'nearest_batch',        // 25
-            'investment_readiness' => 'ready',    // 25
-            'goal' => 'open_workshop',            // 20
-            'activity' => 'workshop_owner',       // 20
-            'program_interest' => 'professional', // 10
+            'readiness' => 'nearest_batch',
+            'goal' => 'mechanic_career',
+            'program_interest' => 'professional',
         ]);
 
-        $this->assertSame(100, $result['score']);
-        $this->assertSame('hot', $result['qualification']);
+        $this->assertSame(50, $result['score']);
     }
 
     public function test_it_ignores_unknown_values_instead_of_failing(): void
     {
         $result = $this->scorer()->score([
-            'timeline' => 'whenever',
-            'investment_readiness' => 'ready',
+            'readiness' => 'whenever',
             'goal' => null,
-            'activity' => ['not', 'a', 'string'],
             'program_interest' => 'basic',
         ]);
 
-        $this->assertSame(35, $result['score']);
+        $this->assertSame(15, $result['score']);
         $this->assertSame('low_intent', $result['qualification']);
     }
 
@@ -87,13 +92,13 @@ class LeadScorerTest extends TestCase
     public static function thresholds(): array
     {
         return [
-            'top' => [100, 'hot'],
-            'hot boundary' => [80, 'hot'],
-            'just below hot' => [79, 'qualified'],
+            'top' => [80, 'hot'],
+            'hot boundary' => [70, 'hot'],
+            'just below hot' => [69, 'qualified'],
             'qualified boundary' => [60, 'qualified'],
             'just below qualified' => [59, 'nurture'],
-            'nurture boundary' => [40, 'nurture'],
-            'just below nurture' => [39, 'low_intent'],
+            'nurture boundary' => [45, 'nurture'],
+            'just below nurture' => [44, 'low_intent'],
             'zero' => [0, 'low_intent'],
         ];
     }

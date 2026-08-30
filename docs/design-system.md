@@ -96,6 +96,22 @@ regardless of the OS setting.
 - Stylesheets are inlined (`inlineStylesheets: 'always'`): one 20KB sheet on a
   two-page site is worth more as a saved round trip than as a cached file.
 
+## Form
+
+Six fields on one page: three typed (nama, WhatsApp, domisili), three tapped
+(program, tujuan, kesiapan). Single submit — with only three things to type,
+splitting it into steps adds a click without removing any work.
+
+The three choice questions use radio pills, not `<select>`. A native select on
+mobile opens a picker and costs two extra interactions per question; a pill is
+one tap. The real radio stays in the DOM, visually hidden, so keyboard
+navigation and screen-reader announcement are unchanged.
+
+The readiness question is worded around readiness, not budget. "Kesiapan
+mengikuti program" gets the same signal as asking whether someone can afford
+Rp5 juta, without asking a school leaver about their finances on a landing
+page.
+
 ## Honesty constraints
 
 These are design rules here because breaking them creates business risk:

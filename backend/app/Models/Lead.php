@@ -30,6 +30,7 @@ class Lead extends Model
         'domicile',
         'activity',
         'goal',
+        'readiness',
         'timeline',
         'investment_readiness',
         'program_interest',

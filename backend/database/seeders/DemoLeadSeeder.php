@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\EducationConsultant;
+use App\Models\Lead;
 use App\Services\LeadIntake;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -78,7 +79,7 @@ class DemoLeadSeeder extends Seeder
         }
 
         // Spread them over the last two weeks so the chart is not one spike.
-        \App\Models\Lead::query()->where('submission_id', 'like', 'demo-%')->get()
+        Lead::query()->where('submission_id', 'like', 'demo-%')->get()
             ->each(fn ($lead, $i) => $lead->forceFill([
                 'created_at' => now()->subDays(13 - ($i % 13))->subHours(random_int(1, 20)),
             ])->save());

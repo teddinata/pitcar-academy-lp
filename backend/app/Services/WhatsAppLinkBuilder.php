@@ -37,11 +37,9 @@ class WhatsAppLinkBuilder
             'Kode lead: '.$lead->lead_code,
             'Nama: '.$lead->name,
             'Domisili: '.$lead->domicile,
-            'Aktivitas: '.LeadOptions::label(LeadOptions::ACTIVITIES, $lead->activity),
-            'Tujuan: '.LeadOptions::label(LeadOptions::GOALS, $lead->goal),
-            'Rencana mulai: '.LeadOptions::label(LeadOptions::TIMELINES, $lead->timeline),
-            'Kesiapan investasi: '.LeadOptions::label(LeadOptions::INVESTMENT_READINESS, $lead->investment_readiness),
             'Program diminati: '.LeadOptions::label(LeadOptions::PROGRAMS, $lead->program_interest),
+            'Tujuan: '.LeadOptions::label(LeadOptions::GOALS, $lead->goal),
+            'Kesiapan: '.LeadOptions::label(LeadOptions::READINESS, $lead->readiness),
             '',
             'Mohon bantu rekomendasikan program dan langkah berikutnya. Terima kasih.',
         ]);

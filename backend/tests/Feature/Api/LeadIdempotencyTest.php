@@ -67,8 +67,7 @@ class LeadIdempotencyTest extends TestCase
         // Even if the visitor edits their answers, the stored lead stands; the
         // consultant follows up on what was actually recorded.
         $this->postJson('/api/leads', array_merge($payload, [
-            'timeline' => 'considering',
-            'investment_readiness' => 'researching',
+            'readiness' => 'exploring',
         ]))->assertOk();
 
         $this->assertSame(1, Lead::count());
