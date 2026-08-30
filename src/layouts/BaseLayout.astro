@@ -52,7 +52,12 @@ const {
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta id="theme-color" name="theme-color" content="#FAFAF9" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {/* Real PITCAR mark. 32/48 keep the transparent cut-out for browser tabs;
+        the Apple icon is flattened onto white because iOS renders a
+        transparent background as black. */}
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="generator" content={Astro.generator} />
     {/* Only fetched where the image is the LCP. On phones the hero image sits
         below the fold and the H1 is the LCP, so a high-priority image preload

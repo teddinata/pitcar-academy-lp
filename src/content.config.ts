@@ -13,14 +13,13 @@ export interface PackageItem {
   priceDisplay: string;
   strikePriceDisplay?: string;
   /**
-   * Anchors shown above the price, each with the reason it exists. Two bare
-   * crossed-out numbers read as a marketplace flash sale; labelled ones read
-   * as "here is how we got to this figure".
+   * One line explaining where `strikePriceDisplay` comes from. A crossed-out
+   * number with no stated origin is the thing buyers distrust.
    *
-   * !! VERIFY: every value here must be a price the business genuinely
-   * charges or will charge. An anchor nobody has ever paid is not a discount.
+   * !! VERIFY: the anchor must be a price the business genuinely charges or
+   * will charge. An anchor nobody has ever paid is not a discount.
    */
-  priceLadder?: { label: string; value: string }[];
+  strikePriceNote?: string;
   savingsNote?: string;
   scarcityNote?: string;
   duration: string;
@@ -111,10 +110,8 @@ export const packages: PackageItem[] = [
       'Mencakup seluruh materi Level 1 & Level 2 untuk menguasai kompetensi mekanik secara menyeluruh.',
     price: '8500000',
     priceDisplay: 'Rp 8.500.000',
-    priceLadder: [
-      { label: '2 program terpisah', value: 'Rp 15.000.000' },
-      { label: 'Paket Professional', value: 'Rp 11.000.000' },
-    ],
+    strikePriceDisplay: 'Rp 15.000.000',
+    strikePriceNote: 'harga 2 program jika diambil terpisah',
     savingsNote: 'Hemat Rp6.500.000 — Founding Batch 2026',
     scarcityNote: 'Berlaku selama kuota Founding Batch masih tersedia.',
     duration: '2 Bulan',
@@ -260,16 +257,21 @@ export const faqs: FaqItem[] = [
  * !! VERIFY: the saving figure must match the package cards.
  */
 export interface Announcement {
+  /** The offer. Lead with the number, not an adjective. */
   text: string;
+  /** Why now. Keep it quota-based unless a dated cutoff has a real owner. */
+  urgency: string;
   cta: string;
   href: string;
   publish: boolean;
-  deadline?: string;
 }
 
 export const announcement: Announcement = {
-  text: 'Founding Batch 2026 dibuka — kuota terbatas, harga naik setelah batch perdana',
-  cta: 'Konsultasi gratis',
+  // The saving figure is the hard sell. "Harga hemat khusus" asks for trust;
+  // "Hemat Rp6.500.000" does the persuading by itself.
+  text: 'PROMO FOUNDING BATCH 2026: Hemat Rp6.500.000',
+  urgency: 'Kuota batch perdana terbatas — harga naik setelah ditutup!',
+  cta: 'Ambil sekarang',
   href: '#konsultasi',
   publish: true,
 };

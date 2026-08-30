@@ -21,8 +21,9 @@ const consultationHref = `${homePrefix}#konsultasi`;
       data-source-cta="announcement_bar"
       class="group flex min-h-11 flex-wrap items-center justify-center gap-x-2.5 gap-y-1 bg-accent-fill px-4 py-3 text-center text-xs font-bold text-white transition-colors hover:bg-accent-fill-hover sm:text-sm"
     >
-      <span>{announcement.text}</span>
-      <span class="inline-flex items-center gap-1 underline underline-offset-2">
+      <span class="font-display text-sm font-bold uppercase tracking-wide sm:text-base">{announcement.text}</span>
+      <span class="text-white/90">{announcement.urgency}</span>
+      <span class="inline-flex items-center gap-1 whitespace-nowrap underline underline-offset-2">
         {announcement.cta}
         <svg aria-hidden="true" class="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
       </span>
