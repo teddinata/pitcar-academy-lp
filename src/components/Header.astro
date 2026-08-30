@@ -1,5 +1,6 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
+import { announcement } from '../content.config';
 
 const homePrefix = Astro.url.pathname === '/' ? '' : '/';
 
@@ -13,10 +14,20 @@ const consultationHref = `${homePrefix}#konsultasi`;
 ---
 
 <header class="fixed inset-x-0 top-0 z-50">
-  <p class="flex items-center justify-center gap-2.5 border-b border-line bg-ground px-4 py-2.5 text-center text-xs font-semibold text-muted sm:text-sm">
-    <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-accent-fill" aria-hidden="true"></span>
-    Founding Batch 2026 — pendaftaran konsultasi dibuka
-  </p>
+  {announcement.publish && (
+    <a
+      href={homePrefix + announcement.href}
+      data-lead-cta
+      data-source-cta="announcement_bar"
+      class="group flex min-h-11 flex-wrap items-center justify-center gap-x-2.5 gap-y-1 bg-accent-fill px-4 py-3 text-center text-xs font-bold text-white transition-colors hover:bg-accent-fill-hover sm:text-sm"
+    >
+      <span>{announcement.text}</span>
+      <span class="inline-flex items-center gap-1 underline underline-offset-2">
+        {announcement.cta}
+        <svg aria-hidden="true" class="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+      </span>
+    </a>
+  )}
 
   <div class="border-b border-line bg-ground/95 backdrop-blur">
     <nav class="shell flex h-16 items-center justify-between gap-6 md:h-20" aria-label="Navigasi utama">

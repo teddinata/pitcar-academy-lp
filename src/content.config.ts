@@ -12,6 +12,15 @@ export interface PackageItem {
   price: string;
   priceDisplay: string;
   strikePriceDisplay?: string;
+  /**
+   * Anchors shown above the price, each with the reason it exists. Two bare
+   * crossed-out numbers read as a marketplace flash sale; labelled ones read
+   * as "here is how we got to this figure".
+   *
+   * !! VERIFY: every value here must be a price the business genuinely
+   * charges or will charge. An anchor nobody has ever paid is not a discount.
+   */
+  priceLadder?: { label: string; value: string }[];
   savingsNote?: string;
   scarcityNote?: string;
   duration: string;
@@ -102,8 +111,11 @@ export const packages: PackageItem[] = [
       'Mencakup seluruh materi Level 1 & Level 2 untuk menguasai kompetensi mekanik secara menyeluruh.',
     price: '8500000',
     priceDisplay: 'Rp 8.500.000',
-    strikePriceDisplay: 'Rp 11.000.000',
-    savingsNote: 'Hemat Rp2.500.000 — Founding Batch 2026',
+    priceLadder: [
+      { label: '2 program terpisah', value: 'Rp 15.000.000' },
+      { label: 'Paket Professional', value: 'Rp 11.000.000' },
+    ],
+    savingsNote: 'Hemat Rp6.500.000 — Founding Batch 2026',
     scarcityNote: 'Berlaku selama kuota Founding Batch masih tersedia.',
     duration: '2 Bulan',
     hours: '208 Jam',
@@ -187,7 +199,7 @@ export const faqs: FaqItem[] = [
   {
     question: 'Saya ingin belajar keduanya. Program mana yang sebaiknya dipilih?',
     answer:
-      'Program Professional mencakup Level 1 dan Level 2 sekaligus dengan total 208 jam pembelajaran dan 2 bulan OJT, serta lebih hemat Rp1.500.000.',
+      'Program Professional mencakup Level 1 dan Level 2 sekaligus, total 208 jam pembelajaran dan 2 bulan OJT. Dibanding mengambil Basic dan Advance terpisah pada harga Founding Batch, Professional lebih hemat Rp1.500.000; dibanding harga normal kedua program, hemat Rp6.500.000.',
   },
   {
     question: 'Di mana OJT dilakukan?',
@@ -236,6 +248,31 @@ export const faqs: FaqItem[] = [
    Everything below is page copy, kept here so it can be changed without
    touching components.
    ========================================================================== */
+
+/**
+ * Announcement bar.
+ *
+ * Urgency here is quota-based on purpose. A date ("harga naik di September")
+ * is stronger while it is true and a liability the morning after — and nobody
+ * owns updating it. Set `deadline` only if there is a real, dated cutoff
+ * someone has committed to maintaining.
+ *
+ * !! VERIFY: the saving figure must match the package cards.
+ */
+export interface Announcement {
+  text: string;
+  cta: string;
+  href: string;
+  publish: boolean;
+  deadline?: string;
+}
+
+export const announcement: Announcement = {
+  text: 'Founding Batch 2026 dibuka — kuota terbatas, harga naik setelah batch perdana',
+  cta: 'Konsultasi gratis',
+  href: '#konsultasi',
+  publish: true,
+};
 
 /**
  * Trust numbers.

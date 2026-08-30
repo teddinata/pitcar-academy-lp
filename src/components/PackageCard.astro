@@ -57,9 +57,23 @@ const facts = [
 
     <div class="mt-8 border-t border-line pt-6">
       <p class="text-xs font-bold uppercase tracking-[0.14em]">Investasi program</p>
-      <div class="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+      {pkg.priceLadder && (
+        <div class="mt-3 mb-4 border-b border-line pb-4">
+          <p class="text-xs uppercase tracking-wider text-muted">Harga normal</p>
+          <dl class="mt-2 space-y-1.5 text-sm">
+          {pkg.priceLadder.map((rung) => (
+            <div class="flex items-baseline justify-between gap-x-3">
+              <dt class="text-muted">{rung.label}</dt>
+              <dd class="whitespace-nowrap text-muted line-through">{rung.value}</dd>
+            </div>
+          ))}
+          </dl>
+        </div>
+      )}
+
+      <div class:list={['flex flex-wrap items-baseline gap-x-3 gap-y-1', pkg.priceLadder ? '' : 'mt-3']}>
         <span class="font-display text-4xl font-bold leading-none">{pkg.priceDisplay}</span>
-        {pkg.strikePriceDisplay && (
+        {pkg.strikePriceDisplay && !pkg.priceLadder && (
           <span class="text-base text-muted line-through">{pkg.strikePriceDisplay}</span>
         )}
       </div>
