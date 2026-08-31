@@ -219,16 +219,39 @@ jobs:
 |-------|-----------|
 | `/` | Landing Page utama |
 | `/faq` | Halaman FAQ lengkap |
-| `/admin` | Placeholder — siap jadi LMS (React/Vue) |
+| `/kelas-online` | Halaman jualan kelas online — `noindex` sampai siap |
+| `/kelas` | Dashboard siswa (prototipe) |
+| `/kelas/[slug]` | Pemutar pelajaran, 27 halaman |
+| `/kelas/profil` | Profil dan statistik belajar |
 
-## 🔮 Roadmap ke LMS
+Dashboard lead untuk tim sales **tidak ada di sini**. Ia bagian dari backend
+Laravel — lihat tabel di bawah.
 
-Untuk menambahkan LMS di `/admin`:
+## 🔐 Dua panel yang berbeda
 
-1. Hapus `src/pages/admin/index.astro`
-2. Buat app baru: `cd src/pages/admin && npx create-react-app .` atau `npm create vue@latest`
-3. Update `nginx.conf` dengan proxy pass ke dev server saat development
-4. Atau gunakan monorepo approach (Astro root + React/Vue subdir)
+| Panel | Untuk siapa | URL |
+|-------|-------------|-----|
+| Dashboard lead | Sales & admin | `{host backend}/admin` — lokal `http://127.0.0.1:8000/admin` |
+| Area belajar | Peserta kelas online | `{host frontend}/kelas` — lokal `http://localhost:4321/kelas` |
+
+Keduanya kebetulan sama-sama memakai path `/admin` dan `/kelas`, tetapi berada
+di **host yang berbeda**. Dashboard lead berjalan di aplikasi Laravel, bukan di
+landing page Astro.
+
+Rute panel lead: `/admin/leads`, `/admin/education-consultants`, `/admin/users`.
+
+## 🔮 Roadmap LMS
+
+Prototipe area belajar sudah ada di `/kelas` sebagai halaman statis Astro
+dengan data contoh. Yang belum ada:
+
+1. Autentikasi peserta — saat ini nama peserta di-hardcode
+2. Penyimpanan progres — sekarang hanya bertahan di memori halaman
+3. Hosting video — setiap slot pemutar masih kosong
+4. Checkout — payment gateway masih di luar scope
+
+Placeholder lama di `/admin` sudah dihapus: namanya menyesatkan untuk area
+peserta, dan path itu bertabrakan dengan dashboard lead di backend.
 
 ---
 

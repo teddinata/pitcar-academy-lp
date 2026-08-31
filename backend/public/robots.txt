@@ -1,2 +1,5 @@
+# API dan panel internal. Tidak ada yang berguna untuk mesin pencari, dan
+# halaman login dashboard lead tidak boleh muncul di hasil pencarian.
 User-agent: *
-Disallow:
+Disallow: /admin
+Disallow: /api
