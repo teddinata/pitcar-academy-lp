@@ -716,3 +716,107 @@ export const digitalFaqs: FaqItem[] = [
       'Kelas online membangun pemahaman dasar. Program offline memberi praktik langsung pada kendaraan, OJT di bengkel yang beroperasi, dan assessment kompetensi.',
   },
 ];
+
+/* ============================================================================
+   PROFIL SISWA — PROTOTIPE
+   Data contoh. Belum ada autentikasi, jadi peserta di-hardcode.
+   ========================================================================== */
+
+export interface StudyDay {
+  /** ISO date. */
+  date: string;
+  minutes: number;
+}
+
+export interface StudentProfile {
+  name: string;
+  email: string;
+  phone: string;
+  city: string;
+  joinedAt: string;
+  /** 28 hari terakhir, terbaru di akhir. */
+  history: StudyDay[];
+}
+
+/** Aktivitas contoh: rajin di awal, sempat berhenti, lalu mulai lagi. */
+function sampleHistory(): StudyDay[] {
+  const pattern = [
+    0, 0, 0, 0, 42, 38, 0,
+    25, 31, 0, 0, 18, 44, 0,
+    0, 0, 0, 0, 0, 0, 0,
+    0, 0, 29, 22, 35, 14, 0,
+  ];
+  const today = new Date('2026-08-31T00:00:00Z');
+  return pattern.map((minutes, i) => {
+    const d = new Date(today);
+    d.setUTCDate(d.getUTCDate() - (pattern.length - 1 - i));
+    return { date: d.toISOString().slice(0, 10), minutes };
+  });
+}
+
+export const studentProfile: StudentProfile = {
+  name: 'Budi Santoso',
+  email: 'budi.santoso@example.com',
+  phone: '+62 812-3456-7890',
+  city: 'Purwokerto',
+  joinedAt: '2026-07-14',
+  history: sampleHistory(),
+};
+
+/**
+ * Statistik yang dihitung, bukan diketik.
+ *
+ * Sengaja TIDAK memuat peringkat, persentil, atau perbandingan dengan peserta
+ * lain. Angka semacam itu tidak mengubah apa pun yang bisa dilakukan siswa
+ * berikutnya — dan bagi yang tertinggal, justru alasan untuk berhenti.
+ * Semua yang ada di bawah menjawab satu pertanyaan: apa langkah saya sekarang.
+ */
+function minutesOf(duration: string): number {
+  const [m, s] = duration.split(':').map(Number);
+  return m + s / 60;
+}
+
+const done = courseModules.flatMap((m) => m.lessons).filter((l) => l.done);
+const remaining = courseModules.flatMap((m) => m.lessons).filter((l) => !l.done);
+const activeDays = studentProfile.history.filter((d) => d.minutes > 0);
+
+/** Rentetan hari belajar yang masih berjalan, dihitung dari hari terakhir. */
+function currentStreak(): number {
+  let streak = 0;
+  for (let i = studentProfile.history.length - 1; i >= 0; i--) {
+    if (studentProfile.history[i].minutes > 0) streak++;
+    else if (streak > 0) break;
+  }
+  return streak;
+}
+
+const minutesLeft = remaining.reduce((sum, l) => sum + minutesOf(l.duration), 0);
+const weeklyPace = activeDays.length > 0
+  ? activeDays.reduce((s, d) => s + d.minutes, 0) / (studentProfile.history.length / 7)
+  : 0;
+
+export const studentStats = {
+  lessonsDone: done.length,
+  lessonsLeft: remaining.length,
+  percent: Math.round((done.length / (done.length + remaining.length)) * 100),
+  minutesWatched: Math.round(done.reduce((sum, l) => sum + minutesOf(l.duration), 0)),
+  minutesLeft: Math.round(minutesLeft),
+  streak: currentStreak(),
+  activeDays: activeDays.length,
+  /** Berapa minggu lagi jika ritme belajar bertahan seperti sekarang. */
+  weeksToFinish: weeklyPace > 0 ? Math.max(1, Math.ceil(minutesLeft / weeklyPace)) : null,
+  /** Modul yang belum disentuh sama sekali — ini langkah berikutnya. */
+  untouchedModules: courseModules.filter((m) => m.lessons.every((l) => !l.done)).length,
+};
+
+/** Progres per modul, supaya siswa tahu persis di mana ia berhenti. */
+export const moduleProgress = courseModules.map((m) => {
+  const finished = m.lessons.filter((l) => l.done).length;
+  return {
+    title: m.title,
+    finished,
+    total: m.lessons.length,
+    percent: Math.round((finished / m.lessons.length) * 100),
+    nextLesson: m.lessons.find((l) => !l.done) ?? null,
+  };
+});

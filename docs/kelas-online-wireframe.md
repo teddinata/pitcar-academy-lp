@@ -85,6 +85,35 @@ Semua halaman area belajar `noindex`. Belum ada autentikasi: peserta
 di-hardcode dan progres hanya bertahan di memori halaman. Itu yang membedakan
 prototipe ini dari LMS sungguhan.
 
+## Profil siswa
+
+Ada di `/kelas/profil`, dijangkau lewat avatar di header.
+
+Semua statistik menjawab satu pertanyaan: **apa langkah saya sekarang.**
+
+| Statistik | Kenapa berguna |
+| --- | --- |
+| Progres sertifikat | Menyebut sisa pelajaran, bukan hanya persentase |
+| Waktu belajar | Bukti usaha yang sudah dikeluarkan |
+| Rentetan hari | Alasan untuk membuka materi hari ini |
+| Perkiraan selesai | Membantu merencanakan, bukan sekadar mengukur |
+| Ritme 28 hari | Pola lebih jujur daripada satu angka total |
+| Progres per modul | Menunjukkan persis di mana ia berhenti |
+
+Yang **sengaja tidak ada**: peringkat, persentil, dan perbandingan dengan
+peserta lain. Angka semacam itu tidak mengubah apa pun yang bisa dilakukan
+siswa berikutnya, dan bagi yang tertinggal justru jadi alasan berhenti. Lencana
+tanpa makna juga dilewati.
+
+Kalender ritme diselaraskan ke hari sungguhan dengan mengisi kolom kosong di
+awal — tanpa itu ia cuma 28 kotak yang tidak memberi tahu hari apa seseorang
+biasanya belajar.
+
+Setiap angka dihitung dari data pelajaran dan riwayat, bukan diketik.
+
+Bagian akun memuat data diri, riwayat pembelian, dan bantuan. Semua tombol
+aksi `disabled` karena belum ada sistem akun.
+
 ## Yang masih placeholder
 
 Isi kurikulum sudah realistis (6 modul, 27 pelajaran, 5 jam 18 menit, dengan

@@ -1,0 +1,231 @@
+---
+import CourseLayout from '../../layouts/CourseLayout.astro';
+import { courseModules, moduleProgress, studentProfile as me, studentStats as st } from '../../content.config';
+
+const joined = new Date(me.joinedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+const hours = Math.floor(st.minutesWatched / 60);
+const mins = st.minutesWatched % 60;
+const nextUp = courseModules.flatMap((m) => m.lessons).find((l) => !l.done);
+const peakMinutes = Math.max(...me.history.map((d) => d.minutes), 1);
+const dayLabels = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+
+// Pad the front so each column really is that weekday, otherwise the grid is
+// just 28 squares and tells you nothing about which days you tend to study.
+const leadingBlanks = new Date(me.history[0].date + 'T00:00:00Z').getUTCDay();
+const cells: ({ date: string; minutes: number } | null)[] = [
+  ...Array.from({ length: leadingBlanks }, () => null),
+  ...me.history,
+];
+---
+
+<CourseLayout title="Profil" description="Profil dan statistik belajar peserta kelas online Pitcar Academy.">
+  <section class="band">
+    <div class="shell">
+      <!-- Identity -->
+      <div class="flex flex-col gap-6 sm:flex-row sm:items-center">
+        <span class="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-ground-alt font-display text-2xl font-bold">
+          {me.name.split(' ').slice(0, 2).map((w) => w[0]).join('')}
+        </span>
+        <div class="min-w-0">
+          <h1 class="display-2">{me.name}</h1>
+          <p class="mt-2 text-muted">{me.email} · {me.city}</p>
+          <p class="mt-1 text-sm text-muted">Bergabung {joined}</p>
+        </div>
+      </div>
+
+      <!-- Statistik: setiap angka menjawab "apa langkah saya sekarang" -->
+      <dl class="mt-10 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+        <div class="bg-ground px-5 py-6">
+          <dt class="text-xs uppercase tracking-wider text-muted">Progres sertifikat</dt>
+          <dd class="mt-2">
+            <span class="block font-display text-3xl font-bold leading-none">{st.percent}%</span>
+            <span class="mt-2 block text-sm text-muted">{st.lessonsLeft} pelajaran lagi</span>
+          </dd>
+        </div>
+        <div class="bg-ground px-5 py-6">
+          <dt class="text-xs uppercase tracking-wider text-muted">Waktu belajar</dt>
+          <dd class="mt-2">
+            <span class="block font-display text-3xl font-bold leading-none">{hours}j {mins}m</span>
+            <span class="mt-2 block text-sm text-muted">dari {st.activeDays} hari aktif</span>
+          </dd>
+        </div>
+        <div class="bg-ground px-5 py-6">
+          <dt class="text-xs uppercase tracking-wider text-muted">Rentetan hari</dt>
+          <dd class="mt-2">
+            <span class="block font-display text-3xl font-bold leading-none">{st.streak}</span>
+            <span class="mt-2 block text-sm text-muted">{st.streak > 0 ? 'Belajar lagi hari ini untuk melanjutkan' : 'Mulai lagi hari ini'}</span>
+          </dd>
+        </div>
+        <div class="bg-ground px-5 py-6">
+          <dt class="text-xs uppercase tracking-wider text-muted">Perkiraan selesai</dt>
+          <dd class="mt-2">
+            <span class="block font-display text-3xl font-bold leading-none">
+            {st.weeksToFinish ? `${st.weeksToFinish} minggu` : '—'}
+          </span>
+            <span class="mt-2 block text-sm text-muted">jika ritmemu bertahan</span>
+          </dd>
+        </div>
+      </dl>
+
+      <!-- Next action, stated plainly -->
+      {nextUp && (
+        <div class="mt-6 flex flex-col gap-4 border border-line bg-surface p-6 sm:flex-row sm:items-center sm:justify-between">
+          <div class="min-w-0">
+            <p class="text-xs font-bold uppercase tracking-[0.14em] text-muted">Langkah berikutnya</p>
+            <p class="display-3 mt-2">{nextUp.title}</p>
+          </div>
+          <a href={`/kelas/${nextUp.slug}/`} class="btn btn-primary shrink-0">Lanjutkan</a>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- Konsistensi: pola 28 hari lebih berguna daripada satu angka total -->
+  <section class="band band-alt border-t border-line" aria-labelledby="rhythm-title">
+    <div class="shell">
+      <h2 id="rhythm-title" class="display-3">Ritme belajar 28 hari terakhir</h2>
+      <p class="mt-2 max-w-prose text-sm text-muted">
+        Belajar sedikit tapi rutin mengalahkan sesi panjang yang jarang. Pola di bawah
+        memperlihatkan hari mana kamu benar-benar membuka materi.
+      </p>
+
+      <div class="mt-8 overflow-x-auto">
+        <div class="w-max">
+          <div class="grid grid-cols-7 gap-1.5">
+            {dayLabels.map((d) => (
+              <span class="text-center text-[0.6875rem] font-semibold uppercase tracking-wider text-muted">{d}</span>
+            ))}
+          </div>
+          <div
+            class="mt-1.5 grid grid-cols-7 gap-1.5"
+            role="img"
+            aria-label={`Belajar pada ${st.activeDays} dari 28 hari terakhir`}
+          >
+            {cells.map((day) => {
+              if (!day) return <span aria-hidden="true"></span>;
+              const level = day.minutes === 0 ? 0 : Math.ceil((day.minutes / peakMinutes) * 3);
+              return (
+                <span
+                  class:list={[
+                    'h-8 w-8 rounded-sm border border-line',
+                    level === 0 && 'bg-ground',
+                    level === 1 && 'bg-accent-fill/30',
+                    level === 2 && 'bg-accent-fill/60',
+                    level >= 3 && 'bg-accent-fill',
+                  ]}
+                  title={day.minutes > 0 ? `${day.date} — ${day.minutes} menit` : `${day.date} — tidak belajar`}
+                ></span>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 flex items-center gap-2 text-xs text-muted">
+        <span>Tidak belajar</span>
+        <span class="h-3 w-3 rounded-sm border border-line bg-ground"></span>
+        <span class="h-3 w-3 rounded-sm bg-accent-fill/30"></span>
+        <span class="h-3 w-3 rounded-sm bg-accent-fill/60"></span>
+        <span class="h-3 w-3 rounded-sm bg-accent-fill"></span>
+        <span>Lebih lama</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Per modul: menjawab "di mana saya berhenti" -->
+  <section class="band border-t border-line" aria-labelledby="modules-title">
+    <div class="shell">
+      <h2 id="modules-title" class="display-3">Progres per modul</h2>
+
+      <ul class="mt-8 border-t border-line">
+        {moduleProgress.map((m, i) => (
+          <li class="border-b border-line py-5">
+            <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+              <span class="font-display text-sm font-semibold uppercase tracking-[0.14em] text-accent">
+                Modul {String(i + 1).padStart(2, '0')}
+              </span>
+              <span class="text-sm tabular-nums text-muted">{m.finished}/{m.total} pelajaran</span>
+            </div>
+            <div class="mt-2 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+              <h3 class="display-3 min-w-0">{m.title}</h3>
+              {m.nextLesson
+                ? <a href={`/kelas/${m.nextLesson.slug}/`} class="inline-flex min-h-11 items-center text-sm font-semibold text-accent transition-colors hover:text-body">
+                    {m.finished === 0 ? 'Mulai modul ini' : 'Lanjutkan modul ini'} →
+                  </a>
+                : <span class="inline-flex min-h-11 items-center text-sm font-semibold text-muted">Selesai</span>}
+            </div>
+            <div class="mt-3 h-2 overflow-hidden rounded-full bg-line">
+              <div class="h-full bg-accent-fill" style={`width: ${m.percent}%`}></div>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      {st.untouchedModules > 0 && (
+        <p class="mt-6 text-sm text-muted">
+          {st.untouchedModules} modul belum disentuh sama sekali.
+        </p>
+      )}
+    </div>
+  </section>
+
+  <!-- Akun: data, pembelian, bantuan -->
+  <section class="band band-alt border-t border-line" aria-labelledby="account-title">
+    <div class="shell">
+      <h2 id="account-title" class="display-3">Akun</h2>
+
+      <div class="mt-8 grid gap-6 lg:grid-cols-2">
+        <form class="border border-line bg-surface p-6" onsubmit="return false">
+          <h3 class="text-xs font-bold uppercase tracking-[0.14em] text-muted">Data diri</h3>
+          <div class="mt-5 space-y-4">
+            <div>
+              <label class="block text-sm font-bold" for="p-name">Nama lengkap</label>
+              <input class="mt-2 min-h-12 w-full rounded-sm border border-line bg-ground px-4 py-3 text-base outline-none transition focus:border-accent-fill" id="p-name" name="name" type="text" value={me.name} />
+            </div>
+            <div>
+              <label class="block text-sm font-bold" for="p-phone">Nomor WhatsApp</label>
+              <input class="mt-2 min-h-12 w-full rounded-sm border border-line bg-ground px-4 py-3 text-base outline-none transition focus:border-accent-fill" id="p-phone" name="phone" type="tel" value={me.phone} />
+            </div>
+            <div>
+              <label class="block text-sm font-bold" for="p-city">Domisili</label>
+              <input class="mt-2 min-h-12 w-full rounded-sm border border-line bg-ground px-4 py-3 text-base outline-none transition focus:border-accent-fill" id="p-city" name="city" type="text" value={me.city} />
+            </div>
+            <div>
+              <label class="block text-sm font-bold" for="p-email">Email</label>
+              <input class="mt-2 min-h-12 w-full rounded-sm border border-line bg-ground-alt px-4 py-3 text-base text-muted" id="p-email" type="email" value={me.email} disabled />
+              <p class="mt-1.5 text-xs text-muted">Email dipakai untuk masuk dan tidak bisa diubah sendiri.</p>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-ghost mt-6 w-full" disabled>Simpan perubahan</button>
+          <p class="mt-2 text-xs text-muted">Belum aktif — menunggu sistem akun.</p>
+        </form>
+
+        <div class="space-y-6">
+          <div class="border border-line bg-surface p-6">
+            <h3 class="text-xs font-bold uppercase tracking-[0.14em] text-muted">Pembelian</h3>
+            <div class="mt-4 flex items-baseline justify-between gap-4">
+              <div>
+                <p class="font-semibold">Fundamental Otomotif untuk Pemula</p>
+                <p class="mt-1 text-sm text-muted">{joined} · akses selamanya</p>
+              </div>
+              <p class="shrink-0 font-display text-xl font-bold">Rp 99.000</p>
+            </div>
+            <button type="button" class="btn btn-ghost mt-5 w-full" disabled>Unduh invoice</button>
+          </div>
+
+          <div class="border border-line bg-surface p-6">
+            <h3 class="text-xs font-bold uppercase tracking-[0.14em] text-muted">Butuh bantuan?</h3>
+            <p class="mt-3 text-sm text-muted">
+              Pertanyaan soal materi bisa dikirim ke grup peserta. Kendala akses atau pembayaran,
+              hubungi tim kami.
+            </p>
+            <div class="mt-5 flex flex-col gap-3 sm:flex-row">
+              <button type="button" class="btn btn-ghost flex-1" disabled>Grup peserta</button>
+              <a href="/#konsultasi" class="btn btn-ghost flex-1">Hubungi tim</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</CourseLayout>
