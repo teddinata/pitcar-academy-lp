@@ -216,6 +216,11 @@ export const faqs: FaqItem[] = [
       'Program Professional mencakup Level 1 dan Level 2 sekaligus dengan total 208 jam pembelajaran dan 2 bulan OJT, serta lebih hemat Rp1.500.000.',
   },
   {
+    question: 'Di mana lokasi pelatihan?',
+    answer:
+      'Pelatihan Pitcar Academy dilaksanakan di Purwokerto, Banyumas, Jawa Tengah. Sesi praktik dan OJT berlangsung di lingkungan bengkel yang ditentukan oleh jaringan Pitcar Academy.',
+  },
+  {
     question: 'Di mana OJT dilakukan?',
     answer:
       'OJT dilaksanakan langsung di lingkungan bengkel yang ditentukan oleh jaringan Pitcar Academy.',
