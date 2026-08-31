@@ -6,6 +6,9 @@ on:
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
+    env:
+      WA_PHONE_NUMBER: ${{ secrets.WA_PHONE_NUMBER }}
+      WA_WEBHOOK_URL: ${{ secrets.WA_WEBHOOK_URL }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -17,6 +20,7 @@ jobs:
           
       - name: Install Dependencies & Build
         run: |
+          test -n "$WA_PHONE_NUMBER" || (echo "WA_PHONE_NUMBER secret is required" && exit 1)
           npm install
           npm run build
           

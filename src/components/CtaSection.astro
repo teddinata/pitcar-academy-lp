@@ -73,6 +73,7 @@ const waNum = whatsappNumber ?? whatsappConfig.phoneNumber;
     <form
       data-whatsapp-form
       data-whatsapp-number={waNum}
+      data-webhook-url={whatsappConfig.webhookUrl}
       class="mx-auto grid max-w-2xl gap-3 text-left sm:grid-cols-2"
       novalidate
     >
@@ -166,6 +167,22 @@ const waNum = whatsappNumber ?? whatsappConfig.phoneNumber;
         }
 
         error?.classList.add("hidden");
+        const webhookUrl = form.dataset.webhookUrl;
+        if (webhookUrl) {
+          void fetch(webhookUrl, {
+            method: "POST",
+            mode: "no-cors",
+            body: new URLSearchParams({
+              event: "whatsapp_registration",
+              name,
+              phone,
+              city,
+              submittedAt: new Date().toISOString(),
+              source: window.location.href,
+            }),
+            keepalive: true,
+          }).catch(() => undefined);
+        }
         const message = encodeURIComponent(
           `Halo Pitcar Academy, saya ingin mendaftar program pelatihan mekanik.\n\nNama: ${name}\nNomor WhatsApp: ${phone}\nDomisili: ${city}`,
         );

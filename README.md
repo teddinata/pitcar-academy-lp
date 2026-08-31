@@ -54,6 +54,8 @@ npm run preview    # Preview build locally
 Edit `src/content.config.ts` untuk mengubah semua konten tanpa menyentuh kode:
 
 - **Nomor WhatsApp**: Set `WA_PHONE_NUMBER` di file `.env` (format `62XXXXXXXXXX`)
+- **Webhook pendaftaran**: Set `WA_WEBHOOK_URL` di file `.env`
+- **Deploy GitHub Actions**: Tambahkan `WA_PHONE_NUMBER` dan `WA_WEBHOOK_URL` sebagai repository secrets
 - **Paket Belajar**: Edit array `packages[]`
 - **Keunggulan**: Edit array `advantages[]`
 - **FAQ**: Edit array `faqs[]`
