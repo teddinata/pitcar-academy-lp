@@ -532,3 +532,111 @@ export const programFacts: ProgramFact[] = [
   { label: 'Syarat peserta', value: 'Minimal 17 tahun, sehat jasmani, siap mengikuti SOP bengkel' },
   { label: 'Batch terdekat', value: 'Oktober 2026' },
 ];
+
+/* ============================================================================
+   KELAS ONLINE — WIREFRAME
+   Struktur halaman sudah final; isinya belum. Setiap nilai di bawah adalah
+   placeholder sampai materi, harga, dan platform pengiriman diputuskan.
+   Halaman ini sengaja noindex dan tidak masuk sitemap sampai siap.
+   ========================================================================== */
+
+export interface CourseModule {
+  title: string;
+  lessons: number;
+  duration: string;
+  free?: boolean;
+}
+
+export interface DigitalCourse {
+  /** !! PLACEHOLDER — semua nilai di bawah menunggu keputusan bisnis. */
+  ready: boolean;
+  eyebrow: string;
+  headline: string;
+  subheadline: string;
+  price: string;
+  strikePrice?: string;
+  access: string;
+  totalDuration: string;
+  totalLessons: number;
+  outcomes: string[];
+  modules: CourseModule[];
+  includes: { title: string; description: string }[];
+  guarantee?: string;
+  requirements: string[];
+}
+
+export const digitalCourse: DigitalCourse = {
+  // Flip to true only when materi, harga, dan checkout benar-benar ada.
+  ready: false,
+
+  eyebrow: 'Kelas online',
+  headline: 'Pahami dasar kerja mesin sebelum menyentuh kunci.',
+  subheadline:
+    'Materi fundamental otomotif yang bisa kamu pelajari dari rumah, disusun oleh trainer yang mengerjakan kendaraan customer setiap hari.',
+
+  price: 'Rp 000.000',
+  strikePrice: undefined,
+  access: 'Akses selamanya',
+  totalDuration: '00 jam',
+  totalLessons: 0,
+
+  outcomes: [
+    'Memahami cara kerja mesin bensin dan komponen utamanya',
+    'Membaca gejala kerusakan dari suara, bau, dan indikator',
+    'Mengenali prosedur perawatan berkala dan urutannya',
+    'Memahami istilah teknis yang dipakai di bengkel',
+  ],
+
+  modules: [
+    { title: 'Pengenalan sistem kendaraan', lessons: 0, duration: '00 menit', free: true },
+    { title: 'Mesin dan sistem pembakaran', lessons: 0, duration: '00 menit' },
+    { title: 'Sistem pendingin dan pelumasan', lessons: 0, duration: '00 menit' },
+    { title: 'Sistem pengereman', lessons: 0, duration: '00 menit' },
+    { title: 'Dasar kelistrikan dan EFI', lessons: 0, duration: '00 menit' },
+    { title: 'Prosedur perawatan berkala', lessons: 0, duration: '00 menit' },
+  ],
+
+  includes: [
+    { title: 'Akses selamanya', description: 'Sekali beli, materi bisa diputar ulang kapan saja termasuk pembaruan.' },
+    { title: 'Bisa ditonton di HP', description: 'Tidak perlu laptop. Materi dirancang untuk layar kecil.' },
+    { title: 'Sertifikat penyelesaian', description: 'Diberikan setelah seluruh modul diselesaikan.' },
+    { title: 'Tanya trainer', description: 'Kirim pertanyaan lewat grup peserta kelas online.' },
+  ],
+
+  guarantee: 'Garansi 7 hari uang kembali jika materi tidak sesuai harapan.',
+
+  requirements: [
+    'Tidak perlu latar belakang otomotif',
+    'Bisa diakses dari HP, tablet, atau laptop',
+    'Butuh koneksi internet untuk memutar video',
+  ],
+};
+
+/** Objection yang khas produk digital — bukan salinan FAQ program offline. */
+export const digitalFaqs: FaqItem[] = [
+  {
+    question: 'Berapa lama saya bisa mengakses materinya?',
+    answer: 'PLACEHOLDER — tentukan masa akses sebelum publikasi. Ini keberatan nomor satu pada kelas online.',
+  },
+  {
+    question: 'Apakah bisa ditonton dari HP?',
+    answer: 'PLACEHOLDER — konfirmasi dukungan perangkat dan apakah materi bisa diunduh untuk ditonton offline.',
+  },
+  {
+    question: 'Apakah dapat sertifikat?',
+    answer: 'PLACEHOLDER — jelaskan jenis sertifikatnya, dan tegaskan bedanya dengan sertifikat program offline.',
+  },
+  {
+    question: 'Bisakah saya bertanya kalau ada yang tidak dipahami?',
+    answer: 'PLACEHOLDER — tentukan kanalnya (grup, kolom komentar, sesi live) dan waktu responsnya.',
+  },
+  {
+    question: 'Bagaimana kalau materinya tidak sesuai harapan?',
+    answer: 'PLACEHOLDER — putuskan kebijakan refund. Garansi uang kembali menaikkan konversi produk low-ticket secara signifikan.',
+  },
+  {
+    question: 'Apa bedanya dengan program offline Pitcar Academy?',
+    answer:
+      'Kelas online membangun pemahaman dasar. Program offline memberi praktik langsung pada kendaraan, OJT di bengkel yang beroperasi, dan assessment kompetensi.',
+  },
+];

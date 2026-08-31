@@ -17,6 +17,8 @@ interface Props {
   preloadImageMedia?: string;
   structuredData?: Record<string, unknown>[];
   gaId?: string;
+  /** Keeps a page out of search results while its content is still a draft. */
+  noindex?: boolean;
 }
 
 const {
@@ -28,6 +30,7 @@ const {
   preloadImageMedia = '(min-width: 1024px)',
   structuredData = [],
   gaId = import.meta.env.PUBLIC_GA_ID,
+  noindex = false,
 } = Astro.props;
 ---
 
@@ -73,6 +76,7 @@ const {
       image={image}
       url={canonical}
       structuredData={structuredData}
+      noindex={noindex}
     />
   </head>
   <body class="antialiased">
