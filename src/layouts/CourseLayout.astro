@@ -1,0 +1,81 @@
+---
+import ThemeToggle from '../components/ThemeToggle.astro';
+import { courseStats } from '../content.config';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Prototype only — no auth yet, so the student is hard-coded. */
+  student?: string;
+}
+
+const {
+  title,
+  description = 'Area belajar peserta kelas online Pitcar Academy.',
+  student = 'Budi Santoso',
+} = Astro.props;
+const percent = Math.round((courseStats.completed / courseStats.lessons) * 100);
+const initials = student.split(' ').slice(0, 2).map((w) => w[0]).join('');
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <script is:inline>
+      try {
+        if (localStorage.getItem('pitcar-theme') === 'dark') {
+          document.documentElement.classList.add('dark');
+        }
+      } catch (error) {
+        // Blocked storage just means the default theme.
+      }
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta id="theme-color" name="theme-color" content="#FAFAF9" />
+    <!-- A student area has nothing to offer search engines. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <title>{title} | Kelas Online Pitcar Academy</title>
+  </head>
+  <body class="antialiased">
+    <a class="skip-link" href="#course-content">Lewati ke konten</a>
+
+    <header class="sticky top-0 z-40 border-b border-line bg-ground">
+      <div class="shell flex h-16 items-center justify-between gap-4">
+        <a href="/kelas/" class="flex min-h-11 items-center gap-1.5 font-display text-lg font-bold leading-none">
+          <span class="text-body">PITCAR</span><span class="text-accent">ACADEMY</span>
+        </a>
+
+        <div class="hidden items-center gap-3 sm:flex">
+          <div class="h-1.5 w-32 overflow-hidden rounded-full bg-line" role="img" aria-label={`Progres ${percent} persen`}>
+            <div class="h-full bg-accent-fill" style={`width: ${percent}%`}></div>
+          </div>
+          <span class="text-sm font-semibold tabular-nums text-muted">{percent}%</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <ThemeToggle />
+          <span
+            class="flex h-11 w-11 items-center justify-center rounded-full bg-ground-alt font-display text-sm font-bold"
+            title={student}
+          >{initials}</span>
+        </div>
+      </div>
+    </header>
+
+    <main id="course-content">
+      <slot />
+    </main>
+
+    <footer class="border-t border-line py-8">
+      <div class="shell flex flex-col gap-2 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
+        <p>Prototipe dashboard — data contoh, belum tersambung ke akun sungguhan.</p>
+        <a class="inline-flex min-h-11 items-center transition-colors hover:text-body" href="/kelas-online/">Halaman penjualan kelas</a>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -534,66 +534,128 @@ export const programFacts: ProgramFact[] = [
 ];
 
 /* ============================================================================
-   KELAS ONLINE — WIREFRAME
-   Struktur halaman sudah final; isinya belum. Setiap nilai di bawah adalah
-   placeholder sampai materi, harga, dan platform pengiriman diputuskan.
-   Halaman ini sengaja noindex dan tidak masuk sitemap sampai siap.
+   KELAS ONLINE
+   Konten dummy yang realistis untuk review. Materi, video, dan checkout belum
+   ada — halaman tetap noindex sampai `digitalCourse.ready` diubah ke true.
    ========================================================================== */
+
+export interface Lesson {
+  slug: string;
+  title: string;
+  duration: string;
+  /** Dibuka tanpa membeli, sebagai contoh materi. */
+  free?: boolean;
+  /** Dummy progress untuk prototipe dashboard. */
+  done?: boolean;
+}
 
 export interface CourseModule {
   title: string;
-  lessons: number;
-  duration: string;
-  free?: boolean;
+  summary: string;
+  lessons: Lesson[];
 }
 
+export const courseModules: CourseModule[] = [
+  {
+    title: 'Mengenal kendaraan dari nol',
+    summary: 'Peta besar sistem kendaraan sebelum masuk ke detail tiap bagian.',
+    lessons: [
+      { slug: 'selamat-datang', title: 'Selamat datang & cara belajar di kelas ini', duration: '4:12', free: true, done: true },
+      { slug: 'anatomi-kendaraan', title: 'Anatomi kendaraan: 5 sistem utama', duration: '9:38', free: true, done: true },
+      { slug: 'istilah-bengkel', title: 'Istilah bengkel yang wajib kamu tahu', duration: '11:05', free: true, done: true },
+      { slug: 'alat-ukur-dasar', title: 'Alat ukur dasar dan cara membacanya', duration: '8:47', free: true, done: true },
+    ],
+  },
+  {
+    title: 'Mesin dan sistem pembakaran',
+    summary: 'Bagaimana bensin, udara, dan api menjadi tenaga.',
+    lessons: [
+      { slug: 'siklus-4-langkah', title: 'Siklus 4 langkah, dijelaskan pelan-pelan', duration: '12:20', done: true },
+      { slug: 'komponen-mesin', title: 'Komponen mesin dan fungsinya', duration: '14:03', done: true },
+      { slug: 'sistem-bahan-bakar', title: 'Sistem bahan bakar: dari tangki ke injektor', duration: '10:41', done: true },
+      { slug: 'gejala-mesin-bermasalah', title: 'Membaca gejala mesin bermasalah', duration: '13:29' },
+      { slug: 'praktik-tune-up', title: 'Studi kasus: tune up mesin bensin', duration: '15:52' },
+    ],
+  },
+  {
+    title: 'Pendingin dan pelumasan',
+    summary: 'Dua sistem yang paling sering diabaikan sampai mesin rusak.',
+    lessons: [
+      { slug: 'kenapa-mesin-panas', title: 'Kenapa mesin bisa overheat', duration: '9:14' },
+      { slug: 'radiator-dan-coolant', title: 'Radiator, coolant, dan thermostat', duration: '11:36' },
+      { slug: 'sistem-pelumasan', title: 'Sistem pelumasan dan pemilihan oli', duration: '12:48' },
+      { slug: 'inspeksi-kebocoran', title: 'Inspeksi kebocoran: apa yang dicari', duration: '10:07' },
+    ],
+  },
+  {
+    title: 'Sistem pengereman',
+    summary: 'Sistem paling berkaitan dengan keselamatan penumpang.',
+    lessons: [
+      { slug: 'prinsip-rem-hidrolik', title: 'Prinsip kerja rem hidrolik', duration: '10:55' },
+      { slug: 'rem-cakram-tromol', title: 'Rem cakram vs tromol', duration: '9:22' },
+      { slug: 'gejala-rem', title: 'Gejala rem bermasalah dan penyebabnya', duration: '12:11' },
+      { slug: 'inspeksi-rem', title: 'Prosedur inspeksi rem sesuai SOP', duration: '13:40' },
+    ],
+  },
+  {
+    title: 'Diagnosis dengan scanner',
+    summary: 'Membaca data langsung dari ECU — bagian yang paling membedakan mekanik modern dari yang menebak.',
+    lessons: [
+      { slug: 'listrik-dasar', title: 'Listrik dasar yang perlu dipahami dulu', duration: '11:18' },
+      { slug: 'sensor-efi', title: 'Sensor EFI dan apa yang sebenarnya mereka baca', duration: '15:27' },
+      { slug: 'menghubungkan-scanner', title: 'Menghubungkan scanner ke port OBD-II', duration: '8:52' },
+      { slug: 'membaca-kode-dtc', title: 'Membaca kode DTC: struktur dan artinya', duration: '14:49' },
+      { slug: 'live-data', title: 'Live data: mana yang normal, mana yang tidak', duration: '17:06' },
+      { slug: 'studi-kasus-scanner', title: 'Studi kasus: check engine menyala — dari scan sampai kesimpulan', duration: '21:34' },
+    ],
+  },
+  {
+    title: 'Perawatan berkala & langkah selanjutnya',
+    summary: 'Menyatukan semuanya menjadi prosedur kerja yang runtut.',
+    lessons: [
+      { slug: 'jadwal-servis', title: 'Jadwal servis dan apa yang dikerjakan', duration: '10:26' },
+      { slug: 'checklist-inspeksi', title: 'Menyusun checklist inspeksi sendiri', duration: '12:15' },
+      { slug: 'komunikasi-customer', title: 'Menjelaskan temuan ke pemilik kendaraan', duration: '9:58' },
+      { slug: 'langkah-berikutnya', title: 'Ke mana setelah kelas ini', duration: '6:44' },
+    ],
+  },
+];
+
 export interface DigitalCourse {
-  /** !! PLACEHOLDER — semua nilai di bawah menunggu keputusan bisnis. */
+  /** Ubah ke true hanya setelah materi, video, dan checkout benar-benar ada. */
   ready: boolean;
+  /** Null selama payment gateway belum tersambung. */
+  checkoutUrl: string | null;
   eyebrow: string;
   headline: string;
   subheadline: string;
   price: string;
   strikePrice?: string;
   access: string;
-  totalDuration: string;
-  totalLessons: number;
   outcomes: string[];
-  modules: CourseModule[];
   includes: { title: string; description: string }[];
   guarantee?: string;
   requirements: string[];
 }
 
 export const digitalCourse: DigitalCourse = {
-  // Flip to true only when materi, harga, dan checkout benar-benar ada.
   ready: false,
+  checkoutUrl: null,
 
   eyebrow: 'Kelas online',
   headline: 'Pahami dasar kerja mesin sebelum menyentuh kunci.',
   subheadline:
-    'Materi fundamental otomotif yang bisa kamu pelajari dari rumah, disusun oleh trainer yang mengerjakan kendaraan customer setiap hari.',
+    'Materi fundamental otomotif yang bisa dipelajari dari rumah, disusun oleh trainer yang mengerjakan kendaraan customer setiap hari.',
 
-  price: 'Rp 000.000',
-  strikePrice: undefined,
+  price: 'Rp 99.000',
+  strikePrice: 'Rp 249.000',
   access: 'Akses selamanya',
-  totalDuration: '00 jam',
-  totalLessons: 0,
 
   outcomes: [
     'Memahami cara kerja mesin bensin dan komponen utamanya',
     'Membaca gejala kerusakan dari suara, bau, dan indikator',
     'Mengenali prosedur perawatan berkala dan urutannya',
     'Memahami istilah teknis yang dipakai di bengkel',
-  ],
-
-  modules: [
-    { title: 'Pengenalan sistem kendaraan', lessons: 0, duration: '00 menit', free: true },
-    { title: 'Mesin dan sistem pembakaran', lessons: 0, duration: '00 menit' },
-    { title: 'Sistem pendingin dan pelumasan', lessons: 0, duration: '00 menit' },
-    { title: 'Sistem pengereman', lessons: 0, duration: '00 menit' },
-    { title: 'Dasar kelistrikan dan EFI', lessons: 0, duration: '00 menit' },
-    { title: 'Prosedur perawatan berkala', lessons: 0, duration: '00 menit' },
   ],
 
   includes: [
@@ -603,7 +665,7 @@ export const digitalCourse: DigitalCourse = {
     { title: 'Tanya trainer', description: 'Kirim pertanyaan lewat grup peserta kelas online.' },
   ],
 
-  guarantee: 'Garansi 7 hari uang kembali jika materi tidak sesuai harapan.',
+  guarantee: 'Garansi 7 hari uang kembali. Tidak cocok, uangmu kembali penuh.',
 
   requirements: [
     'Tidak perlu latar belakang otomotif',
@@ -612,27 +674,41 @@ export const digitalCourse: DigitalCourse = {
   ],
 };
 
-/** Objection yang khas produk digital — bukan salinan FAQ program offline. */
+/** Angka turunan — dihitung, bukan diketik, supaya tidak pernah meleset. */
+const allLessons = courseModules.flatMap((m) => m.lessons);
+const totalSeconds = allLessons.reduce((sum, l) => {
+  const [min, sec] = l.duration.split(':').map(Number);
+  return sum + min * 60 + sec;
+}, 0);
+
+export const courseStats = {
+  modules: courseModules.length,
+  lessons: allLessons.length,
+  freeLessons: allLessons.filter((l) => l.free).length,
+  completed: allLessons.filter((l) => l.done).length,
+  totalDuration: `${Math.floor(totalSeconds / 3600)} jam ${Math.round((totalSeconds % 3600) / 60)} menit`,
+};
+
 export const digitalFaqs: FaqItem[] = [
   {
     question: 'Berapa lama saya bisa mengakses materinya?',
-    answer: 'PLACEHOLDER — tentukan masa akses sebelum publikasi. Ini keberatan nomor satu pada kelas online.',
+    answer: 'Selamanya. Sekali membeli, kamu bisa memutar ulang seluruh materi kapan saja, termasuk pembaruan yang kami tambahkan nanti.',
   },
   {
     question: 'Apakah bisa ditonton dari HP?',
-    answer: 'PLACEHOLDER — konfirmasi dukungan perangkat dan apakah materi bisa diunduh untuk ditonton offline.',
+    answer: 'Bisa. Seluruh materi dirancang untuk layar kecil dan dapat diakses dari HP, tablet, maupun laptop lewat browser.',
   },
   {
     question: 'Apakah dapat sertifikat?',
-    answer: 'PLACEHOLDER — jelaskan jenis sertifikatnya, dan tegaskan bedanya dengan sertifikat program offline.',
+    answer: 'Ya, sertifikat penyelesaian kelas online diberikan setelah seluruh modul selesai. Ini berbeda dengan sertifikat kelulusan program offline yang mencakup praktik, OJT, dan assessment kompetensi.',
   },
   {
     question: 'Bisakah saya bertanya kalau ada yang tidak dipahami?',
-    answer: 'PLACEHOLDER — tentukan kanalnya (grup, kolom komentar, sesi live) dan waktu responsnya.',
+    answer: 'Bisa. Peserta kelas online mendapat akses ke grup tanya jawab yang didampingi trainer.',
   },
   {
     question: 'Bagaimana kalau materinya tidak sesuai harapan?',
-    answer: 'PLACEHOLDER — putuskan kebijakan refund. Garansi uang kembali menaikkan konversi produk low-ticket secara signifikan.',
+    answer: 'Ada garansi 7 hari uang kembali. Kalau menurutmu materinya tidak sesuai, uangmu kembali penuh tanpa perlu alasan panjang.',
   },
   {
     question: 'Apa bedanya dengan program offline Pitcar Academy?',

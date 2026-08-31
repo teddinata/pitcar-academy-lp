@@ -61,10 +61,37 @@ menyentuh produk digital, jadi "isinya seperti apa" adalah pertanyaan nomor
 satu. Slot preview di hero harus diisi rekaman layar pelajaran asli, bukan
 ilustrasi.
 
+## Dashboard siswa
+
+Prototipe area belajar ada di `/kelas` (dashboard) dan `/kelas/[slug]`
+(pemutar pelajaran) — 27 halaman pelajaran ter-generate dari satu sumber data.
+
+App shell-nya terpisah dari halaman marketing: `CourseLayout` tidak membawa
+bar promo maupun CTA konsultasi, karena orang yang sudah membeli tidak perlu
+dijual lagi. Yang dibawanya: progres, toggle tema, dan identitas peserta.
+
+Dashboard menaruh satu aksi di paling atas — *lanjutkan belajar*, menunjuk ke
+pelajaran pertama yang belum selesai, bukan pelajaran pertama. Itu satu-satunya
+hal yang dibutuhkan orang yang kembali.
+
+Halaman pelajaran menahan daftar materi tetap terlihat di sisi kanan dan
+menggulirkannya ke pelajaran yang sedang dibuka, supaya peserta di modul lima
+tidak membuka halaman dan melihat modul satu.
+
+Angka progres, durasi total, dan jumlah pelajaran **dihitung dari data**, bukan
+diketik — jadi tidak bisa meleset saat materi bertambah.
+
+Semua halaman area belajar `noindex`. Belum ada autentikasi: peserta
+di-hardcode dan progres hanya bertahan di memori halaman. Itu yang membedakan
+prototipe ini dari LMS sungguhan.
+
 ## Yang masih placeholder
 
-Semua angka: harga, durasi, jumlah pelajaran, isi modul. Seluruh jawaban FAQ
-diawali `PLACEHOLDER` dan menyebut keputusan apa yang perlu diambil.
+Isi kurikulum sudah realistis (6 modul, 27 pelajaran, 5 jam 18 menit, dengan
+*Diagnosis dengan scanner* sebagai modul inti), tetapi **materinya belum ada**.
+Setiap slot video masih kosong dan deskripsi pelajaran masih generik.
+
+Harga Rp99.000 dari Rp249.000, empat pelajaran pertama gratis.
 
 Tombol beli sengaja `disabled`: payment gateway berada di luar scope saat ini
 (lihat PRD). Halaman tidak boleh dipublikasikan dengan tombol yang tidak

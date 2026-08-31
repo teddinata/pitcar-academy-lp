@@ -1,0 +1,151 @@
+---
+import CourseLayout from '../../layouts/CourseLayout.astro';
+import { courseModules } from '../../content.config';
+
+export function getStaticPaths() {
+  const flat = courseModules.flatMap((m, mi) =>
+    m.lessons.map((l, li) => ({ ...l, moduleIndex: mi, moduleTitle: m.title, lessonIndex: li })),
+  );
+
+  return flat.map((lesson, i) => ({
+    params: { slug: lesson.slug },
+    props: {
+      lesson,
+      previous: flat[i - 1] ?? null,
+      next: flat[i + 1] ?? null,
+      position: i + 1,
+      total: flat.length,
+    },
+  }));
+}
+
+const { lesson, previous, next, position, total } = Astro.props;
+---
+
+<CourseLayout title={lesson.title}>
+  <div class="shell py-8 md:py-12">
+    <div class="grid gap-10 lg:grid-cols-12 lg:gap-12">
+      <!-- Player and lesson body -->
+      <article class="lg:col-span-8">
+        <nav class="text-sm text-muted" aria-label="Posisi pelajaran">
+          <a class="inline-flex min-h-11 items-center transition-colors hover:text-body" href="/kelas/">Dashboard</a>
+          <span aria-hidden="true"> / </span>
+          <span>Modul {lesson.moduleIndex + 1} — {lesson.moduleTitle}</span>
+        </nav>
+
+        <!-- Video slot. Replace with the real player once material exists. -->
+        <div
+          class="mt-4 flex aspect-video w-full flex-col items-center justify-center gap-3 border border-line bg-ground-alt"
+          role="img"
+          aria-label={`Video "${lesson.title}" belum tersedia di prototipe ini`}
+        >
+          <svg aria-hidden="true" class="h-14 w-14 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m10 9 5 3-5 3z"></path></svg>
+          <span class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Video menyusul · {lesson.duration}</span>
+        </div>
+
+        <p class="mt-6 text-sm text-muted">Pelajaran {position} dari {total} · {lesson.duration}</p>
+        <h1 class="display-2 mt-2">{lesson.title}</h1>
+
+        <div class="mt-6 max-w-prose space-y-4 leading-relaxed text-muted">
+          <p>
+            Deskripsi pelajaran menyusul. Bagian ini akan berisi ringkasan materi, poin penting
+            yang perlu diingat, dan istilah baru yang muncul di video.
+          </p>
+          <p>
+            Untuk pelajaran praktik seperti scanning diagnosis, bagian ini juga memuat langkah
+            kerja yang bisa diikuti sambil menonton.
+          </p>
+        </div>
+
+        <div class="mt-8 border-y border-line py-5">
+          <h2 class="text-xs font-bold uppercase tracking-[0.14em] text-muted">Materi pendukung</h2>
+          <ul class="mt-3 space-y-2 text-sm">
+            <li><a class="inline-flex min-h-11 items-center gap-2 text-accent transition-colors hover:text-body" href="#">Ringkasan pelajaran (PDF)</a></li>
+            <li><a class="inline-flex min-h-11 items-center gap-2 text-accent transition-colors hover:text-body" href="#">Checklist langkah kerja (PDF)</a></li>
+          </ul>
+        </div>
+
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <button type="button" data-complete class="btn btn-primary" aria-pressed={Boolean(lesson.done)}>
+            {lesson.done ? 'Sudah selesai' : 'Tandai selesai'}
+          </button>
+          {next && (
+            <a href={`/kelas/${next.slug}/`} class="btn btn-ghost">
+              Pelajaran berikutnya
+              <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </a>
+          )}
+        </div>
+
+        <nav class="mt-10 grid gap-4 border-t border-line pt-6 sm:grid-cols-2" aria-label="Navigasi pelajaran">
+          {previous ? (
+            <a href={`/kelas/${previous.slug}/`} class="group flex min-h-11 flex-col py-2">
+              <span class="text-xs uppercase tracking-wider text-muted">Sebelumnya</span>
+              <span class="mt-1 font-semibold transition-colors group-hover:text-accent">{previous.title}</span>
+            </a>
+          ) : <span></span>}
+          {next && (
+            <a href={`/kelas/${next.slug}/`} class="group flex min-h-11 flex-col py-2 sm:text-right">
+              <span class="text-xs uppercase tracking-wider text-muted">Berikutnya</span>
+              <span class="mt-1 font-semibold transition-colors group-hover:text-accent">{next.title}</span>
+            </a>
+          )}
+        </nav>
+      </article>
+
+      <!-- Course outline stays visible so a student never loses their place -->
+      <aside class="lg:col-span-4">
+        <div class="lg:sticky lg:top-24">
+          <h2 class="text-xs font-bold uppercase tracking-[0.14em] text-muted">Daftar materi</h2>
+          <div class="mt-4 max-h-[70vh] overflow-y-auto border border-line">
+            {courseModules.map((m, mi) => (
+              <div class="border-b border-line last:border-b-0">
+                <p class="bg-ground-alt px-4 py-3 text-xs font-bold uppercase tracking-wider text-muted">
+                  {String(mi + 1).padStart(2, '0')} · {m.title}
+                </p>
+                <ul>
+                  {m.lessons.map((l) => (
+                    <li>
+                      <a
+                        href={`/kelas/${l.slug}/`}
+                        aria-current={l.slug === lesson.slug ? 'page' : undefined}
+                        class:list={[
+                          'flex min-h-11 items-center gap-2.5 px-4 py-2.5 text-sm transition-colors hover:bg-ground-alt',
+                          l.slug === lesson.slug ? 'border-l-2 border-accent-fill bg-ground-alt font-semibold' : '',
+                        ]}
+                      >
+                        {l.done
+                          ? <svg aria-hidden="true" class="h-4 w-4 shrink-0 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                          : <span class="h-4 w-4 shrink-0 rounded-full border-2 border-line" aria-hidden="true"></span>}
+                        <span class="min-w-0 flex-1">{l.title}</span>
+                        <span class="shrink-0 tabular-nums text-xs text-muted">{l.duration}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</CourseLayout>
+
+<script>
+  // The outline scrolls, so bring the current lesson into view — otherwise a
+  // student deep in the course opens a page and sees module one.
+  const current = document.querySelector<HTMLElement>('[aria-current="page"]');
+  const scroller = current?.closest<HTMLElement>('.overflow-y-auto');
+  if (current && scroller) {
+    scroller.scrollTop = current.offsetTop - scroller.offsetTop - scroller.clientHeight / 3;
+  }
+
+  // Prototype only: progress lives in the browser until there are real accounts.
+  const button = document.querySelector<HTMLButtonElement>('[data-complete]');
+  button?.addEventListener('click', () => {
+    const done = button.getAttribute('aria-pressed') !== 'true';
+    button.setAttribute('aria-pressed', String(done));
+    button.textContent = done ? 'Sudah selesai' : 'Tandai selesai';
+  });
+</script>
