@@ -251,6 +251,26 @@ export const faqs: FaqItem[] = [
    ========================================================================== */
 
 /**
+ * Public contact details shown in the footer.
+ *
+ * These are meant to be read by visitors, so they live in content rather than
+ * in env — unlike `PUBLIC_EDUCATION_CONSULTANT_WHATSAPP`, which decides where
+ * a captured lead is routed and stays configurable per environment.
+ *
+ * Coordinates and the place name were taken from the Maps link itself, not
+ * assumed. No street address is listed because none has been confirmed.
+ */
+export const contact = {
+  whatsappDisplay: '+62 851-9095-0381',
+  whatsappNumber: '6285190950381',
+  placeName: 'PITCAR Service — Spesialis Tune Up, AC & Emergency',
+  mapsUrl: 'https://maps.app.goo.gl/32a5XVu1S4MGKT3X6',
+  latitude: -7.4358518,
+  longitude: 109.2542999,
+  website: 'https://pitcar.co.id',
+};
+
+/**
  * Announcement bar.
  *
  * Urgency here is quota-based on purpose. A date ("harga naik di September")

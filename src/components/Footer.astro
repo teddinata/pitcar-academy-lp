@@ -1,7 +1,8 @@
 ---
+import { contact } from '../content.config';
+
 const homePrefix = Astro.url.pathname === '/' ? '' : '/';
 const consultationHref = `${homePrefix}#konsultasi`;
-const whatsappDisplay = import.meta.env.PUBLIC_EDUCATION_CONSULTANT_WHATSAPP_DISPLAY;
 const year = new Date().getFullYear();
 
 const links = [
@@ -16,7 +17,7 @@ const links = [
   <div class="shell py-16 md:py-20">
     <div class="grid gap-12 md:grid-cols-12 md:gap-8">
       <div class="md:col-span-6">
-        <p class="font-display text-2xl font-bold leading-none">
+        <p class="flex items-center gap-1.5 font-display text-2xl font-bold leading-none">
           <span class="text-body">PITCAR</span><span class="text-accent">ACADEMY</span>
         </p>
         <p class="lead mt-5 max-w-prose text-muted">
@@ -33,7 +34,7 @@ const links = [
         <ul class="mt-5 space-y-3">
           {links.map((link) => (
             <li>
-              <a class="text-muted transition-colors hover:text-body" href={link.href}>{link.label}</a>
+              <a class="inline-flex min-h-11 items-center text-muted transition-colors hover:text-body" href={link.href}>{link.label}</a>
             </li>
           ))}
         </ul>
@@ -41,11 +42,37 @@ const links = [
 
       <div class="md:col-span-3">
         <h2 class="text-xs font-bold uppercase tracking-[0.14em] text-muted">Kontak</h2>
-        <ul class="mt-5 space-y-3 text-muted">
-          {whatsappDisplay && <li>WhatsApp {whatsappDisplay}</li>}
+        <ul class="mt-5 space-y-4 text-muted">
           <li>
-            <a class="transition-colors hover:text-body" href="https://pitcar.co.id" rel="noopener noreferrer" target="_blank">
-              pitcar.co.id
+            {/* Tagged so analytics can show how many people reach WhatsApp
+                without going through the form. */}
+            <a
+              class="inline-flex min-h-11 items-center gap-2.5 py-1 transition-colors hover:text-body"
+              href={`https://wa.me/${contact.whatsappNumber}`}
+              data-lead-whatsapp
+              data-source-cta="footer_whatsapp"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <svg aria-hidden="true" class="mt-0.5 h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path></svg>
+              <span>WhatsApp {contact.whatsappDisplay}</span>
+            </a>
+          </li>
+          <li>
+            <a
+              class="inline-flex min-h-11 items-center gap-2.5 py-1 transition-colors hover:text-body"
+              href={contact.mapsUrl}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <svg aria-hidden="true" class="mt-0.5 h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              <span>Lokasi PITCAR Service <span class="block text-xs">Buka di Google Maps</span></span>
+            </a>
+          </li>
+          <li>
+            <a class="inline-flex min-h-11 items-center gap-2.5 py-1 transition-colors hover:text-body" href={contact.website} rel="noopener noreferrer" target="_blank">
+              <svg aria-hidden="true" class="mt-0.5 h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"></path></svg>
+              <span>pitcar.co.id</span>
             </a>
           </li>
         </ul>

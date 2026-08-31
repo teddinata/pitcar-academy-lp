@@ -1,4 +1,6 @@
 ---
+import { contact } from '../content.config';
+
 // SEO Head Component — Reusable for all pages
 interface Props {
   title: string;
@@ -42,6 +44,20 @@ const schemas = [
       'Program pelatihan mekanik profesional dengan kurikulum terstruktur, praktik intensif, dan pengalaman di lingkungan bengkel PITCAR.',
     url: siteUrl.href,
     image: fullImage.href,
+    telephone: `+${contact.whatsappNumber}`,
+    sameAs: [contact.website],
+    // Coordinates come from the Maps link itself. No streetAddress is claimed
+    // because none has been confirmed — a wrong address is worse than none.
+    location: {
+      '@type': 'Place',
+      name: contact.placeName,
+      hasMap: contact.mapsUrl,
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: contact.latitude,
+        longitude: contact.longitude,
+      },
+    },
   },
   ...structuredData,
 ];

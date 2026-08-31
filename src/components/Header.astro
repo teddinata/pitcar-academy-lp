@@ -35,7 +35,7 @@ const consultationHref = `${homePrefix}#konsultasi`;
 
   <div id="site-nav" class="border-b border-line bg-ground transition-shadow duration-200">
     <nav class="shell flex h-16 items-center justify-between gap-6 md:h-20" aria-label="Navigasi utama">
-      <a href={homePrefix || '/'} class="flex items-baseline gap-1.5 font-display text-xl font-bold leading-none tracking-tight md:text-2xl">
+      <a href={homePrefix || '/'} class="flex min-h-11 items-center gap-1.5 font-display text-xl font-bold leading-none tracking-tight md:text-2xl">
         <span class="text-body">PITCAR</span><span class="text-accent">ACADEMY</span>
       </a>
 
@@ -43,7 +43,7 @@ const consultationHref = `${homePrefix}#konsultasi`;
         {navLinks.map((link) => (
           <a
             href={link.href}
-            class="text-sm font-semibold text-body/80 transition-colors hover:text-body"
+            class="inline-flex items-center py-2 text-sm font-semibold text-body/80 transition-colors hover:text-body"
           >
             {link.label}
           </a>
