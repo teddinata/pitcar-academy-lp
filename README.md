@@ -53,7 +53,7 @@ npm run preview    # Preview build locally
 
 Edit `src/content.config.ts` untuk mengubah semua konten tanpa menyentuh kode:
 
-- **Nomor WhatsApp**: Ubah `whatsappConfig.phoneNumber`
+- **Nomor WhatsApp**: Set `WA_PHONE_NUMBER` di file `.env` (format `62XXXXXXXXXX`)
 - **Paket Belajar**: Edit array `packages[]`
 - **Keunggulan**: Edit array `advantages[]`
 - **FAQ**: Edit array `faqs[]`
