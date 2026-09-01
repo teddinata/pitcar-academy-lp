@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -40,7 +41,7 @@ class LeadCsvExporter
                 foreach ($leads as $lead) {
                     fputcsv($handle, [
                         $lead->lead_code,
-                        $lead->created_at?->toDateTimeString(),
+                        self::localTime($lead->created_at),
                         $lead->name,
                         $includeNumbers ? $lead->whatsapp_normalized : self::maskNumber($lead->whatsapp_normalized),
                         $lead->domicile,
@@ -55,9 +56,9 @@ class LeadCsvExporter
                         $lead->qualification,
                         $lead->status,
                         $lead->consultant?->name,
-                        $lead->follow_up_due_at?->toDateTimeString(),
-                        $lead->first_contacted_at?->toDateTimeString(),
-                        $lead->converted_at?->toDateTimeString(),
+                        self::localTime($lead->follow_up_due_at),
+                        self::localTime($lead->first_contacted_at),
+                        self::localTime($lead->converted_at),
                         $lead->lost_reason,
                         $lead->source_cta,
                         $lead->utm_source,
@@ -67,7 +68,7 @@ class LeadCsvExporter
                         $lead->utm_term,
                         $lead->landing_page,
                         $lead->referrer,
-                        $lead->consent_at?->toDateTimeString(),
+                        self::localTime($lead->consent_at),
                         $lead->submission_count,
                     ]);
                 }
@@ -77,6 +78,15 @@ class LeadCsvExporter
         }, $filename, [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
+    }
+
+    /**
+     * Spreadsheets carry no timezone, so the column has to already be in the
+     * reader's own time. Anything else is read as local and quietly wrong.
+     */
+    private static function localTime(?CarbonInterface $moment): ?string
+    {
+        return $moment?->timezone(config('app.display_timezone'))->toDateTimeString();
     }
 
     private static function maskNumber(?string $number): string

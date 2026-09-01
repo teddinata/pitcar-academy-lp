@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Lead;
 use App\Support\WhatsAppNumber;
+use Filament\Support\Facades\FilamentTimezone;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,6 +20,11 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Stored UTC, read in WIB. Without this the panel shows sales a time
+        // seven hours behind the one on their own clock, which makes every
+        // follow-up SLA look wrong.
+        FilamentTimezone::set(config('app.display_timezone'));
+
         $this->configureLeadRateLimiting();
     }
 
