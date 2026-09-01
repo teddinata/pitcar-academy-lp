@@ -60,19 +60,40 @@ GRANT ALL PRIVILEGES ON pitcar_academy.* TO 'pitcar'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-## 3. Ambil kode
+## 3. Kode dan pemisahan document root
 
-Backend berada di dalam repo frontend, jadi yang di-clone tetap satu repo dan
-document root diarahkan ke `backend/public`.
+Repo sudah ada di server, di `/var/www/pitcar-academy-lp`. Backend tinggal
+dipasang dependensinya:
 
 ```bash
-sudo mkdir -p /var/www/pitcar && sudo chown $USER /var/www/pitcar
-git clone <url-repo> /var/www/pitcar
-cd /var/www/pitcar/backend
+cd /var/www/pitcar-academy-lp/backend
 composer install --no-dev --optimize-autoloader
 ```
 
 `--no-dev` penting: tanpa itu Pint, PHPUnit, dan Faker ikut terpasang di server.
+
+### Periksa dulu document root frontend
+
+Satu direktori kini memuat dua hal: file statis landing page di `dist/`, dan
+seluruh source code termasuk `backend/.env` yang sebentar lagi berisi password
+database.
+
+```bash
+grep -rn "root .*pitcar-academy-lp" /etc/nginx/sites-enabled/
+```
+
+Yang benar hanya ini:
+
+```nginx
+root /var/www/pitcar-academy-lp/dist;
+```
+
+Kalau tertulis `root /var/www/pitcar-academy-lp;` tanpa `/dist`, **perbaiki
+sebelum membuat `.env`**. Tanpa `/dist`, seluruh isi repo dapat diunduh siapa
+pun — `backend/.env`, `.git/`, source code — cukup dengan menebak nama file.
+
+Aturan `location ~ /\. { deny all; }` di blok frontend menutup `.env` dan
+`.git`, tapi itu jaring pengaman, bukan pengganti document root yang benar.
 
 ## 4. Environment
 
@@ -98,10 +119,18 @@ DB_PASSWORD=<password kuat>
 # Hanya origin yang benar-benar memanggil API. Tanpa localhost di produksi.
 LEAD_ALLOWED_ORIGINS=https://academy.pitcar.co.id
 
-LEAD_FALLBACK_CONSULTANT_WHATSAPP=6285190950381
+LEAD_FALLBACK_CONSULTANT_WHATSAPP=6285742228865
 LEAD_SCORING_VERSION=2026-03
 LEAD_RATE_LIMIT_PER_IP=10
 LEAD_RATE_LIMIT_PER_WHATSAPP=3
+
+# Webhook Cekat AI. Dipanggil dari job setelah lead tersimpan, bukan dari
+# browser — jadi tidak ada preflight dan tidak ada URL yang bocor ke bundle.
+LEAD_WEBHOOK_URL=https://workflows.cekat.ai/webhook-test/wa-academy
+
+# Queue wajib database. Dengan `sync`, job berjalan di dalam request dan
+# webhook yang lambat ikut memperlambat balasan ke pengunjung.
+QUEUE_CONNECTION=database
 
 # Kosongkan sampai kebijakan privasi diputuskan; command retensi jadi no-op.
 LEAD_RETENTION_DAYS=
@@ -131,10 +160,10 @@ Tabel yang kosong berarti semua lead jatuh ke nomor fallback.
 ## 6. Izin file
 
 ```bash
-sudo chown -R www-data:www-data /var/www/pitcar/backend/storage \
-                                /var/www/pitcar/backend/bootstrap/cache
-sudo chmod -R 775 /var/www/pitcar/backend/storage \
-                  /var/www/pitcar/backend/bootstrap/cache
+sudo chown -R www-data:www-data /var/www/pitcar-academy-lp/backend/storage \
+                                /var/www/pitcar-academy-lp/backend/bootstrap/cache
+sudo chmod -R 775 /var/www/pitcar-academy-lp/backend/storage \
+                  /var/www/pitcar-academy-lp/backend/bootstrap/cache
 ```
 
 ## 7. nginx
@@ -143,7 +172,7 @@ sudo chmod -R 775 /var/www/pitcar/backend/storage \
 server {
     listen 80;
     server_name api-academy.pitcar.co.id;
-    root /var/www/pitcar/backend/public;
+    root /var/www/pitcar-academy-lp/backend/public;
 
     index index.php;
     charset utf-8;
@@ -194,7 +223,7 @@ After=network.target
 User=www-data
 Restart=always
 RestartSec=5
-WorkingDirectory=/var/www/pitcar/backend
+WorkingDirectory=/var/www/pitcar-academy-lp/backend
 ExecStart=/usr/bin/php artisan queue:work --sleep=3 --tries=3 --max-time=3600
 
 [Install]
@@ -213,7 +242,7 @@ sudo crontab -u www-data -e
 ```
 
 ```cron
-* * * * * cd /var/www/pitcar/backend && php artisan schedule:run >> /dev/null 2>&1
+* * * * * cd /var/www/pitcar-academy-lp/backend && php artisan schedule:run >> /dev/null 2>&1
 ```
 
 Belum ada tugas terjadwal yang aktif. Ini disiapkan untuk
@@ -232,12 +261,14 @@ Ulangi setiap kali `.env` berubah — nilai lama akan tetap terpakai kalau tidak
 
 ## 11. Sambungkan frontend
 
-Di build environment landing page:
+Landing page dibangun oleh GitHub Actions, jadi nilainya masuk sebagai
+**repository secret** (Settings → Secrets and variables → Actions), bukan file
+`.env` di server — server hanya menerima hasil build:
 
 ```dotenv
 PUBLIC_LEAD_API_BASE_URL=https://api-academy.pitcar.co.id
-PUBLIC_EDUCATION_CONSULTANT_WHATSAPP=6285190950381
-PUBLIC_GA_ID=G-XXXXXXXXXX
+PUBLIC_EDUCATION_CONSULTANT_WHATSAPP=6285742228865
+PUBLIC_GA_ID=G-FNT01JRZN7
 SITE_URL=https://academy.pitcar.co.id
 ```
 
@@ -320,7 +351,7 @@ sebelum lead pertama masuk.
 ## Deploy berikutnya
 
 ```bash
-cd /var/www/pitcar
+cd /var/www/pitcar-academy-lp
 git pull
 cd backend
 composer install --no-dev --optimize-autoloader
