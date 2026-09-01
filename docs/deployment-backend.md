@@ -39,6 +39,14 @@ sebelum meminta sertifikat SSL.
 ## 2. Server
 
 Butuh PHP **8.3+** (Laravel 13), Composer, nginx, dan sebuah database.
+Periksa dulu apa yang sudah ada — server ini juga menjalankan aplikasi lain:
+
+```bash
+php -v
+systemctl is-active mysql mariadb postgresql
+```
+
+Kalau PHP belum ada, ganti `8.3` di bawah dengan versi yang kamu pasang:
 
 ```bash
 sudo apt update
@@ -46,6 +54,13 @@ sudo apt install -y nginx php8.3-fpm php8.3-cli php8.3-mbstring php8.3-xml \
   php8.3-curl php8.3-zip php8.3-intl php8.3-mysql unzip git
 curl -sS https://getcomposer.org/installer | php
 sudo mv composer.phar /usr/local/bin/composer
+```
+
+**Versi PHP menentukan path socket FPM di konfigurasi nginx nanti.** Jangan
+menebak — baca dari sistem:
+
+```bash
+ls /run/php/
 ```
 
 **Pakai MySQL atau PostgreSQL, bukan SQLite.** Lokal memakai SQLite karena
@@ -188,7 +203,8 @@ server {
     }
 
     location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+        # Samakan dengan hasil `ls /run/php/`.
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         include fastcgi_params;
     }
