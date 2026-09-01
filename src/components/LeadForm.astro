@@ -390,8 +390,14 @@ const readiness = [
           showStatus('Ringkasan konsultasi siap. Mengarahkan ke WhatsApp…', 'success');
           trackEvent('lead_submit_success', payload, { lead_code: null });
           window.gtag?.('event', 'generate_lead', { ...getAnalyticsContext(payload), lead_code: null });
-          trackEvent('whatsapp_open', payload, { lead_code: null });
-          window.setTimeout(() => window.location.assign(directUrl), 350);
+          trackEvent('whatsapp_click', payload, { lead_code: null });
+          // Navigate when the event is delivered rather than after a guessed
+          // delay: faster when analytics answers, safe when it does not.
+          window.trackFunnelEventThen?.(
+            'whatsapp_open',
+            { ...getAnalyticsContext(payload), lead_code: null },
+            directUrl,
+          ) ?? window.setTimeout(() => window.location.assign(directUrl), 350);
         } else {
           persistPending(payload);
           showStatus('Nomor Education Consultant belum dikonfigurasi. Salin ringkasan di bawah lalu kirimkan ke tim Pitcar Academy.', 'warning');
@@ -418,11 +424,18 @@ const readiness = [
         });
         const url = resolveWhatsAppUrl(payload, latestResponse, { storage: storageMode });
         if (url) {
-          trackEvent('whatsapp_open', payload, {
+          const context = {
+            ...getAnalyticsContext(payload),
+            lead_code: latestResponse.lead_code,
+            qualification: latestResponse.qualification,
+          };
+          // Legacy name kept so an existing GA4 conversion keeps firing.
+          trackEvent('whatsapp_click', payload, {
             lead_code: latestResponse.lead_code,
             qualification: latestResponse.qualification,
           });
-          window.setTimeout(() => window.location.assign(url), 350);
+          window.trackFunnelEventThen?.('whatsapp_open', context, url)
+            ?? window.setTimeout(() => window.location.assign(url), 350);
         } else {
           showStatus(`Data tersimpan dengan kode ${latestResponse.lead_code}. Tautan WhatsApp belum dikonfigurasi; salin ringkasan untuk melanjutkan secara manual.`, 'warning');
           pendingPayload = payload;

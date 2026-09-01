@@ -7,6 +7,15 @@ const { id } = Astro.props;
 ---
 
 {id && (
+  <>
+    {/* The tag loads on idle, so the handshake would otherwise sit on the
+        critical path the moment it does. Warming it costs a connection. */}
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+  </>
+)}
+
+{id && (
   <script is:inline define:vars={{ id }}>
     (() => {
       let loaded = false;

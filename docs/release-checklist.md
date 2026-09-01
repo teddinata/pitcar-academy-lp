@@ -61,6 +61,27 @@ PUBLIC_GA_ID=
 
 ## Analytics
 
+**Measurement ID produksi: `G-FNT01JRZN7`.** Ini properti GA4 yang sudah
+berjalan di `academy.pitcar.co.id` — diambil dari situs live, bukan dibuat
+baru. Mengganti ID memutus riwayat, bukan memindahkannya. Nilainya ada di
+`.env.example` karena ID GA memang tampil di source halaman; ia bukan rahasia,
+dan yang berisiko justru kehilangannya.
+
+**Event `whatsapp_click` dipertahankan.** Situs lama hanya melacak satu event
+kustom dengan nama itu. Kalau di GA4 sudah ada konversi atau laporan yang
+dibangun di atasnya, mengganti nama akan memutusnya diam-diam. Sekarang
+`whatsapp_open` (funnel baru) dan `whatsapp_click` (nama lama) sama-sama
+dikirim.
+
+> **Tandai hanya SATU sebagai conversion di GA4**, atau setiap hand-off ke
+> WhatsApp terhitung dua kali. Setelah laporan dipindahkan ke `whatsapp_open`,
+> alias lama bisa dihapus dari `FunnelAnalytics.astro`.
+
+Biaya GA terukur: LCP naik dari 2,0s ke 3,1s tanpa `preconnect`, kembali ke
+2,0s setelah ditambahkan. Skor performa mobile turun dari 99 (tanpa GA) ke
+sekitar 98 dengan GA, dan best practices ke 79 karena cookie pihak ketiga —
+biaya itu melekat pada GA dan sudah ada di situs lama juga.
+
 - Tandai seluruh delapan event funnel sebagai custom events di GA4 bila diperlukan.
 - Daftarkan custom dimensions untuk `source_cta`, `program_interest`, UTM, `lead_code`, dan `qualification` sesuai kebijakan data.
 - Gunakan DebugView/Tag Assistant untuk memastikan urutan event dari CTA sampai `whatsapp_open`.

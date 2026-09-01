@@ -1,5 +1,7 @@
 <script>
-  type FunnelEventParams = Record<string, string | number | boolean | null | undefined>;
+  // `unknown` because gtag also accepts event_callback (a function) and
+  // event_timeout alongside the plain analytics dimensions.
+  type FunnelEventParams = Record<string, unknown>;
   type LeadAttributionSnapshot = {
     landing_page: string;
     referrer: string | null;
@@ -62,6 +64,22 @@
     );
   }
 
+  /**
+   * Sends an event, then navigates as soon as gtag confirms delivery — or
+   * after `timeout` if it never does. The live site already works this way.
+   * A fixed delay either loses the event or wastes time; this does neither.
+   */
+  window.trackFunnelEventThen = (eventName, params, url, timeout = 1200) => {
+    let navigated = false;
+    const go = () => {
+      if (navigated) return;
+      navigated = true;
+      window.location.assign(url);
+    };
+    window.setTimeout(go, timeout);
+    window.trackFunnelEvent?.(eventName, { ...params, event_callback: go, event_timeout: timeout });
+  };
+
   window.trackFunnelEvent = (eventName, params = {}) => {
     window.dataLayer = window.dataLayer || [];
     if (!window.gtag) {
@@ -102,6 +120,10 @@
 
     if (element.matches('[data-lead-whatsapp]')) {
       window.trackFunnelEvent?.('whatsapp_open', params);
+      // The live site fires `whatsapp_click`. Kept so any GA4 conversion or
+      // report already built on that name keeps working. Mark only ONE of the
+      // two as a conversion, or every WhatsApp hand-off counts twice.
+      window.trackFunnelEvent?.('whatsapp_click', params);
       return;
     }
 

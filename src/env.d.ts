@@ -16,7 +16,14 @@ interface Window {
   gtag?: (...args: unknown[]) => void;
   trackFunnelEvent?: (
     eventName: string,
-    params?: Record<string, string | number | boolean | null | undefined>,
+    params?: Record<string, unknown>,
+  ) => void;
+  /** Fires an event, then navigates once it is delivered or the timeout lapses. */
+  trackFunnelEventThen?: (
+    eventName: string,
+    params: Record<string, unknown>,
+    url: string,
+    timeout?: number,
   ) => void;
   getLeadAttribution?: () => {
     landing_page: string;
