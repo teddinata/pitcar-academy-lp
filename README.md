@@ -227,6 +227,8 @@ jobs:
 Dashboard lead untuk tim sales **tidak ada di sini**. Ia bagian dari backend
 Laravel — lihat tabel di bawah.
 
+Panduan deploy backend: [docs/deployment-backend.md](docs/deployment-backend.md).
+
 ## 🔐 Dua panel yang berbeda
 
 | Panel | Untuk siapa | URL |
