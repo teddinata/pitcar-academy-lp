@@ -225,6 +225,29 @@ sudo nginx -t && sudo systemctl reload nginx
 sudo certbot --nginx -d api-academy.pitcar.co.id
 ```
 
+### Kalau domainnya di belakang Cloudflare
+
+Periksa dulu — kalau `getent hosts api-academy.pitcar.co.id` mengembalikan
+alamat Cloudflare (`104.16.x.x`, `172.64.x.x`, `2606:4700::/32`) dan bukan IP
+server, TLS diterminasi di Cloudflare.
+
+**Jangan jalankan certbot.** Origin cukup melayani HTTP di port 80, sama seperti
+frontend. Tantangan HTTP-01 lewat proxy bisa gagal, dan sertifikatnya pun tidak
+akan dipakai siapa pun.
+
+Yang wajib ada gantinya: aplikasi harus mempercayai proxy itu. Sudah
+dikonfigurasi di `bootstrap/app.php` lewat `CloudflareProxies::all()`.
+Tanpa itu dua hal rusak diam-diam:
+
+- Semua pengunjung terlihat sebagai satu alamat Cloudflare, jadi
+  `LEAD_RATE_LIMIT_PER_IP` berlaku global — pengunjung sah saling memblokir
+- Skema terbaca `http`, jadi Filament menyisipkan URL `http://` ke halaman
+  `https://` dan login bisa redirect-loop
+
+Daftar rentangnya sengaja eksplisit, bukan `*`: IP origin tetap bisa dihubungi
+langsung, dan `*` akan membuat `X-Forwarded-For` palsu cukup untuk melewati
+rate limit. Diuji di `tests/Feature/TrustedProxyTest.php`.
+
 ## 8. Queue worker — wajib
 
 `QUEUE_CONNECTION=database` dan `NotifyNewLead` adalah job. **Tanpa worker,

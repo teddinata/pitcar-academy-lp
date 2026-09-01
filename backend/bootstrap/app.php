@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\LimitLeadPayloadSize;
+use App\Support\CloudflareProxies;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -14,6 +15,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Cloudflare terminates TLS and forwards over plain HTTP. Without
+        // this the app misreads two things that matter: every visitor looks
+        // like the same Cloudflare address, collapsing the per-IP lead rate
+        // limit into one shared bucket, and the scheme reads as http, so
+        // Filament builds http:// URLs into an https:// page.
+        $middleware->trustProxies(at: CloudflareProxies::all());
+
         $middleware->api(prepend: [
             LimitLeadPayloadSize::class,
         ]);
