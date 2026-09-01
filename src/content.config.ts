@@ -261,8 +261,8 @@ export const faqs: FaqItem[] = [
  * assumed. No street address is listed because none has been confirmed.
  */
 export const contact = {
-  whatsappDisplay: '+62 851-9095-0381',
-  whatsappNumber: '6285190950381',
+  whatsappDisplay: '+62 857-4222-8865',
+  whatsappNumber: '6285742228865',
   placeName: 'PITCAR Service — Spesialis Tune Up, AC & Emergency',
   mapsUrl: 'https://maps.app.goo.gl/32a5XVu1S4MGKT3X6',
   latitude: -7.4358518,

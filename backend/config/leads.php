@@ -86,6 +86,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Integrasi keluar
+    |--------------------------------------------------------------------------
+    | Webhook Cekat AI yang menjalankan otomasi WhatsApp. Dipanggil dari queue
+    | setelah lead tersimpan, bukan dari browser: lead yang sudah masuk
+    | database tidak boleh hilang hanya karena layanan pihak ketiga sedang
+    | bermasalah, dan URL-nya tidak perlu terlihat di source halaman.
+    */
+
+    'webhook_url' => env('LEAD_WEBHOOK_URL'),
+    'webhook_timeout' => (int) env('LEAD_WEBHOOK_TIMEOUT', 8),
+
+    /*
+    |--------------------------------------------------------------------------
     | Abuse protection
     |--------------------------------------------------------------------------
     | Tune against real traffic after launch. Too tight costs real leads.

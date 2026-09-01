@@ -95,6 +95,20 @@ biaya itu melekat pada GA dan sudah ada di situs lama juga.
 - Periksa LCP element, cache header, Brotli/gzip, TTFB, font loading, lazy loading, dan CLS.
 - Target awal performance mobile minimal 85; target produk tetap 95 bila dapat dicapai tanpa merusak conversion/tracking.
 
+## Integrasi Cekat AI
+
+Webhook `LEAD_WEBHOOK_URL` dipanggil dari backend setelah lead tersimpan,
+bukan dari browser. Dua alasan: lead yang sudah masuk database tidak boleh
+hilang hanya karena layanan pihak ketiga sedang bermasalah, dan URL webhook
+tidak perlu terlihat di source halaman.
+
+Payload memuat `lead_code`, nama, nomor ternormalisasi, kota, program, tujuan,
+kesiapan, skor, kualifikasi, dan atribusi UTM — lebih lengkap daripada form
+lama yang hanya mengirim nama/HP/kota.
+
+Kalau webhook gagal, job dilempar ke queue untuk dicoba ulang dengan backoff.
+Respons API tetap `201` apa pun yang terjadi pada webhook.
+
 ## Keputusan bisnis yang masih diperlukan
 
 - Rule scoring final, threshold qualification, dan alasan score yang perlu terlihat oleh sales.

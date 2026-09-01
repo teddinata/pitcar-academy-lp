@@ -29,7 +29,9 @@ const {
   preloadImage,
   preloadImageMedia = '(min-width: 1024px)',
   structuredData = [],
-  gaId = import.meta.env.PUBLIC_GA_ID,
+  // Defaulted so a build without the variable still reports to the live
+  // property. Losing analytics silently is worse than being hard to change.
+  gaId = import.meta.env.PUBLIC_GA_ID ?? 'G-FNT01JRZN7',
   noindex = false,
 } = Astro.props;
 ---

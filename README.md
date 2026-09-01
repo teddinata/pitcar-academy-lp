@@ -91,6 +91,12 @@ npm run preview    # Preview build locally
 
 Edit `src/content.config.ts` untuk mengubah konten bisnis tanpa menyentuh komponen:
 
+- **Nomor WhatsApp**: secret repo `WA_PHONE_NUMBER` (format `62XXXXXXXXXX`).
+  Workflow deploy memetakannya ke `PUBLIC_EDUCATION_CONSULTANT_WHATSAPP`.
+- **Webhook Cekat AI**: secret `WA_WEBHOOK_URL`. Sekarang dipanggil dari
+  backend Laravel setelah lead tersimpan, bukan dari browser — lihat
+  `docs/deployment-backend.md`.
+- **Google Analytics**: `PUBLIC_GA_ID`, default `G-FNT01JRZN7` di kode.
 - **Paket Belajar**: Edit array `packages[]`
 - **Keunggulan**: Edit array `advantages[]`
 - **FAQ**: Edit array `faqs[]`

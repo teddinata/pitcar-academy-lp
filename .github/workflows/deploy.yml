@@ -6,6 +6,16 @@ on:
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
+    env:
+      # Existing repo secret, mapped to the name the code reads. Kept as-is so
+      # the secret does not have to be re-created.
+      PUBLIC_EDUCATION_CONSULTANT_WHATSAPP: ${{ secrets.WA_PHONE_NUMBER }}
+      # Analytics has a default in code; set here so it is visible in the build.
+      PUBLIC_GA_ID: ${{ secrets.PUBLIC_GA_ID || 'G-FNT01JRZN7' }}
+      SITE_URL: https://academy.pitcar.co.id
+      # Lead API. Empty until the backend is deployed — the form then hands the
+      # summary to WhatsApp directly instead of failing in front of a visitor.
+      PUBLIC_LEAD_API_BASE_URL: ${{ secrets.PUBLIC_LEAD_API_BASE_URL }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -17,6 +27,8 @@ jobs:
           
       - name: Install Dependencies & Build
         run: |
+          test -n "$PUBLIC_EDUCATION_CONSULTANT_WHATSAPP" || (echo "WA_PHONE_NUMBER secret is required" && exit 1)
+          test -n "$PUBLIC_GA_ID" || (echo "PUBLIC_GA_ID resolved empty" && exit 1)
           npm install
           npm run build
           

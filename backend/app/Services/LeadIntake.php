@@ -7,6 +7,8 @@ use App\Models\Lead;
 use App\Models\LeadStatusHistory;
 use App\Support\WhatsAppNumber;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class LeadIntake
 {
@@ -26,8 +28,21 @@ class LeadIntake
 
         // Integrations run after the row is committed. A failing CRM or
         // notification must never cost us a lead that is already saved.
+        //
+        // The try/catch is what makes that unconditional. On a real queue the
+        // dispatch returns immediately and cannot throw, but on the `sync`
+        // driver the job runs inline — and a webhook returning 500 would turn
+        // a stored lead into a 500 response, telling the visitor their data was
+        // lost when it was not.
         if ($result['created']) {
-            NotifyNewLead::dispatch($result['lead']->id);
+            try {
+                NotifyNewLead::dispatch($result['lead']->id);
+            } catch (Throwable $e) {
+                Log::warning('lead.notify_failed', [
+                    'lead_code' => $result['lead']->lead_code,
+                    'error' => $e::class,
+                ]);
+            }
         }
 
         return $result;
