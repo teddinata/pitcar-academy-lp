@@ -211,7 +211,11 @@ server {
 
     # Jangan pernah menyajikan file tersembunyi; .env ada di atas root tapi
     # aturan ini menutup kesalahan konfigurasi di kemudian hari.
-    location ~ /\. { deny all; }
+    #
+    # `(?!well-known)` wajib: tanpa itu certbot tidak bisa menyajikan
+    # tantangan HTTP-01 dari /.well-known/acme-challenge/ dan penerbitan
+    # sertifikat gagal dengan 403 yang membingungkan.
+    location ~ /\.(?!well-known).* { deny all; }
 }
 ```
 
