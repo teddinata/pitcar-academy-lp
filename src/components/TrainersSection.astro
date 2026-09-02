@@ -1,5 +1,16 @@
 ---
 import { trainers } from '../content.config';
+
+/**
+ * Names the school only when the role has not already. "Pengawas Pitcar
+ * Academy di Pitcar Academy" is what a blind template produces, and a screen
+ * reader reads every word of it.
+ */
+function describe(name: string, role: string): string {
+  return role.toLowerCase().includes('pitcar')
+    ? `${name}, ${role}`
+    : `${name}, ${role} di Pitcar Academy`;
+}
 ---
 
 <section class="band border-t border-line" aria-labelledby="trainers-title">
@@ -19,9 +30,9 @@ import { trainers } from '../content.config';
           {trainer.photo ? (
             <img
               src={trainer.photo}
-              alt={`${trainer.name}, ${trainer.role} di Pitcar Academy`}
-              width="600"
-              height="750"
+              alt={describe(trainer.name, trainer.role)}
+              width="800"
+              height="1000"
               loading="lazy"
               decoding="async"
               class="aspect-[4/5] w-full object-cover"

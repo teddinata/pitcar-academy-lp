@@ -401,11 +401,7 @@ export const trainers: Trainer[] = [
   {
     name: 'Roka',
     role: 'Technical Trainer',
-    // Drop the file at public/trainers/roka.webp, then set:
-    //   photo: '/trainers/roka.webp',
-    // Left unset until the file exists — a missing path renders a broken
-    // image on a live page, while the section already degrades to a
-    // "Foto menyusul" placeholder when there is nothing to show.
+    photo: '/trainers/roka.webp',
     credentials: [
       '13 tahun pengalaman di industri otomotif',
       'Praktisi aktif di jaringan bengkel PITCAR',
@@ -414,7 +410,7 @@ export const trainers: Trainer[] = [
   {
     name: 'Dayat',
     role: 'Technical Trainer',
-    // photo: '/trainers/dayat.webp',
+    photo: '/trainers/dayat.webp',
     credentials: [
       '8 tahun pengalaman di industri otomotif',
       'Praktisi aktif di jaringan bengkel PITCAR',
@@ -423,7 +419,7 @@ export const trainers: Trainer[] = [
   {
     name: 'Hanif',
     role: 'Pengawas Pitcar Academy',
-    // photo: '/trainers/hanif.webp',
+    photo: '/trainers/hanif.webp',
     credentials: [
       'Mengawasi jalannya program dan ritme kerja bengkel',
       'Mendampingi peserta selama praktik dan OJT',
