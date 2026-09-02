@@ -24,6 +24,11 @@ interface Window {
     options?: { eventID?: string },
   ) => void;
   hj?: (...args: unknown[]) => void;
+  /** Cloudflare Zaraz. Injected at the edge, so it may arrive after our code. */
+  zaraz?: {
+    track?: (eventName: string, params?: Record<string, unknown>) => void;
+    set?: (key: string, value: unknown, options?: { scope?: string }) => void;
+  };
   trackFunnelEvent?: (
     eventName: string,
     params?: Record<string, unknown>,

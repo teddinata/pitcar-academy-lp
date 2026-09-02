@@ -80,6 +80,40 @@
     window.trackFunnelEvent?.(eventName, { ...params, event_callback: go, event_timeout: timeout });
   };
 
+  // Cloudflare injects Zaraz's own script asynchronously, so `window.zaraz`
+  // can still be missing when an early CTA is clicked. Events are held until
+  // it appears rather than dropped — but only for a bounded window, because a
+  // site without Zaraz enabled must not poll forever.
+  const zarazQueue: Array<[string, FunnelEventParams]> = [];
+  let zarazDeadline = 0;
+
+  function flushZaraz(): boolean {
+    if (typeof window.zaraz?.track !== 'function') return false;
+    while (zarazQueue.length) {
+      const queued = zarazQueue.shift();
+      if (queued) window.zaraz.track(queued[0], queued[1]);
+    }
+    return true;
+  }
+
+  function trackZaraz(eventName: string, params: FunnelEventParams): void {
+    zarazQueue.push([eventName, params]);
+    if (flushZaraz()) return;
+
+    // Extend the wait on each new event, then let it lapse.
+    const nextDeadline = Date.now() + 10_000;
+    const alreadyWaiting = zarazDeadline > Date.now();
+    zarazDeadline = nextDeadline;
+    if (alreadyWaiting) return;
+
+    const timer = window.setInterval(() => {
+      if (flushZaraz() || Date.now() > zarazDeadline) {
+        window.clearInterval(timer);
+        zarazQueue.length = 0;
+      }
+    }, 250);
+  }
+
   window.trackFunnelEvent = (eventName, params = {}) => {
     window.dataLayer = window.dataLayer || [];
     if (!window.gtag) {
@@ -89,7 +123,13 @@
         window.dataLayer?.push(arguments);
       };
     }
-    window.gtag('event', eventName, compact({ ...getAttribution(), ...params }));
+    const payload = compact({ ...getAttribution(), ...params });
+    window.gtag('event', eventName, payload);
+
+    // gtag's navigation callback has no meaning to Zaraz and is not
+    // serialisable, so it never leaves this function.
+    const { event_callback: _callback, event_timeout: _timeout, ...zarazPayload } = payload;
+    trackZaraz(eventName, zarazPayload);
   };
 
   try {
