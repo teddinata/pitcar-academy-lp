@@ -399,30 +399,34 @@ export interface Trainer {
 
 export const trainers: Trainer[] = [
   {
-    name: 'Trainer 1',
-    role: 'Technical Trainer — Engine & EFI',
+    name: 'Roka',
+    role: 'Technical Trainer',
+    // Drop the file at public/trainers/roka.webp, then set:
+    //   photo: '/trainers/roka.webp',
+    // Left unset until the file exists — a missing path renders a broken
+    // image on a live page, while the section already degrades to a
+    // "Foto menyusul" placeholder when there is nothing to show.
     credentials: [
-      'Praktisi aktif jaringan bengkel PITCAR',
-      'Spesialisasi engine dan sistem EFI',
-      'Berpengalaman menangani diagnosis kendaraan customer',
+      '13 tahun pengalaman di industri otomotif',
+      'Praktisi aktif di jaringan bengkel PITCAR',
     ],
   },
   {
-    name: 'Trainer 2',
-    role: 'Technical Trainer — General Repair',
+    name: 'Dayat',
+    role: 'Technical Trainer',
+    // photo: '/trainers/dayat.webp',
     credentials: [
-      'Praktisi aktif jaringan bengkel PITCAR',
-      'Spesialisasi general repair dan chassis',
+      '8 tahun pengalaman di industri otomotif',
+      'Praktisi aktif di jaringan bengkel PITCAR',
+    ],
+  },
+  {
+    name: 'Hanif',
+    role: 'Pengawas Pitcar Academy',
+    // photo: '/trainers/hanif.webp',
+    credentials: [
+      'Mengawasi jalannya program dan ritme kerja bengkel',
       'Mendampingi peserta selama praktik dan OJT',
-    ],
-  },
-  {
-    name: 'Trainer 3',
-    role: 'Workshop Supervisor — OJT',
-    credentials: [
-      'Mengawasi ritme kerja dan SOP bengkel',
-      'Menilai attitude dan kesiapan kerja peserta',
-      'Menjembatani peserta dengan proses rekrutmen',
     ],
   },
 ];
