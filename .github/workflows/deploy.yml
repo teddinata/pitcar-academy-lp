@@ -12,6 +12,7 @@ jobs:
       PUBLIC_EDUCATION_CONSULTANT_WHATSAPP: ${{ secrets.WA_PHONE_NUMBER }}
       # Analytics has a default in code; set here so it is visible in the build.
       PUBLIC_GA_ID: ${{ secrets.PUBLIC_GA_ID || 'G-FNT01JRZN7' }}
+      PUBLIC_HOTJAR_ID: ${{ secrets.PUBLIC_HOTJAR_ID || '6772321' }}
       SITE_URL: https://academy.pitcar.co.id
       # Lead API. Empty until the backend is deployed — the form then hands the
       # summary to WhatsApp directly instead of failing in front of a visitor.

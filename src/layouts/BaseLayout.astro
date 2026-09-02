@@ -4,6 +4,7 @@ import Footer from '../components/Footer.astro';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
 import SeoHead from '../components/SeoHead.astro';
 import GoogleAnalytics from '../components/GoogleAnalytics.astro';
+import Hotjar from '../components/Hotjar.astro';
 import FunnelAnalytics from '../components/FunnelAnalytics.astro';
 import '../styles/global.css';
 
@@ -34,6 +35,11 @@ const {
   gaId = import.meta.env.PUBLIC_GA_ID ?? 'G-FNT01JRZN7',
   noindex = false,
 } = Astro.props;
+
+// Site id, not a credential — it ships in the page either way. Defaulted for
+// the same reason as the analytics property: silently losing measurement is
+// worse than being hard to change.
+const hotjarId = import.meta.env.PUBLIC_HOTJAR_ID ?? '6772321';
 ---
 
 <!doctype html>
@@ -54,6 +60,7 @@ const {
 
     <!-- Google Analytics -->
     <GoogleAnalytics id={gaId} />
+    <Hotjar id={hotjarId} />
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta id="theme-color" name="theme-color" content="#FAFAF9" />

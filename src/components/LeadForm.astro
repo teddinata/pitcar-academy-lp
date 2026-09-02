@@ -44,6 +44,10 @@ const readiness = [
   <h3 class="display-3 mt-3">Ceritakan sedikit tentang kamu</h3>
   <p class="mt-2 text-sm text-muted">Hanya butuh sekitar 30 detik.</p>
 
+  {/* data-hj-suppress on the two identifying fields. Hotjar masks input
+      values by default, but that default lives in the account settings and
+      someone can turn it off without touching this repo — a name and a phone
+      number should not depend on a checkbox elsewhere. */}
   <form id="lead-form" class="mt-7" novalidate>
     <input type="hidden" name="submission_id" />
     <input type="hidden" name="source_cta" value="consultation_section" />
@@ -51,12 +55,12 @@ const readiness = [
     <div class="space-y-5">
       <div>
         <label class={labelClass} for="lead-name">Nama lengkap</label>
-        <input class={inputClass} id="lead-name" name="name" type="text" autocomplete="name" maxlength="100" placeholder="Nama kamu" required />
+        <input class={inputClass} id="lead-name" name="name" data-hj-suppress type="text" autocomplete="name" maxlength="100" placeholder="Nama kamu" required />
       </div>
 
       <div>
         <label class={labelClass} for="lead-whatsapp">Nomor WhatsApp</label>
-        <input class={inputClass} id="lead-whatsapp" name="whatsapp_number" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" pattern={whatsappPattern} placeholder="08xxxxxxxxxx" aria-describedby="lead-whatsapp-help" required />
+        <input class={inputClass} id="lead-whatsapp" name="whatsapp_number" data-hj-suppress type="tel" inputmode="tel" autocomplete="tel" maxlength="20" pattern={whatsappPattern} placeholder="08xxxxxxxxxx" aria-describedby="lead-whatsapp-help" required />
         <p id="lead-whatsapp-help" class="mt-1.5 text-xs leading-relaxed text-muted">Pastikan nomor aktif agar konsultan dapat menghubungi.</p>
       </div>
 
