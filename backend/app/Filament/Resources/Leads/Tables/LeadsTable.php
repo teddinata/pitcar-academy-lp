@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Leads\Tables;
 
 use App\Models\EducationConsultant;
 use App\Models\Lead;
+use App\Services\WhatsAppLinkBuilder;
 use App\Support\LeadOptions;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -43,7 +44,7 @@ class LeadsTable
                     ->label('WhatsApp')
                     ->searchable()
                     ->copyable()
-                    ->url(fn ($record) => 'https://wa.me/'.$record->whatsapp_normalized)
+                    ->url(fn ($record) => app(WhatsAppLinkBuilder::class)->buildFollowUp($record))
                     ->openUrlInNewTab(),
 
                 TextColumn::make('qualification')

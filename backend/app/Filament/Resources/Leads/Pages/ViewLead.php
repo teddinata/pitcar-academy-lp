@@ -15,13 +15,16 @@ class ViewLead extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            // Opens a chat *with the lead*, not the one the visitor sent us.
+            // Reusing the visitor's link here pointed the consultant at
+            // themselves, carrying a message written in the student's voice.
             Action::make('whatsapp')
-                ->label('Buka WhatsApp')
+                ->label('Hubungi lead')
                 ->icon('heroicon-o-chat-bubble-left-right')
                 ->color('success')
-                ->url(fn () => app(WhatsAppLinkBuilder::class)->build($this->getRecord()))
+                ->url(fn () => app(WhatsAppLinkBuilder::class)->buildFollowUp($this->getRecord()))
                 ->openUrlInNewTab()
-                ->visible(fn () => (bool) app(WhatsAppLinkBuilder::class)->build($this->getRecord())),
+                ->visible(fn () => (bool) app(WhatsAppLinkBuilder::class)->buildFollowUp($this->getRecord())),
             EditAction::make(),
         ];
     }
