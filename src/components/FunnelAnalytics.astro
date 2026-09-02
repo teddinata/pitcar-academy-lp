@@ -84,6 +84,13 @@
   // can still be missing when an early CTA is clicked. Events are held until
   // it appears rather than dropped — but only for a bounded window, because a
   // site without Zaraz enabled must not poll forever.
+  // Zaraz rules match on their own event names, which are configured in the
+  // Cloudflare dashboard and outlive any one deploy. Renaming here keeps GA4
+  // on the names its existing reports and conversions are already built on.
+  const zarazEventNames: Record<string, string> = {
+    lead_submit_success: 'add_to_cart_submit',
+  };
+
   const zarazQueue: Array<[string, FunnelEventParams]> = [];
   let zarazDeadline = 0;
 
@@ -97,7 +104,7 @@
   }
 
   function trackZaraz(eventName: string, params: FunnelEventParams): void {
-    zarazQueue.push([eventName, params]);
+    zarazQueue.push([zarazEventNames[eventName] ?? eventName, params]);
     if (flushZaraz()) return;
 
     // Extend the wait on each new event, then let it lapse.
