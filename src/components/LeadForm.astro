@@ -137,6 +137,7 @@ const readiness = [
     LEAD_API_CONFIGURED,
     LeadSubmissionError,
     normalizeWhatsappNumber,
+    readMetaCookie,
     resolveWhatsAppUrl,
     submitLead,
     type LeadPayload,
@@ -227,8 +228,21 @@ const readiness = [
         utm_campaign: storedAttribution?.utm_campaign ?? params.get('utm_campaign'),
         utm_content: storedAttribution?.utm_content ?? params.get('utm_content'),
         utm_term: storedAttribution?.utm_term ?? params.get('utm_term'),
+        fbp: readMetaCookie('_fbp'),
+        fbc: readMetaCookie('_fbc'),
       },
     };
+  }
+
+  /**
+   * The same conversion also reaches Meta from the server. `eventID` is the
+   * visitor's own submission id, which is what tells Meta the two are one
+   * event — without it every lead would be counted twice.
+   */
+  function trackMetaLead(payload: LeadPayload): void {
+    window.fbq?.('track', 'Lead', {
+      content_name: payload.program_interest,
+    }, { eventID: payload.submission_id });
   }
 
   function getAnalyticsContext(payload?: LeadPayload): Record<string, string | null> {
@@ -393,6 +407,7 @@ const readiness = [
           pendingPayload = payload;
           showStatus('Ringkasan konsultasi siap. Mengarahkan ke WhatsApp…', 'success');
           trackEvent('lead_submit_success', payload, { lead_code: null });
+          trackMetaLead(payload);
           window.gtag?.('event', 'generate_lead', { ...getAnalyticsContext(payload), lead_code: null });
           trackEvent('whatsapp_click', payload, { lead_code: null });
           // Navigate when the event is delivered rather than after a guessed
@@ -421,6 +436,7 @@ const readiness = [
           lead_code: latestResponse.lead_code,
           qualification: latestResponse.qualification,
         });
+        trackMetaLead(payload);
         window.gtag?.('event', 'generate_lead', {
           ...getAnalyticsContext(payload),
           lead_code: latestResponse.lead_code,

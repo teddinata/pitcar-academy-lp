@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Jobs\NotifyNewLead;
+use App\Jobs\SendMetaConversion;
 use App\Models\Lead;
 use App\Models\LeadStatusHistory;
 use App\Support\WhatsAppNumber;
@@ -35,13 +36,16 @@ class LeadIntake
         // a stored lead into a 500 response, telling the visitor their data was
         // lost when it was not.
         if ($result['created']) {
-            try {
-                NotifyNewLead::dispatch($result['lead']->id);
-            } catch (Throwable $e) {
-                Log::warning('lead.notify_failed', [
-                    'lead_code' => $result['lead']->lead_code,
-                    'error' => $e::class,
-                ]);
+            foreach ([NotifyNewLead::class, SendMetaConversion::class] as $job) {
+                try {
+                    $job::dispatch($result['lead']->id);
+                } catch (Throwable $e) {
+                    Log::warning('lead.integration_failed', [
+                        'lead_code' => $result['lead']->lead_code,
+                        'job' => $job,
+                        'error' => $e::class,
+                    ]);
+                }
             }
         }
 
@@ -100,6 +104,8 @@ class LeadIntake
             'utm_campaign' => $attribution['utm_campaign'] ?? null,
             'utm_content' => $attribution['utm_content'] ?? null,
             'utm_term' => $attribution['utm_term'] ?? null,
+            'fbp' => $attribution['fbp'] ?? null,
+            'fbc' => $attribution['fbc'] ?? null,
         ]);
 
         // forceFill, not fill: none of these are mass assignable, which is what

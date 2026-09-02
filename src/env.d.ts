@@ -6,6 +6,7 @@ interface ImportMetaEnv {
   readonly PUBLIC_EDUCATION_CONSULTANT_WHATSAPP_DISPLAY?: string;
   readonly PUBLIC_GA_ID?: string;
   readonly PUBLIC_HOTJAR_ID?: string;
+  readonly PUBLIC_META_PIXEL_ID?: string;
 }
 
 interface ImportMeta {
@@ -15,6 +16,14 @@ interface ImportMeta {
 interface Window {
   dataLayer?: unknown[];
   gtag?: (...args: unknown[]) => void;
+  /** Meta pixel. The fourth argument carries eventID for CAPI deduplication. */
+  fbq?: (
+    command: string,
+    eventName: string,
+    params?: Record<string, unknown>,
+    options?: { eventID?: string },
+  ) => void;
+  hj?: (...args: unknown[]) => void;
   trackFunnelEvent?: (
     eventName: string,
     params?: Record<string, unknown>,

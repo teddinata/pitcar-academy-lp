@@ -44,12 +44,17 @@ class Lead extends Model
         'utm_campaign',
         'utm_content',
         'utm_term',
+        // Meta's own cookies. Visitor-supplied like the rest of attribution,
+        // and just as inert: they steer reporting, never scoring or routing.
+        'fbp',
+        'fbc',
     ];
 
     protected function casts(): array
     {
         return [
             'consent_at' => 'datetime',
+            'meta_conversion_sent_at' => 'datetime',
             'scored_at' => 'datetime',
             'assigned_at' => 'datetime',
             'follow_up_due_at' => 'datetime',

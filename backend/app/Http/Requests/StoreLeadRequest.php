@@ -57,6 +57,11 @@ class StoreLeadRequest extends FormRequest
             'attribution.utm_campaign' => ['nullable', 'string', 'max:255'],
             'attribution.utm_content' => ['nullable', 'string', 'max:255'],
             'attribution.utm_term' => ['nullable', 'string', 'max:255'],
+
+            // Meta's own cookies, forwarded for Conversions API matching.
+            // Opaque strings; neither identifies a person by itself.
+            'attribution.fbp' => ['nullable', 'string', 'max:255'],
+            'attribution.fbc' => ['nullable', 'string', 'max:255'],
         ];
     }
 

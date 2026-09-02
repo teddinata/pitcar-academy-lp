@@ -6,6 +6,9 @@ export interface LeadAttribution {
   utm_campaign: string | null;
   utm_content: string | null;
   utm_term: string | null;
+  /** Meta's own cookies, forwarded so the Conversions API can match. */
+  fbp?: string | null;
+  fbc?: string | null;
 }
 
 export interface LeadPayload {
@@ -54,6 +57,18 @@ const CONSULTANT_NUMBER = import.meta.env.PUBLIC_EDUCATION_CONSULTANT_WHATSAPP?.
 export const LEAD_API_CONFIGURED = API_BASE_URL !== '';
 
 export type LeadStorageMode = 'api' | 'direct';
+
+/**
+ * `_fbp` is written by the pixel, `_fbc` by the pixel from an `fbclid` on the
+ * landing URL. Sending them with the lead is what lets Meta tie a server-side
+ * conversion back to the ad that produced it; without them the match falls
+ * back to a hashed name and phone number alone.
+ */
+export function readMetaCookie(name: '_fbp' | '_fbc'): string | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+  return match ? decodeURIComponent(match[1]) : null;
+}
 
 function getLeadEndpoint(): string {
   if (!API_BASE_URL) {

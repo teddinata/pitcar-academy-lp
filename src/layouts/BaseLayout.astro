@@ -5,6 +5,7 @@ import WhatsAppButton from '../components/WhatsAppButton.astro';
 import SeoHead from '../components/SeoHead.astro';
 import GoogleAnalytics from '../components/GoogleAnalytics.astro';
 import Hotjar from '../components/Hotjar.astro';
+import MetaPixel from '../components/MetaPixel.astro';
 import FunnelAnalytics from '../components/FunnelAnalytics.astro';
 import '../styles/global.css';
 
@@ -40,6 +41,11 @@ const {
 // the same reason as the analytics property: silently losing measurement is
 // worse than being hard to change.
 const hotjarId = import.meta.env.PUBLIC_HOTJAR_ID ?? '6772321';
+
+// Pixel id only. The Conversions API token is a credential and lives on the
+// server — a PUBLIC_* variable is compiled into this bundle, where anyone
+// could read it and post fabricated conversions into the ad account.
+const metaPixelId = import.meta.env.PUBLIC_META_PIXEL_ID ?? '1364110365687038';
 ---
 
 <!doctype html>
@@ -61,6 +67,7 @@ const hotjarId = import.meta.env.PUBLIC_HOTJAR_ID ?? '6772321';
     <!-- Google Analytics -->
     <GoogleAnalytics id={gaId} />
     <Hotjar id={hotjarId} />
+    <MetaPixel id={metaPixelId} />
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta id="theme-color" name="theme-color" content="#FAFAF9" />
