@@ -1,0 +1,303 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/garage.css';
+import { contact, onlineCourses, onlineCourseFaqs, packages, trustNumbers } from '../content.config';
+
+// Etalase, bukan halaman jual: pengunjung memilih kelas di sini, lalu
+// diyakinkan di halaman kelasnya. Karena itu header dan footer tetap ada,
+// sementara halaman kelas (bare) tidak punya jalan keluar selain tombol beli.
+// The shared content file separates clauses with a long dash; this page sets
+// them with a comma instead of editing copy other pages use.
+const tidy = (text: string) => text.replaceAll(' — ', ', ');
+
+const workshopNumbers = trustNumbers.filter((n) => n.publish);
+const professional = packages.find((p) => p.id === 'professional');
+// Offline packages are written "Rp 8.500.000"; the online courses "Rp99.000".
+// One numeral rule per page, so the offline card follows the page it sits on.
+const professionalPrice = professional?.priceDisplay.replace(/^Rp\s+/, 'Rp');
+
+const site = Astro.site ?? new URL('https://academy.pitcar.co.id');
+const pageUrl = new URL('/kelas-online/', site).href;
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Kelas Online Pitcar Academy',
+    url: pageUrl,
+    itemListElement: onlineCourses.map((course, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: {
+        '@type': 'Course',
+        name: course.name,
+        description: course.summary,
+        url: new URL(course.href, site).href,
+        image: new URL(course.cover, site).href,
+        inLanguage: 'id',
+        provider: { '@id': new URL('/#organization', site).href },
+        offers: {
+          '@type': 'Offer',
+          price: String(course.price),
+          priceCurrency: 'IDR',
+          availability: 'https://schema.org/InStock',
+          category: 'Paid',
+          url: new URL(course.href, site).href,
+        },
+        hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'Online' },
+      },
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: onlineCourseFaqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+    })),
+  },
+];
+
+const howToBuy = [
+  {
+    title: 'Pilih kelasnya',
+    description: 'Baca isi, batasan, dan harganya di halaman kelas. Tidak ada yang disembunyikan sampai checkout.',
+  },
+  {
+    title: 'Bayar sekali',
+    description: 'Tombol beli membawa kamu ke halaman checkout. Isi data, pilih cara bayar, selesai.',
+  },
+  {
+    title: 'Materi langsung terbuka',
+    description: 'Setelah pembayaran berhasil, akses terbuka otomatis. Putar dari HP atau laptop, kapan saja, selamanya.',
+  },
+];
+---
+
+<BaseLayout
+  title="Kelas Online Pitcar Academy: Belajar Otomotif dari Mekanik Bengkel"
+  description="Pilih kelas online Pitcar Academy: Kelas AC Mobil dan Kelas Inspeksi Mobil Bekas. Disusun mekanik bengkel PITCAR, sekali bayar, akses selamanya, bisa dari HP."
+  canonical="/kelas-online/"
+  image="/kelas-ac/og.jpg"
+  imageAlt="Kelas online Pitcar Academy: mekanik PITCAR di bengkel, kelas dasar pemeriksaan dan perawatan AC mobil."
+  structuredData={structuredData}
+  world="garage"
+  header={{
+    links: [
+      { href: '#kelas', label: 'Pilih kelas' },
+      { href: '#cara-belajar', label: 'Cara belajar' },
+      { href: '#faq', label: 'FAQ' },
+    ],
+    cta: { href: '#kelas', label: 'Pilih kelas', sourceCta: 'kelas_online_header' },
+    showAnnouncement: false,
+  }}
+  floatingCta={{ href: '#kelas', label: 'Pilih kelas', sourceCta: 'kelas_online_floating', icon: false }}
+>
+  <section class="pt-28 pb-16 sm:pt-32 lg:pb-24" aria-labelledby="hero-title">
+    <div class="shell">
+      <div class="grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-10">
+        <h1 id="hero-title" class="g-display max-w-[16ch] lg:col-span-7">Ilmu dari lantai bengkel, dipelajari dari HP kamu.</h1>
+        <div class="lg:col-span-5 lg:pb-2">
+          <p class="lead max-w-prose">
+            Disusun dari pekerjaan mekanik PITCAR sehari-hari: apa yang diperiksa, bagaimana urutannya,
+            dan kapan harus berhenti menebak. Bayar sekali, materi langsung terbuka di HP atau laptop
+            dan bisa diputar ulang selamanya.
+          </p>
+          <div class="mt-6 flex flex-col gap-3 sm:flex-row [&>a]:whitespace-nowrap">
+            <a href="#kelas" data-lead-cta data-source-cta="kelas_online_hero" class="btn btn-primary">Pilih kelas</a>
+            <a href="#cara-belajar" class="btn btn-ghost">Cara belajar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="kelas" class="g-section scroll-mt-28" aria-labelledby="courses-title">
+    <div class="shell">
+      <div class="grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-16">
+        <h2 id="courses-title" class="g-h2 lg:col-span-7">Mulai dari masalah yang sedang kamu hadapi.</h2>
+        <p class="leading-relaxed text-muted lg:col-span-5">
+          Setiap kelas berdiri sendiri. Tidak ada urutan yang harus diikuti, tidak ada paket yang harus diambil.
+        </p>
+      </div>
+
+      <div class="mt-14 grid border-t border-body lg:grid-cols-2">
+        {onlineCourses.map((course, index) => (
+          <article class:list={['flex flex-col py-9', index === 0 ? 'border-b border-line lg:border-b-0 lg:border-r lg:pr-10' : 'lg:pl-10']}>
+            <a href={course.href} data-lead-cta data-source-cta={`kelas_online_cover_${course.id}`} class="g-photo block" aria-label={`Lihat ${course.name}`}>
+              <img
+                src={course.cover}
+                srcset={course.coverSrcset}
+                sizes="(min-width: 1024px) 36rem, 100vw"
+                width={course.coverWidth}
+                height={course.coverHeight}
+                loading={index === 0 ? 'eager' : 'lazy'}
+                fetchpriority={index === 0 ? 'high' : undefined}
+                decoding="async"
+                alt={course.coverAlt}
+                class="aspect-[4/3] w-full object-cover object-top"
+              />
+            </a>
+            <h3 class="g-h2 mt-7 !text-[clamp(1.75rem,3vw,2.5rem)]">
+              {tidy(course.name)}
+              {course.badge && <span class="g-label ml-2 whitespace-nowrap align-middle text-accent">{course.badge}</span>}
+            </h3>
+            <p class="g-h3 mt-4 text-muted">{tidy(course.hook)}</p>
+            <p class="mt-3 max-w-prose leading-relaxed text-muted">{tidy(course.summary)}</p>
+
+            <ul class="mt-7 grid gap-x-8 gap-y-2.5 sm:grid-cols-2">
+              {course.highlights.map((item) => <li class="g-node leading-relaxed">{tidy(item)}</li>)}
+            </ul>
+            <p class="mt-6 border-t border-line pt-5 text-sm leading-relaxed text-muted">
+              <span class="font-semibold text-body">Cocok untuk:</span> {tidy(course.forWho)}
+            </p>
+
+            <div class="mt-auto pt-8">
+              <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <span class="g-num text-5xl">{course.priceDisplay}</span>
+                <span class="text-lg text-muted line-through">{course.strikePriceDisplay}</span>
+                <span class="text-sm font-semibold text-accent">{course.priceLabel}</span>
+              </div>
+              <p class="mt-2 text-sm text-muted">Sekali bayar. Akses selamanya, langsung terbuka setelah pembayaran.</p>
+              <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+                <a href={course.href} data-lead-cta data-source-cta={`kelas_online_detail_${course.id}`} class="btn btn-primary flex-1">Lihat isi kelas</a>
+                <a
+                  href={course.checkoutUrl}
+                  data-checkout
+                  data-item-id={course.id}
+                  data-item-name={course.name}
+                  data-price={course.price}
+                  data-source-cta={`kelas_online_buy_${course.id}`}
+                  class="btn btn-ghost flex-1"
+                >
+                  Langsung beli
+                </a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="cara-belajar" class="g-section scroll-mt-28" aria-labelledby="steps-title">
+    <div class="shell grid gap-12 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-5">
+        <h2 id="steps-title" class="g-h2">Tiga langkah. Tidak ada jadwal, tidak ada antrean.</h2>
+        <p class="lead mt-5">
+          Keputusan beli kelas online harusnya selesai dalam hitungan menit, bukan lewat percakapan panjang.
+          Kalau tetap ingin bertanya dulu, tombol WhatsApp ada di pojok layar.
+        </p>
+      </div>
+      <ol class="border-t border-body lg:col-span-7">
+        {howToBuy.map((step, i) => (
+          <li class="flex gap-6 border-b border-line py-7">
+            <span class="g-num w-12 shrink-0 text-5xl text-muted" aria-hidden="true">{i + 1}</span>
+            <div>
+              <h3 class="g-h3">{step.title}</h3>
+              <p class="mt-2 max-w-prose leading-relaxed text-muted">{step.description}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="g-section" aria-labelledby="why-title">
+    <div class="shell grid gap-12 lg:grid-cols-12 lg:items-end lg:gap-16">
+      <div class="lg:col-span-7">
+        <h2 id="why-title" class="g-h2">Diajarkan oleh orang yang besok paginya tetap mengerjakan mobil customer.</h2>
+        <p class="lead mt-5 max-w-prose">
+          Pitcar Academy adalah bagian dari ekosistem bengkel PITCAR. Yang menyusun materi adalah mekanik
+          yang menangani kendaraan setiap hari, jadi urutan kerja di kelas sama dengan urutan kerja di bengkel.
+          Kami juga menulis batasan tiap kelas sebelum harganya, bukan sesudah kamu bayar.
+        </p>
+      </div>
+      <div class="lg:col-span-5">
+        <p class="g-h3">{tidy(contact.placeName)}</p>
+        <dl class="mt-5 border-t border-body">
+          {workshopNumbers.map((n) => (
+            <div class="flex items-baseline justify-between gap-4 border-b border-line py-3.5">
+              <dt class="text-muted">{n.label}</dt>
+              <dd class="g-num text-3xl">{n.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" class="g-section scroll-mt-28" aria-labelledby="faq-title">
+    <div class="shell grid gap-10 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-4">
+        <h2 id="faq-title" class="g-h2">Pertanyaan yang sering muncul</h2>
+        <p class="lead mt-5">Sudah tahu kelas mana yang kamu butuhkan?</p>
+        <a href="#kelas" data-lead-cta data-source-cta="kelas_online_faq" class="btn btn-ghost mt-7">Pilih kelas</a>
+      </div>
+      <div class="border-t border-body lg:col-span-8">
+        {onlineCourseFaqs.map((faq) => (
+          <details name="faq" class="group border-b border-line">
+            <summary class="flex min-h-11 list-none items-start justify-between gap-6 py-5 text-lg font-semibold leading-snug transition-colors hover:text-accent">
+              {tidy(faq.question)}
+              <svg aria-hidden="true" class="mt-1 h-5 w-5 shrink-0 text-muted transition-transform duration-200 group-open:rotate-45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+            </summary>
+            <p class="max-w-prose pb-6 leading-relaxed text-muted">{tidy(faq.answer)}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="g-section" aria-labelledby="ladder-title">
+    <div class="shell">
+      <article class="grid gap-10 border-t-2 border-accent-fill bg-ground-alt p-6 sm:p-9 lg:grid-cols-12 lg:items-end lg:gap-16">
+        <div class="lg:col-span-7">
+          <h2 id="ladder-title" class="g-h2">Kelas online membangun pemahaman. Praktiknya ada di bengkel.</h2>
+          <p class="mt-4 max-w-prose leading-relaxed text-muted">
+            Praktik pada kendaraan sungguhan, OJT di bengkel yang beroperasi, dan assessment kompetensi
+            hanya ada di program offline Pitcar Academy.
+          </p>
+        </div>
+        <div class="lg:col-span-5">
+          <h3 class="g-h3">{professional && tidy(professional.name)}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-muted">{professional?.subtitle}</p>
+          <p class="g-num mt-5 border-t border-line pt-5 text-5xl">{professionalPrice}</p>
+          <a href="/#program" data-lead-cta data-source-cta="kelas_online_ladder" class="btn btn-ghost mt-6 w-full">Lihat program offline</a>
+        </div>
+      </article>
+    </div>
+  </section>
+</BaseLayout>
+
+<script define:vars={{ items: onlineCourses.map((c) => ({ item_id: c.id, item_name: c.name, price: c.price })) }}>
+  // Katalog: GA4 view_item_list saat halaman dibuka, begin_checkout saat
+  // tombol "Langsung beli" ditekan. Halaman kelas masing-masing mengirim
+  // view_item-nya sendiri.
+  document.addEventListener('DOMContentLoaded', () => {
+    window.trackFunnelEvent?.('view_item_list', { item_list_id: 'kelas_online', item_list_name: 'Kelas online', items });
+  });
+
+  const attributionParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'gclid', 'ttclid', 'fbclid'];
+
+  document.addEventListener('click', (event) => {
+    const link = event.target?.closest?.('[data-checkout]');
+    if (!link) return;
+    const toCheckout = link.hostname === window.location.hostname && link.pathname.startsWith('/checkout');
+    if (toCheckout || link.hostname.endsWith('myscalev.com')) {
+      const from = new URLSearchParams(window.location.search);
+      const to = new URL(link.href);
+      for (const key of attributionParams) {
+        if (from.has(key) && !to.searchParams.has(key)) to.searchParams.set(key, from.get(key));
+      }
+      link.href = to.toString();
+    }
+    const price = Number(link.dataset.price) || 0;
+    const item = { item_id: link.dataset.itemId, item_name: link.dataset.itemName, price, quantity: 1 };
+    window.trackFunnelEvent?.('begin_checkout', { currency: 'IDR', value: price, items: [item], source_cta: link.dataset.sourceCta || 'unknown' });
+    window.fbq?.('track', 'InitiateCheckout', { value: price, currency: 'IDR', content_name: item.item_name, content_ids: [item.item_id], content_type: 'product' });
+    // The checkout page sends InitiateCheckout itself unless told this click already did.
+    if (toCheckout) {
+      try { sessionStorage.setItem('pitcar_checkout_initiated', new URL(link.href).searchParams.get('kelas') || ''); } catch { /* storage blocked */ }
+    }
+  });
+</script>

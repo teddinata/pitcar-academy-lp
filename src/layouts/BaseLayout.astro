@@ -3,60 +3,144 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
 import SeoHead from '../components/SeoHead.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
 import GoogleAnalytics from '../components/GoogleAnalytics.astro';
+import GoogleTagManager from '../components/GoogleTagManager.astro';
+import Hotjar from '../components/Hotjar.astro';
+import MetaPixel from '../components/MetaPixel.astro';
+import FunnelAnalytics from '../components/FunnelAnalytics.astro';
 import '../styles/global.css';
 
 interface Props {
   title: string;
   description: string;
-  image?: string;
-  canonical?: string;
-  whatsappNumber?: string;
+  image?: string | URL;
+  imageAlt?: string;
+  canonical?: string | URL;
+  preloadImage?: string;
+  /** Viewports where `preloadImage` is actually the LCP element. */
+  preloadImageMedia?: string;
+  structuredData?: Record<string, unknown>[];
   gaId?: string;
+  /** Keeps a page out of search results while its content is still a draft. */
+  noindex?: boolean;
+  /** Overrides for pages that sell something other than the offline program. */
+  header?: {
+    links?: { href: string; label: string }[];
+    cta?: { href: string; label: string; sourceCta: string };
+    showAnnouncement?: boolean;
+  };
+  floatingCta?: { href: string; label: string; sourceCta: string; icon?: boolean; checkout?: boolean };
+  /** Drops the site header and footer so a sales page has no exits but the buy button. */
+  bare?: boolean;
+  /** Scopes a page to its own visual world. `garage` also defaults to dark. */
+  world?: 'garage';
+  /** A bare page that places ThemeToggle in its own top strip sets this. */
+  ownThemeToggle?: boolean;
 }
 
-import { whatsappConfig } from "../content.config";
 const {
   title,
   description,
-  image = '/og-image.png',
-  canonical = '/',
-  whatsappNumber = whatsappConfig.phoneNumber,
-  gaId = 'G-FNT01JRZN7',
+  image = '/og-image.jpg',
+  imageAlt,
+  canonical = Astro.url.pathname,
+  preloadImage,
+  preloadImageMedia = '(min-width: 1024px)',
+  structuredData = [],
+  // Defaulted so a build without the variable still reports to the live
+  // property. Losing analytics silently is worse than being hard to change.
+  gaId = import.meta.env.PUBLIC_GA_ID ?? 'G-FNT01JRZN7',
+  noindex = false,
+  header,
+  floatingCta,
+  bare = false,
+  world,
+  ownThemeToggle = false,
 } = Astro.props;
 
-const siteUrl = Astro.site || 'https://academy.pitcar.co.id';
+const defaultDark = world === 'garage';
+
+// Site id, not a credential — it ships in the page either way. Defaulted for
+// the same reason as the analytics property: silently losing measurement is
+// worse than being hard to change.
+const gtmId = import.meta.env.PUBLIC_GTM_ID ?? 'GTM-WRX9JBBT';
+const hotjarId = import.meta.env.PUBLIC_HOTJAR_ID ?? '6772321';
+
+// Pixel id only. The Conversions API token is a credential and lives on the
+// server — a PUBLIC_* variable is compiled into this bundle, where anyone
+// could read it and post fabricated conversions into the ad account.
+const metaPixelId = import.meta.env.PUBLIC_META_PIXEL_ID ?? '1364110365687038';
 ---
 
 <!doctype html>
-<html lang="id" class="scroll-smooth">
+<html lang="id" class={world} data-default-theme={defaultDark ? 'dark' : 'light'}>
   <head>
+    <meta charset="UTF-8" />
+    <GoogleTagManager id={gtmId} placement="head" />
+    <script is:inline>
+      // Runs before paint. The page names its default; an explicit choice
+      // stored by the toggle always wins over it.
+      (function () {
+        var root = document.documentElement;
+        var stored = null;
+        try {
+          stored = localStorage.getItem('pitcar-theme');
+        } catch (error) {
+          // Blocked storage just means the page default.
+        }
+        var theme = stored === 'dark' || stored === 'light' ? stored : root.dataset.defaultTheme;
+        if (theme === 'dark') root.classList.add('dark');
+      })();
+    </script>
+
     <!-- Google Analytics -->
     <GoogleAnalytics id={gaId} />
+    <Hotjar id={hotjarId} />
+    <MetaPixel id={metaPixelId} />
 
-    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta id="theme-color" name="theme-color" content={defaultDark ? '#0A0A0A' : '#FAFAF9'} />
+    {/* Real PITCAR mark. 32/48 keep the transparent cut-out for browser tabs;
+        the Apple icon is flattened onto white because iOS renders a
+        transparent background as black. */}
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="generator" content={Astro.generator} />
+    {/* Only fetched where the image is the LCP. On phones the hero image sits
+        below the fold and the H1 is the LCP, so a high-priority image preload
+        there would compete with the font that heading needs. */}
+    {preloadImage && (
+      <link rel="preload" as="image" href={preloadImage} fetchpriority="high" media={preloadImageMedia} />
+    )}
 
     <!-- SEO -->
     <SeoHead
       title={title}
       description={description}
-      image={`${siteUrl}${image}`}
-      url={`${siteUrl}${canonical}`}
+      image={image}
+      imageAlt={imageAlt}
+      url={canonical}
+      structuredData={structuredData}
+      noindex={noindex}
     />
-
-    <!-- Preconnect for performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   </head>
-  <body class="bg-page text-default antialiased tracking-tight selection:bg-primary/30 selection:text-white">
-    <Header whatsappNumber={whatsappNumber} />
+  <body class="antialiased">
+    <GoogleTagManager id={gtmId} placement="body" />
+    <FunnelAnalytics />
+    <a class="skip-link" href="#main-content">Lewati ke konten utama</a>
+    {!bare && <Header {...header} />}
+    {/* A bare page has no header, so the switch needs another home. */}
+    {bare && !ownThemeToggle && (
+      <div class="shell -mb-3 flex justify-end pt-3">
+        <ThemeToggle />
+      </div>
+    )}
     <main id="main-content">
       <slot />
     </main>
-    <Footer whatsappNumber={whatsappNumber} />
-    <WhatsAppButton number={whatsappNumber} />
+    {!bare && <Footer />}
+    <WhatsAppButton {...floatingCta} />
   </body>
 </html>

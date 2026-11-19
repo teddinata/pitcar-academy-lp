@@ -1,159 +1,68 @@
 ---
-interface Props {
-  whatsappNumber?: string;
-  whatsappMessage?: string;
-}
-
-const { whatsappNumber: _whatsappNumber, whatsappMessage: _whatsappMessage } = Astro.props;
+const trustChips = [
+  'Praktik langsung',
+  'Trainer praktisi',
+  'OJT di bengkel',
+  'Assessment kompetensi',
+  'Career opportunity',
+];
 ---
 
-<section class="hero-minimal relative overflow-hidden bg-slate-950 text-white" aria-label="Hero">
-  <div class="container-custom relative z-10 mx-auto flex min-h-[100dvh] items-center px-4 pb-20 pt-32 sm:px-6 md:pb-24 md:pt-36 lg:px-8">
-    <div class="grid w-full items-center gap-16 lg:grid-cols-[1.1fr_0.9fr] lg:gap-24">
-      <div class="max-w-3xl">
-        <p class="hero-eyebrow mb-7 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-brand-300">
-          <span class="h-px w-8 bg-brand-500"></span>
-          Batch perdana · Oktober 2026
-        </p>
+<section class="band relative overflow-hidden pt-28 pb-16 sm:pt-32 md:pt-40 md:pb-24" aria-labelledby="hero-title">
+  <div class="shell">
+    <div class="grid gap-12 lg:grid-cols-12 lg:gap-16 lg:items-center">
+      <!-- Copy -->
+      <div class="lg:col-span-7">
+        <p class="eyebrow text-accent">Pitcar Academy</p>
 
-        <h1 class="hero-heading max-w-3xl font-heading text-5xl font-black uppercase italic leading-[0.98] tracking-[-0.045em] text-white sm:text-6xl md:text-7xl lg:text-[5.6rem]">
-          Bangun skill.<br />
-          Dapatkan pengalaman.<br />
-          <em class="not-italic text-brand-400">Mulai kariermu.</em>
+        <h1 id="hero-title" class="display-1 mt-6 max-w-[15ch] text-body">
+          Belajar mekanik di bengkel nyata.
+          <span class="block text-muted">Bukan hanya di ruang kelas.</span>
         </h1>
 
-        <p class="mt-8 max-w-xl text-base leading-7 text-slate-300 sm:text-lg">
-          Pelatihan mekanik mobil dengan teori, praktik intensif, dan 2 bulan On The Job Training di ekosistem bengkel PITCAR.
+        <p class="lead mt-7 max-w-prose text-muted">
+          Bangun kompetensi mekanik melalui teori, praktik intensif, dan pengalaman
+          langsung di ekosistem bengkel PITCAR.
         </p>
 
+        <ul class="mt-9 flex flex-wrap gap-x-6 gap-y-3">
+          {trustChips.map((chip) => (
+            <li class="flex items-center gap-2.5 text-sm font-semibold text-muted">
+              <svg aria-hidden="true" class="h-4 w-4 shrink-0 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              {chip}
+            </li>
+          ))}
+        </ul>
+
         <div class="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
-          <a href="#cta" class="hero-link hero-link-primary">
-            Daftar sekarang
-            <span aria-hidden="true">→</span>
+          <a href="#konsultasi" data-lead-cta data-source-cta="hero_primary" class="btn btn-primary">
+            Konsultasi Program Gratis
+            <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
           </a>
-          <a href="#packages" class="hero-link hero-link-secondary">
-            Lihat paket belajar
-          </a>
+          <a href="#program" class="btn btn-ghost">Lihat Program &amp; Kurikulum</a>
         </div>
 
-        <dl class="mt-14 grid max-w-xl grid-cols-3 border-t border-white/15 pt-5">
-          <div class="pr-4">
-            <dt class="text-xs leading-5 text-slate-400">Belajar dari</dt>
-            <dd class="mt-1 text-sm font-semibold text-white">Praktisi bengkel</dd>
-          </div>
-          <div class="border-l border-white/15 px-4">
-            <dt class="text-xs leading-5 text-slate-400">Pengalaman</dt>
-            <dd class="mt-1 text-sm font-semibold text-white">2 bulan OJT</dd>
-          </div>
-          <div class="border-l border-white/15 pl-4">
-            <dt class="text-xs leading-5 text-slate-400">Hasil akhir</dt>
-            <dd class="mt-1 text-sm font-semibold text-white">Sertifikat resmi</dd>
-          </div>
-        </dl>
+        <p class="mt-5 text-sm text-muted">Gratis, tanpa kewajiban mendaftar.</p>
       </div>
 
-      <figure class="relative lg:justify-self-end">
-        <div class="hero-image-frame relative overflow-hidden border border-white/15 bg-slate-900">
+      <!-- Visual -->
+      <div class="lg:col-span-5">
+        <figure class="relative">
           <img
-            src="/mechanic-hero.png"
-            alt="Mekanik Pitcar Academy melakukan diagnosa mesin mobil"
-            class="aspect-[4/5] w-full object-cover object-top"
+            src="/mechanic-hero.webp"
+            alt="Mekanik Pitcar Academy melakukan diagnosa mesin kendaraan di area kerja bengkel"
+            width="720"
+            height="720"
             loading="eager"
             fetchpriority="high"
-            width="600"
-            height="800"
+            decoding="async"
+            class="aspect-[4/5] w-full object-cover object-top sm:aspect-square lg:aspect-[4/5]"
           />
-        </div>
-        <figcaption class="mt-4 flex items-start justify-between gap-5 border-t border-white/15 pt-3 text-xs text-slate-400">
-          <span>Praktik langsung di lingkungan bengkel nyata</span>
-          <span class="whitespace-nowrap font-mono text-brand-300">PITCAR / 01</span>
-        </figcaption>
-      </figure>
+          <figcaption class="mt-4 flex items-start gap-3 border-l-2 border-accent-fill pl-4 text-sm leading-relaxed text-muted">
+            Peserta belajar di lingkungan bengkel yang melayani kendaraan customer setiap hari.
+          </figcaption>
+        </figure>
+      </div>
     </div>
   </div>
-
-  <div class="hero-index absolute bottom-7 right-6 hidden font-mono text-xs text-slate-500 md:block lg:right-10">
-    01 — ACADEMY
-  </div>
 </section>
-
-<style>
-  .hero-minimal {
-    font-family: "Helvetica Neue", Arial, sans-serif;
-  }
-
-  .hero-eyebrow {
-    animation: hero-reveal 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  .hero-heading,
-  .hero-heading + p,
-  .hero-link,
-  .hero-image-frame,
-  .hero-image-frame + figcaption,
-  .hero-minimal dl {
-    animation: hero-reveal 700ms cubic-bezier(0.16, 1, 0.3, 1) 100ms both;
-  }
-
-  .hero-image-frame {
-    max-width: 31rem;
-  }
-
-  .hero-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    border-radius: 0.375rem;
-    padding: 0.875rem 1.25rem;
-    font-size: 0.9375rem;
-    font-weight: 600;
-    transition: background-color 200ms ease, color 200ms ease, transform 200ms ease;
-  }
-
-  .hero-link:active {
-    transform: scale(0.98);
-  }
-
-  .hero-link-primary {
-    background: #cc0000;
-    color: white;
-  }
-
-  .hero-link-primary:hover {
-    background: #aa0000;
-  }
-
-  .hero-link-secondary {
-    border: 1px solid rgb(255 255 255 / 20%);
-    color: rgb(255 255 255 / 82%);
-  }
-
-  .hero-link-secondary:hover {
-    background: rgb(255 255 255 / 8%);
-    color: white;
-  }
-
-  @keyframes hero-reveal {
-    from {
-      opacity: 0;
-      transform: translateY(12px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .hero-eyebrow,
-    .hero-heading,
-    .hero-heading + p,
-    .hero-link,
-    .hero-image-frame,
-    .hero-image-frame + figcaption,
-    .hero-minimal dl {
-      animation: none;
-    }
-  }
-</style>

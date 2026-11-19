@@ -1,0 +1,318 @@
+---
+interface Props {
+  id: string;
+  title: string;
+}
+
+const { id, title } = Astro.props;
+const diesel = id === 'mesin-diesel';
+---
+
+<svg class="g-diagram" viewBox="0 0 320 190" width="320" height="190" role="img" aria-label={`Diagram cara kerja ${title}`}>
+  {(id === 'mesin' || diesel) && (
+    <g>
+      <path class="d-line" d="M120 40V136M200 40V136M120 40H200" />
+      <g class="d-valve-in">
+        <path class="d-line" d="M140 20V45M130 45H150" />
+      </g>
+      <g class="d-valve-ex">
+        <path class="d-line" d="M180 20V45M170 45H190" />
+      </g>
+      <path class="d-line" d="M160 22V42" />
+      <circle class="d-hotfill d-spark" cx="160" cy="50" r="5" />
+      <g class="d-piston">
+        <path class="d-line" d="M160 80V128" />
+        <rect class="d-solid" x="123" y="54" width="74" height="26" />
+        <path class="d-line" d="M123 62H197M123 68H197" />
+      </g>
+      <circle class="d-solid" cx="160" cy="152" r="24" />
+      <g class="d-spin" style="--t:2s">
+        <circle cx="160" cy="152" r="24" fill="none" />
+        <circle class="d-hotfill" cx="160" cy="136" r="4" />
+      </g>
+      <path class="d-line" d="M86 30H112M106 25l6 5-6 5" />
+      <path class="d-line" d="M208 30H234M228 25l6 5-6 5" />
+      <text x="86" y="20">{diesel ? 'Udara saja' : 'Udara + bensin'}</text>
+      <text x="208" y="20">Gas buang</text>
+      <text class="d-stroke" style="--q:0" x="232" y="76">1 Isap</text>
+      <text class="d-stroke" style="--q:1" x="232" y="96">2 Kompresi</text>
+      <text class="d-stroke" style="--q:2" x="232" y="116">{diesel ? '3 Usaha: solar' : '3 Usaha: busi'}</text>
+      <text class="d-stroke" style="--q:3" x="232" y="136">4 Buang</text>
+      <text x="30" y="156">Poros engkol</text>
+      <path class="d-line" d="M100 152H134" />
+    </g>
+  )}
+
+  {id === 'pendingin' && (
+    <g>
+      <rect class="d-solid" x="28" y="62" width="92" height="78" />
+      <text class="d-strong" x="52" y="105">Mesin</text>
+      <rect class="d-solid" x="232" y="48" width="40" height="106" />
+      <path class="d-line" d="M240 48V154M248 48V154M256 48V154M264 48V154" />
+      <text class="d-strong" x="228" y="174">Radiator</text>
+      <path class="d-line d-hot d-flow" d="M120 76C165 34 200 34 232 64" />
+      <path class="d-line d-flow" d="M232 138C200 168 165 168 120 126" />
+      <circle class="d-solid" cx="160" cy="46" r="8" />
+      <text x="132" y="28">Thermostat</text>
+      <circle class="d-solid" cx="120" cy="126" r="9" />
+      <text x="62" y="160">Water pump</text>
+      <text x="170" y="74">Panas</text>
+      <text x="166" y="142">Dingin</text>
+      <g class="d-spin" style="--t:1.2s">
+        <circle cx="296" cy="100" r="16" fill="none" />
+        <path class="d-line" d="M296 84V116M280 100H312" />
+      </g>
+      <text x="284" y="134">Kipas</text>
+    </g>
+  )}
+
+  {id === 'rem' && (
+    <g>
+      <g class="d-pedal">
+        <path class="d-line" d="M30 34L46 112M38 112H58" />
+      </g>
+      <text x="16" y="134">Pedal</text>
+      <rect class="d-solid" x="62" y="60" width="66" height="24" />
+      <g class="d-master">
+        <path class="d-line" d="M44 72H74M74 62V82" />
+      </g>
+      <text x="62" y="50">Master silinder</text>
+      <path class="d-line d-pressure" d="M128 72H196V112H218" />
+      <text x="140" y="64">Minyak rem</text>
+      <path class="d-line" d="M218 84H264V96M218 84V156H264V144" />
+      <rect class="d-solid" x="237" y="62" width="8" height="116" />
+      <g class="d-pad-l">
+        <rect class="d-hotfill" x="224" y="100" width="8" height="40" />
+      </g>
+      <g class="d-pad-r">
+        <rect class="d-hotfill" x="250" y="100" width="8" height="40" />
+      </g>
+      <text x="270" y="106">Kampas</text>
+      <text x="270" y="124">Kaliper</text>
+      <text x="224" y="52">Cakram</text>
+    </g>
+  )}
+
+  {id === 'ecu' && (
+    <g>
+      <rect class="d-solid" x="12" y="24" width="76" height="26" />
+      <text x="20" y="41">Udara masuk</text>
+      <rect class="d-solid" x="12" y="72" width="76" height="26" />
+      <text x="20" y="89">Suhu mesin</text>
+      <rect class="d-solid" x="12" y="120" width="76" height="26" />
+      <text x="20" y="137">Oksigen</text>
+      <path class="d-line d-flow" d="M88 37H112V74H130" />
+      <path class="d-line d-flow" d="M88 85H130" />
+      <path class="d-line d-flow" d="M88 133H112V96H130" />
+      <rect class="d-solid" x="130" y="56" width="62" height="58" />
+      <text class="d-strong" x="148" y="90">ECU</text>
+      <path class="d-line d-hot d-flow" d="M192 72H214V45H236" />
+      <path class="d-line d-hot d-flow" d="M192 98H214V125H236" />
+      <rect class="d-solid" x="236" y="32" width="72" height="26" />
+      <text x="246" y="49">Injektor</text>
+      <rect class="d-solid" x="236" y="112" width="72" height="26" />
+      <text x="246" y="129">Koil + busi</text>
+      <path class="d-line" d="M161 114V150" />
+      <rect class="d-solid" x="128" y="150" width="66" height="26" />
+      <text x="136" y="167">Scanner</text>
+      <text x="200" y="167">lewat OBD-II</text>
+    </g>
+  )}
+
+  {id === 'ac' && (
+    <g>
+      <rect class="d-solid" x="28" y="26" width="92" height="34" />
+      <path class="d-line" d="M40 26V60M52 26V60M64 26V60M76 26V60M88 26V60M100 26V60" />
+      <text class="d-strong" x="28" y="18">Kondensor</text>
+      <circle class="d-solid" cx="74" cy="138" r="22" />
+      <text class="d-strong" x="40" y="180">Kompresor</text>
+      <rect class="d-solid" x="206" y="121" width="92" height="34" />
+      <path class="d-line" d="M218 121V155M230 121V155M242 121V155M254 121V155M266 121V155M278 121V155" />
+      <text class="d-strong" x="206" y="174">Evaporator</text>
+      <path class="d-solid" d="M240 34L264 54H240L264 34Z" />
+      <text class="d-strong" x="206" y="24">Katup ekspansi</text>
+      <path class="d-line d-hot d-flow" d="M74 116V60" />
+      <path class="d-line d-hot d-flow" d="M120 44H240" />
+      <path class="d-line d-flow" d="M252 54V121" />
+      <path class="d-line d-flow" d="M206 138H96" />
+      <text x="140" y="36">Cair, panas</text>
+      <text x="126" y="130">Gas, dingin</text>
+      <text x="82" y="92">Gas panas</text>
+      <text x="262" y="92">Dingin</text>
+    </g>
+  )}
+
+  {id === 'transmisi' && (
+    <g>
+      <g class="d-spin" style="--t:1.6s">
+        <circle class="d-line d-hot" cx="42" cy="82" r="16" stroke-dasharray="4 4.38" />
+        <circle class="d-line d-hot" cx="42" cy="82" r="11" />
+        <circle class="d-hotfill" cx="42" cy="74" r="2.5" />
+      </g>
+      <g class="d-spin d-spin-rev" style="--t:3.4s">
+        <circle class="d-line" cx="92" cy="82" r="34" stroke-dasharray="4 4.38" />
+        <circle class="d-line" cx="92" cy="82" r="29" />
+        <circle cx="92" cy="60" r="2.5" fill="currentColor" />
+      </g>
+      <text class="d-strong" x="26" y="142">Gigi rendah</text>
+      <text x="26" y="158">Lambat, dorongan besar</text>
+
+      <g class="d-spin" style="--t:3.4s">
+        <circle class="d-line d-hot" cx="214" cy="82" r="34" stroke-dasharray="4 4.38" />
+        <circle class="d-line d-hot" cx="214" cy="82" r="29" />
+        <circle class="d-hotfill" cx="214" cy="60" r="2.5" />
+      </g>
+      <g class="d-spin d-spin-rev" style="--t:1.6s">
+        <circle class="d-line" cx="264" cy="82" r="16" stroke-dasharray="4 4.38" />
+        <circle class="d-line" cx="264" cy="82" r="11" />
+        <circle cx="264" cy="74" r="2.5" fill="currentColor" />
+      </g>
+      <text class="d-strong" x="180" y="142">Gigi tinggi</text>
+      <text x="180" y="158">Cepat, dorongan kecil</text>
+      <text x="26" y="24">Merah: dari mesin</text>
+    </g>
+  )}
+
+  {id === 'suspensi' && (
+    <g>
+      <path class="d-line" d="M50 38H270" />
+      <text class="d-strong" x="50" y="28">Bodi</text>
+      <rect class="d-solid" x="182" y="38" width="12" height="36" />
+      <text x="202" y="60">Shock absorber</text>
+      <g class="d-spring">
+        <path class="d-line d-hot" d="M150 38l-12 7 24 10-24 10 24 10-24 10 12 13" />
+      </g>
+      <text x="92" y="72">Pegas</text>
+      <g class="d-wheel">
+        <path class="d-line" d="M188 62V104" />
+        <path class="d-line" d="M140 104H200" />
+        <circle class="d-solid" cx="160" cy="132" r="28" />
+        <circle class="d-line" cx="160" cy="132" r="12" />
+      </g>
+      <g class="d-road">
+        <path class="d-line" d="M-200 160H140Q160 138 180 160H520" />
+      </g>
+      <text x="16" y="180">Jalan</text>
+    </g>
+  )}
+
+  {id === 'karburator' && (
+    <g>
+      <path class="d-line" d="M118 14V60Q118 82 138 96Q118 110 118 132V176" />
+      <path class="d-line" d="M202 14V60Q202 82 182 96Q202 110 202 132V176" />
+      <path class="d-line d-flow" d="M146 18V84" />
+      <path class="d-line d-flow" d="M174 18V84" />
+      <text x="30" y="30">Udara masuk</text>
+      <text class="d-strong" x="52" y="100">Venturi</text>
+      <rect class="d-solid" x="226" y="84" width="70" height="52" />
+      <path class="d-line d-hot" d="M226 108H296" />
+      <rect class="d-solid" x="246" y="96" width="30" height="12" />
+      <text x="226" y="76">Ruang pelampung</text>
+      <text x="238" y="152">Bensin</text>
+      <path class="d-line d-hot d-flow" d="M226 124H212V96H166" />
+      <rect class="d-hotfill" x="208" y="120" width="8" height="8" />
+      <text x="214" y="170">Main jet</text>
+      <path class="d-line" d="M226 164L214 130" />
+      <path class="d-line d-hot d-flow" d="M160 100V140" />
+      <path class="d-line" d="M126 158L194 146" />
+      <text x="30" y="160">Katup gas</text>
+      <text x="126" y="188">Ke mesin</text>
+    </g>
+  )}
+
+  {id === 'commonrail' && (
+    <g>
+      <rect class="d-solid" x="10" y="124" width="58" height="26" />
+      <text x="20" y="141">Tangki</text>
+      <path class="d-line d-flow" d="M68 137H92" />
+      <rect class="d-solid" x="92" y="124" width="62" height="26" />
+      <text x="100" y="141">Pompa</text>
+      <path class="d-line d-hot d-flow" d="M154 137H172V88H184" />
+      <rect class="d-solid" x="184" y="78" width="126" height="20" />
+      <text class="d-strong" x="222" y="92">Rail</text>
+      <path class="d-line d-hot d-flow" d="M202 98V124" />
+      <path class="d-line d-hot d-flow" d="M232 98V124" />
+      <path class="d-line d-hot d-flow" d="M262 98V124" />
+      <path class="d-line d-hot d-flow" d="M292 98V124" />
+      <path class="d-solid" d="M196 124H208L202 146Z" />
+      <path class="d-solid" d="M226 124H238L232 146Z" />
+      <path class="d-solid" d="M256 124H268L262 146Z" />
+      <path class="d-solid" d="M286 124H298L292 146Z" />
+      <text x="214" y="166">Injektor</text>
+      <text x="100" y="118">Tekanan tinggi</text>
+      <rect class="d-solid" x="92" y="22" width="62" height="34" />
+      <text class="d-strong" x="110" y="44">ECU</text>
+      <path class="d-line d-flow" d="M246 78V40H154" />
+      <text x="170" y="32">Sensor tekanan</text>
+      <path class="d-line d-flow" d="M123 56V124" />
+      <text x="20" y="72">Atur pompa</text>
+      <text x="20" y="88">dan injektor</text>
+    </g>
+  )}
+
+  {id === 'pompa-injeksi' && (
+    <g>
+      <rect class="d-solid" x="10" y="130" width="52" height="26" />
+      <text x="18" y="147">Tangki</text>
+      <path class="d-line d-flow" d="M62 143H84" />
+      <rect class="d-solid" x="84" y="96" width="112" height="60" />
+      <text class="d-strong" x="92" y="174">Pompa injeksi</text>
+      <g class="d-spin" style="--t:2s">
+        <circle cx="112" cy="140" r="9" fill="none" />
+        <circle class="d-hotfill" cx="112" cy="133" r="3" />
+      </g>
+      <g class="d-spin" style="--t:2s">
+        <circle cx="168" cy="140" r="9" fill="none" />
+        <circle class="d-hotfill" cx="168" cy="147" r="3" />
+      </g>
+      <path class="d-line" d="M98 140H182" />
+      <rect class="d-solid" x="106" y="104" width="12" height="22" />
+      <rect class="d-solid" x="162" y="104" width="12" height="22" />
+      <text x="124" y="118">Plunger</text>
+      <path class="d-line d-hot d-flow" d="M112 104V60H238V84" />
+      <path class="d-line d-hot d-flow" d="M168 104V74H282V84" />
+      <text x="150" y="52">Pipa tekanan tinggi</text>
+      <path class="d-solid" d="M230 84H246L238 118Z" />
+      <path class="d-solid" d="M274 84H290L282 118Z" />
+      <path class="d-line d-hot d-flow" d="M238 120V138" />
+      <path class="d-line d-hot d-flow" d="M282 120V138" />
+      <text x="236" y="156">Nozzle</text>
+      <path class="d-line" d="M40 40L62 96H84" />
+      <text x="10" y="30">Pedal gas</text>
+      <text x="10" y="84">Governor</text>
+    </g>
+  )}
+
+  {id === 'transmisi-matic' && (
+    <g>
+      <path class="d-line" d="M22 40H86V132H22Z" />
+      <path class="d-line" d="M54 40V132" />
+      <g class="d-spin" style="--t:1.6s">
+        <circle class="d-line d-hot" cx="38" cy="86" r="12" stroke-dasharray="4 3.54" />
+      </g>
+      <g class="d-spin" style="--t:2.2s">
+        <circle class="d-line" cx="70" cy="86" r="12" stroke-dasharray="4 3.54" />
+      </g>
+      <path class="d-line d-hot d-flow" d="M40 54H68" />
+      <path class="d-line d-flow" d="M68 118H40" />
+      <text class="d-strong" x="12" y="28">Torque converter</text>
+      <text x="14" y="150">Pompa</text>
+      <text x="58" y="150">Turbin</text>
+      <text x="26" y="168">Oli meneruskan putaran</text>
+      <path class="d-line" d="M86 86H176" />
+      <circle class="d-line" cx="236" cy="86" r="58" />
+      <g class="d-spin" style="--t:6s">
+        <circle cx="236" cy="86" r="38" fill="none" />
+        <circle class="d-solid" cx="236" cy="48" r="16" />
+        <circle class="d-solid" cx="269" cy="105" r="16" />
+        <circle class="d-solid" cx="203" cy="105" r="16" />
+      </g>
+      <g class="d-spin" style="--t:1.6s">
+        <circle class="d-line d-hot" cx="236" cy="86" r="20" stroke-dasharray="4 3.85" />
+        <circle class="d-hotfill" cx="236" cy="72" r="3" />
+      </g>
+      <text class="d-strong" x="196" y="20">Roda gigi planetary</text>
+      <text x="190" y="164">Matahari, planet, cincin</text>
+    </g>
+  )}
+</svg>

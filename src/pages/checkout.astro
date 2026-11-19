@@ -1,0 +1,784 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
+import '../styles/garage.css';
+import { acCourse, contact, inspectionCourse } from '../content.config';
+
+// Slugs match the course rows on the backend (LmsCourseSeeder).
+const courses = [
+  {
+    slug: 'kelas-online-ac',
+    // Same product ids the sales pages already send to the ad pixels.
+    trackingId: 'kelas-online-ac',
+    amount: acCourse.price,
+    name: acCourse.name,
+    href: '/kelas-online-ac/',
+    price: acCourse.priceDisplay,
+    strike: acCourse.strikePriceDisplay,
+    includes: acCourse.features.map((f) => f.title),
+  },
+  {
+    slug: 'kelas-online-inspeksi',
+    trackingId: 'kelas-inspeksi-mobil-bekas',
+    amount: inspectionCourse.price,
+    name: inspectionCourse.name,
+    href: '/kelas-online-inspeksi/',
+    price: inspectionCourse.priceDisplay,
+    strike: inspectionCourse.strikePriceDisplay,
+    includes: inspectionCourse.includes.map((i) => i.title),
+  },
+];
+
+const apiBase = (import.meta.env.PUBLIC_API_BASE_URL ?? import.meta.env.PUBLIC_LEAD_API_BASE_URL ?? '')
+  .trim()
+  .replace(/\/$/, '');
+const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent('Halo Pitcar Academy, saya butuh bantuan soal pembayaran kelas online.')}`;
+---
+
+<BaseLayout
+  title="Checkout Kelas Online | Pitcar Academy"
+  description="Isi data, pilih cara bayar, dan kelas langsung terbuka setelah pembayaran diterima."
+  canonical="/checkout/"
+  world="garage"
+  bare
+  ownThemeToggle
+  noindex
+>
+  <main class="pt-6 pb-20 sm:pt-8" data-checkout-root data-api={apiBase}>
+    <div class="shell">
+      <div class="mb-8 flex items-center justify-between gap-4 border-b border-line pb-3 font-display text-xl font-bold uppercase lg:mb-12">
+        <a href="/kelas-online/" class="inline-flex min-h-11 items-center gap-[0.3em] !text-inherit !no-underline">Pitcar <span class="text-accent">Academy</span></a>
+        <span class="flex items-center gap-4">
+          <span class="g-label text-muted">Checkout</span>
+          <ThemeToggle />
+        </span>
+      </div>
+
+      <!-- No course in the address: let the buyer pick one instead of failing. -->
+      <section data-view="pick" hidden>
+        <h1 class="g-h2">Pilih kelas yang ingin dibeli.</h1>
+        <ul class="mt-8 border-t border-body">
+          {courses.map((course) => (
+            <li class="border-b border-line">
+              <a href={`/checkout/?kelas=${course.slug}`} class="flex min-h-16 flex-wrap items-baseline justify-between gap-x-6 gap-y-1 py-4 !text-inherit !no-underline hover:!text-accent">
+                <span class="g-h3">{course.name}</span>
+                <span class="g-num text-3xl">{course.price}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <div data-view="checkout" class="grid gap-10 lg:grid-cols-12 lg:gap-16" hidden>
+        <aside class="min-w-0 lg:col-span-5" aria-label="Ringkasan pesanan">
+          {courses.map((course) => (
+            <div data-course={course.slug} data-title={course.name} data-tracking-id={course.trackingId} data-amount={course.amount} hidden>
+              <h1 class="g-h2 !text-[clamp(2rem,4vw,3rem)]">{course.name}</h1>
+              <div class="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <span class="g-num text-5xl" data-price>{course.price}</span>
+                <span class="text-lg text-muted line-through" data-strike>{course.strike}</span>
+              </div>
+              <p class="mt-2 text-sm text-muted">Sekali bayar, akses selamanya.</p>
+              <ul class="mt-6 border-t border-line text-[0.9375rem]">
+                {course.includes.map((item) => <li class="border-b border-line py-3">{item}</li>)}
+              </ul>
+              <p class="mt-5 text-sm"><a href={course.href}>Lihat lagi isi kelasnya</a></p>
+            </div>
+          ))}
+        </aside>
+
+        <div class="min-w-0 lg:col-span-7">
+          <ol class="flex flex-wrap gap-x-8 gap-y-2 border-b border-line pb-4 font-display text-lg font-semibold uppercase" aria-label="Langkah checkout">
+            <li data-step-label="1" aria-current="step" class="text-muted aria-[current]:text-body">1. Data kamu</li>
+            <li data-step-label="2" class="text-muted aria-[current]:text-body">2. Pembayaran</li>
+          </ol>
+
+          <form data-view-step="form" class="mt-8 flex flex-col gap-5" novalidate>
+            <div class="flex flex-col gap-1.5">
+              <label for="co-name" class="text-sm font-semibold">Nama lengkap</label>
+              <input id="co-name" name="name" type="text" autocomplete="name" required class="co-input" aria-describedby="co-name-err" />
+              <p id="co-name-err" data-error="name" class="co-error" hidden></p>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label for="co-email" class="text-sm font-semibold">Email</label>
+              <input id="co-email" name="email" type="email" autocomplete="email" inputmode="email" required class="co-input" aria-describedby="co-email-hint co-email-err" />
+              <p id="co-email-hint" class="text-sm text-muted">Email ini yang dipakai untuk masuk ke kelas. Pastikan ejaannya benar.</p>
+              <p id="co-email-err" data-error="email" class="co-error" hidden></p>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label for="co-wa" class="text-sm font-semibold">Nomor WhatsApp</label>
+              <input id="co-wa" name="whatsapp" type="tel" autocomplete="tel" inputmode="tel" placeholder="081234567890" required class="co-input" aria-describedby="co-wa-err" />
+              <p id="co-wa-err" data-error="whatsapp" class="co-error" hidden></p>
+            </div>
+            <fieldset class="flex flex-col gap-3" data-upsell hidden>
+              <legend class="mb-3 text-sm font-semibold">Tambahan untuk pesananmu</legend>
+            </fieldset>
+            <p class="flex items-baseline justify-between gap-4 border-t border-line pt-4" data-total hidden>
+              <span class="text-sm font-semibold">Total bayar</span>
+              <strong class="g-num text-3xl" data-total-value></strong>
+            </p>
+            <p data-error="form" class="co-error" role="alert" hidden></p>
+            <div>
+              <button type="submit" class="btn btn-primary w-full sm:w-auto" data-submit>Lanjut ke pembayaran</button>
+            </div>
+            <p class="text-sm text-muted">Pembayaran diproses oleh DOKU. Bisa lewat QRIS, e-wallet, virtual account, atau paylater.</p>
+          </form>
+
+          <section data-view-step="pay" class="mt-8" aria-live="polite" hidden>
+            <div data-state="pending" hidden>
+              <h2 class="g-h3 !text-3xl" tabindex="-1">Menunggu pembayaran</h2>
+              <dl class="mt-5 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-y border-line py-4 text-[0.9375rem]">
+                <dt class="text-muted">Nomor pesanan</dt><dd class="font-mono" data-field="order"></dd>
+                <dt class="text-muted">Kelas</dt><dd data-field="items"></dd>
+                <dt class="text-muted">Total</dt><dd data-field="amount"></dd>
+                <dt class="text-muted">Bayar sebelum</dt><dd data-field="deadline"></dd>
+              </dl>
+              <p class="mt-4 text-sm text-muted">Halaman ini memeriksa pembayaranmu secara otomatis. Jangan ditutup sampai statusnya berubah.</p>
+              <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+                <button type="button" class="btn btn-primary" data-open-pay>Buka halaman pembayaran</button>
+                <button type="button" class="btn btn-ghost" data-edit>Ubah data</button>
+              </div>
+            </div>
+
+            <div data-state="paid" hidden>
+              <h2 class="g-h3 !text-3xl" tabindex="-1">Pembayaran diterima</h2>
+              <p class="lead mt-4 max-w-prose">Kelas sudah terbuka untuk <strong data-field="email" class="break-all"></strong>.</p>
+              <section class="mt-6 border border-line p-5" aria-labelledby="pass-title" data-pass hidden>
+                <h3 id="pass-title" class="font-sans text-sm font-semibold normal-case tracking-normal">Kata sandi kamu</h3>
+                <p class="mt-2 break-all font-mono text-2xl font-semibold tracking-wider" data-pass-value></p>
+                <p class="mt-3 max-w-prose text-sm text-muted">Simpan sekarang. Kata sandi ini hanya ditampilkan sekali dan tidak bisa dilihat lagi setelah halaman ini ditutup. Kamu bisa menggantinya dengan kata sandi sendiri di halaman Akun.</p>
+                <div class="mt-4">
+                  <button type="button" class="btn btn-ghost w-full sm:w-auto" data-pass-copy>Salin kata sandi</button>
+                </div>
+                <p class="mt-3 text-sm" data-pass-copied role="status" hidden></p>
+              </section>
+              <p class="mt-6 max-w-prose text-sm text-muted" data-pass-shown hidden>Kata sandi sudah ditampilkan sekali di halaman ini. Kalau belum tersimpan, tekan tombol di bawah untuk masuk, lalu ubah kata sandi di halaman Akun.</p>
+              <div class="mt-6">
+                <button type="button" class="btn btn-primary w-full sm:w-auto" data-enter>Mulai belajar sekarang</button>
+              </div>
+              <p class="co-error mt-4" data-enter-error role="alert" hidden></p>
+              <p class="mt-4 max-w-prose" data-enter-mailed hidden>Email ini sudah punya akun di Pitcar Academy, jadi tautan masuk kami kirim ke sana. Buka emailmu untuk mulai belajar.</p>
+              <dl class="mt-8 grid gap-x-6 gap-y-3 border-t border-line pt-5 text-[0.9375rem] sm:grid-cols-[auto_1fr]">
+                <dt class="text-muted">Masuk lagi nanti</dt>
+                <dd>Buka <a href="/belajar/masuk/">halaman Masuk</a>, lalu pakai email di atas dengan kata sandimu. Lupa kata sandi? Minta tautan masuk lewat email di halaman yang sama.</dd>
+                <dt class="text-muted">Di emailmu</dt>
+                <dd>Tautan masuk yang sama juga kami kirim ke email itu.</dd>
+                <dt class="text-muted">Nomor pesanan</dt>
+                <dd class="font-mono" data-field="order"></dd>
+              </dl>
+            </div>
+
+            <div data-state="expired" hidden>
+              <h2 class="g-h3 !text-3xl" tabindex="-1">Batas waktu pembayaran habis</h2>
+              <p class="mt-4 max-w-prose">Pesanan <span class="font-mono" data-field="order"></span> tidak dibayar sampai batas waktunya, jadi tidak ada yang ditagih. Kalau kamu sudah telanjur membayar, hubungi kami dengan nomor pesanan itu.</p>
+              <div class="mt-6">
+                <button type="button" class="btn btn-primary" data-edit>Buat pembayaran baru</button>
+              </div>
+            </div>
+
+            <div data-state="lost" hidden>
+              <h2 class="g-h3 !text-3xl" tabindex="-1">Status pesanan tidak bisa dimuat</h2>
+              <p class="mt-4 max-w-prose">Periksa koneksi internetmu, lalu coba lagi. Pembayaran yang sudah masuk tetap tercatat.</p>
+              <div class="mt-6">
+                <button type="button" class="btn btn-primary" data-retry>Coba lagi</button>
+              </div>
+            </div>
+          </section>
+
+          <p class="mt-10 border-t border-line pt-5 text-sm text-muted">
+            Ada kendala saat membayar? <a href={helpHref} target="_blank" rel="noopener">Hubungi kami lewat WhatsApp</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <template id="co-upsell">
+      <label class="co-upsell">
+        <input type="checkbox" class="co-check" />
+        <span class="flex min-w-0 flex-col gap-1">
+          <span class="font-semibold" data-u-title></span>
+          <span class="text-sm text-muted" data-u-headline></span>
+          <span class="mt-1 flex flex-wrap items-baseline gap-x-3">
+            <strong class="g-num text-2xl text-accent" data-u-price></strong>
+            <span class="text-sm text-muted line-through" data-u-normal></span>
+          </span>
+          <span class="text-sm" data-u-saving></span>
+        </span>
+      </label>
+    </template>
+
+    <dialog data-pay-dialog class="co-dialog" aria-label="Halaman pembayaran DOKU">
+      <div class="co-dialog-bar">
+        <span class="text-sm text-muted">Pembayaran diproses oleh DOKU</span>
+        <button type="button" class="co-dialog-close" data-close-pay>Tutup</button>
+      </div>
+      <iframe data-pay-frame title="Halaman pembayaran DOKU" allow="clipboard-write"></iframe>
+    </dialog>
+  </main>
+</BaseLayout>
+
+<style is:global>
+  /* Layout utilities such as flex and grid outrank the hidden attribute. */
+  [data-checkout-root] [hidden] {
+    display: none !important;
+  }
+  /* Headings take focus only from script, to move a screen reader to the new state. */
+  [data-checkout-root] h2[tabindex='-1']:focus {
+    outline: none;
+  }
+  /* Links inside running text carry no other cue, so they keep an underline. */
+  [data-checkout-root] :is(p, dd) > a {
+    color: rgb(var(--body));
+    text-decoration: underline;
+  }
+  [data-checkout-root] :is(p, dd) > a:hover {
+    color: rgb(var(--accent));
+  }
+  .co-input {
+    min-height: 3rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    color: rgb(var(--body));
+    background: rgb(var(--surface));
+    border: 1px solid rgb(var(--muted));
+    border-radius: 2px;
+  }
+  .co-input::placeholder {
+    color: rgb(var(--muted));
+    opacity: 1;
+  }
+  .co-input:focus-visible {
+    outline: 2px solid rgb(var(--accent));
+    outline-offset: 2px;
+  }
+  .co-input[aria-invalid='true'] {
+    border-color: rgb(var(--accent));
+  }
+  .co-dialog {
+    width: min(100vw, 520px);
+    max-width: none;
+    height: min(100dvh, 860px);
+    max-height: none;
+    padding: 0;
+    overflow: hidden;
+    color: rgb(var(--body));
+    background: rgb(var(--ground));
+    border: 1px solid rgb(var(--line));
+  }
+  .co-dialog[open] {
+    display: flex;
+    flex-direction: column;
+  }
+  .co-dialog::backdrop {
+    background: rgb(0 0 0 / 0.72);
+  }
+  .co-dialog-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0 0 0 1rem;
+    border-bottom: 1px solid rgb(var(--line));
+  }
+  .co-dialog-close {
+    min-height: 3rem;
+    padding: 0 1.25rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .co-dialog-close:hover {
+    color: rgb(var(--accent));
+  }
+  .co-dialog iframe {
+    flex: 1 1 auto;
+    width: 100%;
+    border: 0;
+    background: #fff;
+  }
+  [data-checkout-root] button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  .co-upsell {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1rem 1.125rem;
+    border: 1px solid rgb(var(--line));
+    border-radius: 2px;
+    background: rgb(var(--surface));
+    cursor: pointer;
+  }
+  .co-upsell:hover,
+  .co-upsell:has(:checked) {
+    border-color: rgb(var(--accent));
+  }
+  .co-upsell:has(:focus-visible) {
+    outline: 2px solid rgb(var(--accent));
+    outline-offset: 2px;
+  }
+  .co-check {
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.125rem;
+    accent-color: rgb(var(--accent));
+  }
+  .co-error {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgb(var(--accent));
+  }
+</style>
+
+<script>
+  import { readMetaCookie } from '../lib/leads';
+
+  const root = document.querySelector<HTMLElement>('[data-checkout-root]')!;
+  const api = root.dataset.api ?? '';
+  const $ = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+  const all = (sel: string) => [...root.querySelectorAll<HTMLElement>(sel)];
+
+  const params = new URLSearchParams(location.search);
+  const form = $<HTMLFormElement>('[data-view-step="form"]');
+  const pay = $('[data-view-step="pay"]');
+  const submit = $<HTMLButtonElement>('[data-submit]');
+
+  // Proves to the server that this browser created the order, so it may open the class without the mail.
+  const claim = () => store.get('co-claim');
+
+  type Item = { course: string; title: string; tracking_id: string; kind: string; price: number };
+  type Order = { order: string; course: string; status: string; amount: number; items?: Item[]; payment_url: string | null; expires_at: string | null };
+  type CoursePrice = { slug: string; title: string; tracking_id: string; price: number; strike_price: number | null };
+  type Offer = CoursePrice & { offer_price: number; headline: string | null };
+  let current: Order | null = null;
+  let timer: number | undefined;
+
+  const store = {
+    get: (key: string) => { try { return sessionStorage.getItem(key); } catch { return null; } },
+    set: (key: string, value: string) => { try { sessionStorage.setItem(key, value); } catch { /* private mode */ } },
+    del: (key: string) => { try { sessionStorage.removeItem(key); } catch { /* private mode */ } },
+  };
+
+  const rupiah = (n: number) => 'Rp' + n.toLocaleString('id-ID');
+  const upsell = $<HTMLFieldSetElement>('[data-upsell]');
+  let course: CoursePrice | null = null;
+  let offers: Offer[] = [];
+
+  const selected = () =>
+    offers.filter((offer) => upsell.querySelector<HTMLInputElement>(`[data-addon="${CSS.escape(offer.slug)}"]`)?.checked);
+
+  function updateTotal() {
+    if (!course) return;
+    $('[data-total-value]').textContent = rupiah(course.price + selected().reduce((sum, o) => sum + o.offer_price, 0));
+    $('[data-total]').hidden = false;
+  }
+
+  function renderOffers() {
+    const template = document.querySelector<HTMLTemplateElement>('#co-upsell')!;
+    upsell.querySelectorAll('.co-upsell').forEach((el) => el.remove());
+    for (const offer of offers) {
+      const card = template.content.firstElementChild!.cloneNode(true) as HTMLElement;
+      const box = card.querySelector<HTMLInputElement>('input')!;
+      box.dataset.addon = offer.slug;
+      box.name = 'addons';
+      box.value = offer.slug;
+      const fill = (sel: string, text: string) => (card.querySelector<HTMLElement>(sel)!.textContent = text);
+      fill('[data-u-title]', `Tambah ${offer.title}`);
+      fill('[data-u-headline]', offer.headline ?? '');
+      fill('[data-u-price]', `+${rupiah(offer.offer_price)}`);
+      fill('[data-u-normal]', rupiah(offer.price));
+      fill('[data-u-saving]', offer.price > offer.offer_price ? `Hemat ${rupiah(offer.price - offer.offer_price)} dibanding beli terpisah.` : '');
+      box.addEventListener('change', () => {
+        updateTotal();
+        window.trackFunnelEvent?.('checkout_upsell_toggle', { item_id: offer.tracking_id, item_name: offer.title, checked: box.checked, value: offer.offer_price });
+      });
+      upsell.append(card);
+    }
+    upsell.hidden = offers.length === 0;
+  }
+
+  /** Price and add-ons come from the LMS; the printed price stands in until it answers, or if it cannot. */
+  async function loadCourse(slug: string) {
+    const panel = root.querySelector<HTMLElement>(`[data-course="${CSS.escape(slug)}"]`);
+    if (!panel) return;
+    course = { slug, title: panel.dataset.title ?? '', tracking_id: panel.dataset.trackingId ?? slug, price: Number(panel.dataset.amount) || 0, strike_price: null };
+    try {
+      const res = await fetch(`${api}/api/checkout/courses/${encodeURIComponent(slug)}`, { headers: { Accept: 'application/json' } });
+      if (res.ok) {
+        const data: { course: CoursePrice; offers: Offer[] } = await res.json();
+        course = data.course;
+        offers = data.offers ?? [];
+        panel.querySelector<HTMLElement>('[data-price]')!.textContent = rupiah(course.price);
+        panel.querySelector<HTMLElement>('[data-strike]')!.textContent = course.strike_price ? rupiah(course.strike_price) : '';
+        renderOffers();
+      }
+    } catch {
+      // The class still sells at the printed price, without the bundle.
+    }
+    updateTotal();
+  }
+
+  /** Where the buyer came from, for the order record and Meta's server-side match. */
+  function attribution() {
+    const landing = window.getLeadAttribution?.();
+    const here = new URLSearchParams(location.search);
+    const fbclid = here.get('fbclid');
+    // Before the pixel has written _fbc, Meta accepts one built from the click id.
+    const fbc = readMetaCookie('_fbc') ?? (fbclid ? `fb.1.${Date.now()}.${fbclid}` : null);
+    const values: Record<string, string | null | undefined> = {
+      landing_page: landing?.landing_page,
+      referrer: landing?.referrer,
+      checkout_url: location.href,
+      utm_source: here.get('utm_source') ?? landing?.utm_source,
+      utm_medium: here.get('utm_medium') ?? landing?.utm_medium,
+      utm_campaign: here.get('utm_campaign') ?? landing?.utm_campaign,
+      utm_content: here.get('utm_content') ?? landing?.utm_content,
+      utm_term: here.get('utm_term') ?? landing?.utm_term,
+      fbclid,
+      gclid: here.get('gclid'),
+      ttclid: here.get('ttclid'),
+      fbp: readMetaCookie('_fbp'),
+      fbc,
+    };
+    return Object.fromEntries(Object.entries(values).filter(([, v]) => v));
+  }
+
+  // ---- ad events: same pixel and product ids the sales pages use ----
+  const once = (key: string) => {
+    try {
+      if (localStorage.getItem(key)) return false;
+      localStorage.setItem(key, '1');
+    } catch {
+      // Without storage an event may repeat; Meta and GA4 drop repeats by eventID and transaction_id.
+    }
+    return true;
+  };
+  const gaItems = (items: Item[]) => items.map((i) => ({ item_id: i.tracking_id, item_name: i.title, price: i.price, quantity: 1 }));
+
+  /** One InitiateCheckout per visit: AC and the catalog already send it on their buy button. */
+  function trackInitiate() {
+    if (!course) return;
+    let sentByPage: string | null = null;
+    try {
+      sentByPage = sessionStorage.getItem('pitcar_checkout_initiated');
+      sessionStorage.removeItem('pitcar_checkout_initiated');
+    } catch { /* storage blocked */ }
+    if (sentByPage === course.slug) return;
+    const item = { item_id: course.tracking_id, item_name: course.title, price: course.price, quantity: 1 };
+    window.trackFunnelEvent?.('begin_checkout', { currency: 'IDR', value: course.price, items: [item], source_cta: 'checkout_page' });
+    window.fbq?.('track', 'InitiateCheckout', { value: course.price, currency: 'IDR', content_name: course.title, content_ids: [course.tracking_id], content_type: 'product' });
+  }
+
+  function trackPaymentInfo(order: Order) {
+    if (!order.items?.length || !once(`pitcar_payment_info:${order.order}`)) return;
+    window.trackFunnelEvent?.('add_payment_info', { currency: 'IDR', value: order.amount, items: gaItems(order.items) });
+    window.fbq?.('track', 'AddPaymentInfo', { value: order.amount, currency: 'IDR', content_ids: order.items.map((i) => i.tracking_id), content_type: 'product' });
+  }
+
+  /** Sent by the browser that paid; the server sends the same event, and the order number lets Meta keep one. */
+  function trackPurchase(order: Order) {
+    if (!claim() || !order.items?.length || !once(`pitcar_purchase:${order.order}`)) return;
+    window.fbq?.(
+      'track',
+      'Purchase',
+      {
+        value: order.amount,
+        currency: 'IDR',
+        content_type: 'product',
+        content_ids: order.items.map((i) => i.tracking_id),
+        contents: order.items.map((i) => ({ id: i.tracking_id, quantity: 1, item_price: i.price })),
+        num_items: order.items.length,
+      },
+      { eventID: order.order },
+    );
+    window.trackFunnelEvent?.('purchase', { transaction_id: order.order, currency: 'IDR', value: order.amount, items: gaItems(order.items) });
+  }
+
+  function showCourse(slug: string | null): boolean {
+    const panel = slug ? root.querySelector<HTMLElement>(`[data-course="${CSS.escape(slug)}"]`) : null;
+    $('[data-view="pick"]').hidden = Boolean(panel);
+    $('[data-view="checkout"]').hidden = !panel;
+    all('[data-course]').forEach((el) => (el.hidden = el !== panel));
+    return Boolean(panel);
+  }
+
+  function step(n: 1 | 2) {
+    form.hidden = n !== 1;
+    pay.hidden = n !== 2;
+    all('[data-step-label]').forEach((el) =>
+      el.dataset.stepLabel === String(n) ? el.setAttribute('aria-current', 'step') : el.removeAttribute('aria-current'),
+    );
+  }
+
+  function setError(field: string, message: string | null) {
+    const el = root.querySelector<HTMLElement>(`[data-error="${field}"]`);
+    if (!el) return;
+    el.textContent = message ?? '';
+    el.hidden = !message;
+    const input = form.elements.namedItem(field);
+    if (input instanceof HTMLInputElement) input.setAttribute('aria-invalid', message ? 'true' : 'false');
+  }
+
+  function render(order: Order) {
+    current = order;
+    const state = order.status === 'paid' ? 'paid' : order.status === 'pending' ? 'pending' : 'expired';
+    all('[data-state]').forEach((el) => (el.hidden = el.dataset.state !== state));
+    all('[data-field="order"]').forEach((el) => (el.textContent = order.order));
+    $('[data-field="amount"]').textContent = rupiah(order.amount);
+    $('[data-field="items"]').textContent = (order.items ?? []).map((i) => i.title).join(' + ');
+    $('[data-field="deadline"]').textContent = order.expires_at
+      ? new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'long', timeZone: 'Asia/Jakarta' }).format(new Date(order.expires_at)) + ' WIB'
+      : '';
+    $('[data-field="email"]').textContent = store.get('co-email') ?? 'email yang kamu isi';
+    $('[data-enter]').textContent = claim() ? 'Mulai belajar sekarang' : 'Masuk dengan emailmu';
+    step(2);
+
+    if (state === 'paid') {
+      trackPurchase(order);
+      showPassword();
+    }
+
+    if (state === 'pending') {
+      store.set('co-order', order.order);
+    } else {
+      // A paid order stays remembered, so a reload returns to this screen instead of an empty form.
+      if (state === 'paid') store.set('co-order', order.order);
+      else store.del('co-order');
+      window.clearInterval(timer);
+      closePopup();
+      frame.removeAttribute('src');
+      delete frame.dataset.url;
+    }
+  }
+
+  function showLost() {
+    all('[data-state]').forEach((el) => (el.hidden = el.dataset.state !== 'lost'));
+    step(2);
+  }
+
+  async function refresh(number: string, quiet = true) {
+    try {
+      const res = await fetch(`${api}/api/checkout/orders/${encodeURIComponent(number)}`, { headers: { Accept: 'application/json' } });
+      if (res.status === 404) {
+        store.del('co-order');
+        step(1);
+        return;
+      }
+      if (!res.ok) throw new Error(String(res.status));
+      const before = current?.status;
+      const order: Order = await res.json();
+      showCourse(order.course);
+      render(order);
+      if (before && before !== order.status) pay.querySelector<HTMLElement>('[data-state]:not([hidden]) h2')?.focus();
+    } catch {
+      // A missed poll is not news; only a failed first load or manual retry is.
+      if (!quiet) showLost();
+    }
+  }
+
+  function watch(number: string) {
+    window.clearInterval(timer);
+    timer = window.setInterval(() => {
+      if (document.visibilityState === 'visible') refresh(number);
+    }, 5000);
+  }
+
+  // Same contract as DOKU's own popup script: their page in a frame, with ?view=iframe.
+  const dialog = $<HTMLDialogElement>('[data-pay-dialog]');
+  const frame = $<HTMLIFrameElement>('[data-pay-frame]');
+  const dokuOrigins = ['https://checkout.doku.com', 'https://jokul.doku.com', 'https://sandbox.doku.com', 'https://staging.doku.com'];
+
+  function openPopup() {
+    const url = current?.payment_url;
+    if (!url) return;
+    if (typeof dialog.showModal !== 'function') {
+      location.href = url;
+      return;
+    }
+    if (frame.dataset.url !== url) {
+      frame.dataset.url = url;
+      frame.src = url + '?view=iframe';
+    }
+    if (!dialog.open) dialog.showModal();
+  }
+
+  function closePopup() {
+    if (dialog.open) dialog.close();
+  }
+
+  // Closing by button or Escape: the buyer may have just paid, so ask right away.
+  dialog.addEventListener('close', () => current && refresh(current.order));
+  window.addEventListener('message', (event) => {
+    if (dokuOrigins.includes(event.origin) && event.data?.func === 'closeJokul') closePopup();
+  });
+
+  // Asked for once per paid order; the value lives only in this page's memory.
+  let passwordAsked = false;
+  async function showPassword() {
+    if (passwordAsked || !current || !claim()) return;
+    passwordAsked = true;
+    try {
+      const res = await fetch(`${api}/api/checkout/orders/${encodeURIComponent(current.order)}/password`, {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ claim: claim() }),
+      });
+      const data = await res.json();
+      if (data.password) {
+        $('[data-pass-value]').textContent = data.password;
+        $('[data-pass]').hidden = false;
+      } else if (data.reason === 'shown') {
+        $('[data-pass-shown]').hidden = false;
+      }
+    } catch {
+      // Without it the buyer still gets in by the button below or the mailed link.
+      passwordAsked = false;
+    }
+  }
+
+  async function copyPassword() {
+    const value = $('[data-pass-value]').textContent ?? '';
+    const note = $('[data-pass-copied]');
+    try {
+      await navigator.clipboard.writeText(value);
+      note.textContent = 'Kata sandi tersalin. Tempel di catatan atau pengelola kata sandimu.';
+    } catch {
+      // Clipboard access can be refused; selecting the text lets the buyer copy by hand.
+      const range = document.createRange();
+      range.selectNodeContents($('[data-pass-value]'));
+      getSelection()?.removeAllRanges();
+      getSelection()?.addRange(range);
+      note.textContent = 'Tidak bisa menyalin otomatis. Kata sandi sudah diblok, salin secara manual.';
+    }
+    note.hidden = false;
+  }
+
+  async function enter(button: HTMLButtonElement) {
+    const error = $('[data-enter-error]');
+    error.hidden = true;
+    // Opened from another device or after the tab was closed: the email link is the way in.
+    if (!current || !claim()) {
+      location.href = '/belajar/masuk/';
+      return;
+    }
+    button.disabled = true;
+    button.textContent = 'Membuka kelas';
+    try {
+      const post = (path: string, body: unknown) =>
+        fetch(`${api}/api${path}`, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const access = await post(`/checkout/orders/${encodeURIComponent(current.order)}/access`, { claim: claim() });
+      const grant = await access.json().catch(() => ({}));
+      if (access.ok && grant.emailed) {
+        button.hidden = true;
+        $('[data-enter-mailed]').hidden = false;
+        return;
+      }
+      if (!access.ok) throw new Error(grant.message);
+      const opened = await post('/learn/session', { token: grant.token });
+      const data = await opened.json().catch(() => ({}));
+      if (!opened.ok) throw new Error(data.message);
+      localStorage.setItem('pitcar-learn-session', data.session);
+      store.del('co-claim');
+      location.href = `/belajar/kelas/?k=${encodeURIComponent(current.course)}`;
+    } catch (e) {
+      error.textContent = (e instanceof Error && e.message) || 'Kelas tidak bisa dibuka dari sini. Masuk lewat halaman Masuk dengan emailmu.';
+      error.hidden = false;
+      button.disabled = false;
+      button.textContent = 'Mulai belajar sekarang';
+    }
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    ['name', 'email', 'whatsapp', 'form'].forEach((f) => setError(f, null));
+
+    const data = Object.fromEntries(new FormData(form)) as Record<string, string>;
+    const missing: [string, string][] = [];
+    if (data.name.trim().length < 2) missing.push(['name', 'Nama wajib diisi.']);
+    if (!/^\S+@\S+\.\S+$/.test(data.email.trim())) missing.push(['email', 'Format email belum benar.']);
+    if (data.whatsapp.replace(/\D/g, '').length < 9) missing.push(['whatsapp', 'Nomor WhatsApp belum benar. Contoh: 081234567890.']);
+    if (missing.length) {
+      missing.forEach(([f, m]) => setError(f, m));
+      (form.elements.namedItem(missing[0][0]) as HTMLInputElement).focus();
+      return;
+    }
+
+    submit.disabled = true;
+    submit.textContent = 'Menyiapkan pembayaran';
+    try {
+      const res = await fetch(`${api}/api/checkout`, {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          whatsapp: data.whatsapp,
+          course: params.get('kelas'),
+          addons: selected().map((o) => o.slug),
+          attribution: attribution(),
+          order: store.get('co-order'),
+          claim: claim(),
+        }),
+      });
+      const body = await res.json().catch(() => ({}));
+
+      if (res.status === 422 && body.errors) {
+        Object.entries(body.errors as Record<string, string[]>).forEach(([f, m]) => setError(f in data ? f : 'form', m[0]));
+        return;
+      }
+      if (!res.ok) {
+        setError('form', body.message ?? 'Pembayaran tidak bisa disiapkan. Coba lagi sebentar lagi.');
+        return;
+      }
+
+      store.set('co-email', data.email.trim().toLowerCase());
+      store.set('co-claim', body.claim);
+      render(body as Order);
+      trackPaymentInfo(body as Order);
+      watch(body.order);
+      pay.querySelector<HTMLElement>('[data-state="pending"] h2')?.focus();
+      openPopup();
+    } catch {
+      setError('form', 'Tidak bisa terhubung ke server. Periksa koneksi internetmu, lalu coba lagi.');
+    } finally {
+      submit.disabled = false;
+      submit.textContent = 'Lanjut ke pembayaran';
+    }
+  });
+
+  root.addEventListener('click', (event) => {
+    const target = (event.target as HTMLElement).closest<HTMLElement>('[data-open-pay], [data-close-pay], [data-edit], [data-retry], [data-enter], [data-pass-copy]');
+    if (!target) return;
+    if (target.matches('[data-open-pay]')) openPopup();
+    if (target.matches('[data-close-pay]')) closePopup();
+    if (target.matches('[data-enter]')) enter(target as HTMLButtonElement);
+    if (target.matches('[data-pass-copy]')) copyPassword();
+    if (target.matches('[data-retry]') && store.get('co-order')) refresh(store.get('co-order')!, false);
+    if (target.matches('[data-edit]')) {
+      // Back from a resumed order: the form needs the course's price and add-ons too.
+      const slug = params.get('kelas') ?? current?.course;
+      if (!course && slug) loadCourse(slug);
+      window.clearInterval(timer);
+      store.del('co-order');
+      store.del('co-claim');
+      current = null;
+      step(1);
+      (form.elements.namedItem('name') as HTMLInputElement).focus();
+    }
+  });
+
+  // Returning from DOKU's page, or reloading mid-payment, resumes the same order.
+  const resume = params.get('order') ?? store.get('co-order');
+  const known = showCourse(params.get('kelas'));
+  if (resume) {
+    store.set('co-order', resume);
+    $('[data-view="pick"]').hidden = true;
+    $('[data-view="checkout"]').hidden = false;
+    refresh(resume, false).then(() => current?.status === 'pending' && watch(resume));
+  } else if (known) {
+    step(1);
+    loadCourse(params.get('kelas')!).then(trackInitiate);
+  }
+</script>

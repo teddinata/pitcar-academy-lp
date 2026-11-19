@@ -1,0 +1,269 @@
+---
+import { checkPoints, conditions, pillars, recommendation } from '../../data/inspectionCase';
+import ModelCredit from './ModelCredit.astro';
+
+interface Props {
+  checkout: { href: string; label: string };
+}
+
+const { checkout } = Astro.props;
+const client = {
+  points: checkPoints.map(({ id, label, at, answer }) => ({ id, label, at, answer })),
+  pillars: pillars.map(({ needs, status }) => ({ needs, status })),
+  conditions: Object.fromEntries(conditions.map((c) => [c.code, c.name])),
+};
+---
+
+<div data-inspect data-case={JSON.stringify(client)} class="grid gap-x-10 gap-y-10 lg:grid-cols-12 lg:items-center">
+  <div class="min-w-0 lg:col-span-5"><slot /></div>
+
+  <div class="g-stage min-w-0 lg:col-span-7" data-stage>
+    <p class="g-loading g-readout" role="status">Memuat model 3D</p>
+
+    <canvas
+      class="g-canvas"
+      data-canvas
+      tabindex="0"
+      aria-label="Model 3D mobil bekas dengan sepuluh titik periksa bernomor. Geser, atau tekan tombol panah, untuk memutar. Setiap titik juga bisa dipilih lewat tombol di bawah."
+    ></canvas>
+
+    <span class="g-bracket g-bracket-tl" aria-hidden="true"></span>
+    <span class="g-bracket g-bracket-tr" aria-hidden="true"></span>
+    <span class="g-bracket g-bracket-bl" aria-hidden="true"></span>
+    <span class="g-bracket g-bracket-br" aria-hidden="true"></span>
+
+    <div class="g-hud g-hud-tl">
+      <p class="g-readout g-readout-strong"><span class="g-dot" aria-hidden="true"></span>Unit contoh // tampak mulus</p>
+      <p class="g-readout">Diperiksa: <output data-count>0</output> dari {checkPoints.length} titik</p>
+    </div>
+
+    <div class="g-hud g-hud-tr">
+      <button type="button" class="g-hud-btn" data-body-toggle hidden>Lihat isi mobil</button>
+    </div>
+
+    <div class="g-hud g-hud-zoom" data-zoom hidden>
+      <button type="button" class="g-hud-btn" data-zoom-in aria-label="Perbesar">
+        <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+      </button>
+      <button type="button" class="g-hud-btn" data-zoom-out aria-label="Perkecil">
+        <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><path d="M5 12h14"></path></svg>
+      </button>
+    </div>
+
+    <div class="g-hud g-hud-bl">
+      <p class="g-readout" data-hint hidden>Geser untuk memutar. Klik titik merah untuk memeriksa.</p>
+    </div>
+
+    <p class="g-tip g-readout" data-tip hidden></p>
+  </div>
+
+  <div class="min-w-0 lg:col-span-12">
+    <ModelCredit class="-mt-8 mb-8 sm:text-right" />
+    <h2 id="titik-title" class="g-h3 max-w-[44ch]">Mobil ini tampak mulus. Periksa sepuluh titik, lalu putuskan: beli atau tinggalkan?</h2>
+    <ul class="g-callouts g-chip-row" aria-labelledby="titik-title">
+      {checkPoints.map((point, i) => (
+        <li>
+          <button type="button" class="g-callout g-label" data-point={point.id} aria-pressed={i === 0 ? 'true' : 'false'} aria-controls="pemeriksaan">
+            <span data-point-mark>{i + 1}</span>&nbsp;{point.label}
+          </button>
+        </li>
+      ))}
+    </ul>
+
+    <div id="pemeriksaan" class="g-panel mt-8 grid gap-x-10 gap-y-10 py-8 lg:grid-cols-12 lg:py-10">
+      <div aria-live="polite" class="lg:col-span-7">
+        {checkPoints.map((point, i) => (
+          <article data-point-detail={point.id} hidden={i !== 0}>
+            <p class="g-label text-muted">Form item {point.code}</p>
+            <h3 class="g-h3 mt-2">{point.item}</h3>
+            <p class="mt-4 text-lg leading-relaxed">{point.observation}</p>
+
+            <fieldset class="mt-6" data-guess>
+              <legend class="g-label text-muted">Menurutmu, kondisi mana yang dicentang di form?</legend>
+              <div class="g-callouts !mt-3">
+                {conditions.map((c) => (
+                  <button type="button" class="g-callout g-label" data-guess-code={c.code} aria-pressed="false">
+                    {c.code}, {c.name}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+
+            <div class="mt-6 border-t border-line pt-5" data-reveal hidden>
+              <p class="g-h3"><span class="text-accent">{point.answer}</span>, {conditions.find((c) => c.code === point.answer)!.name}</p>
+              <p class="mt-1 text-sm text-muted" data-verdict></p>
+              <p class="g-node mt-4 max-w-prose leading-relaxed">{point.why}</p>
+              <button type="button" class="btn btn-ghost mt-6" data-next>Titik berikutnya</button>
+            </div>
+          </article>
+        ))}
+        <dl class="mt-8 grid grid-cols-2 gap-x-6 gap-y-3 border-t border-line pt-5 text-sm sm:grid-cols-4">
+          {conditions.map((c) => (
+            <div>
+              <dt class="g-label">{c.code}, {c.name}</dt>
+              <dd class="mt-1 text-muted">{c.meaning}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+
+      <div class="lg:col-span-5">
+        <h3 class="g-label text-muted">Ringkasan 5 pilar</h3>
+        <ol class="mt-3 border-t border-body">
+          {pillars.map((pillar, i) => (
+            <li class="flex items-baseline justify-between gap-4 border-b border-line py-3" data-pillar={i}>
+              <span class="min-w-0">
+                <span class="g-h3 block">{pillar.name}</span>
+                <span class="mt-1 block text-sm leading-relaxed text-muted" data-pillar-note>{pillar.focus}</span>
+              </span>
+              <span class="g-label shrink-0 text-muted" data-pillar-status data-note={pillar.note}>Belum diperiksa</span>
+            </li>
+          ))}
+        </ol>
+
+        <div class="mt-6" data-result hidden>
+          <h3 class="g-label text-muted">Rekomendasi di form</h3>
+          <p class="g-h2 mt-2 text-accent">{recommendation.title}</p>
+          <p class="mt-3 leading-relaxed">{recommendation.text}</p>
+          <p class="mt-3 leading-relaxed text-muted">{recommendation.hook}</p>
+          <p class="mt-3 text-sm text-muted" data-score></p>
+          <a href={checkout.href} data-checkout data-source-cta="inspeksi_case_result" class="btn btn-primary mt-5 w-full">{checkout.label}</a>
+        </div>
+        <p class="mt-6 text-sm leading-relaxed text-muted" data-pending>
+          Rekomendasi muncul setelah semua titik diperiksa. Form aslinya memuat lebih dari enam puluh item di sepuluh bagian.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import type { Garage } from '../../scripts/garage/scene';
+
+  interface Point { id: string; label: string; at: [number, number, number]; answer: string }
+
+  const root = document.querySelector<HTMLElement>('[data-inspect]');
+
+  if (root) {
+    const data: { points: Point[]; pillars: { needs: string[]; status: string }[]; conditions: Record<string, string> } = JSON.parse(root.dataset.case!);
+    const q = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+    const all = <T extends HTMLElement>(sel: string) => [...root.querySelectorAll<T>(sel)];
+    const stage = q('[data-stage]');
+    const canvas = q<HTMLCanvasElement>('[data-canvas]');
+    const chips = all<HTMLButtonElement>('[data-point]');
+    const details = all<HTMLElement>('[data-point-detail]');
+    const tip = q('[data-tip]');
+    const bodyToggle = q<HTMLButtonElement>('[data-body-toggle]');
+
+    let garage: Garage | null = null;
+    let current = data.points[0].id;
+    let solid = true;
+    const guesses = new Map<string, string>();
+
+    const indexOf = (id: string) => data.points.findIndex((p) => p.id === id);
+    const markFor = (id: string) => (guesses.has(id) ? data.points[indexOf(id)].answer : String(indexOf(id) + 1));
+
+    const paintSpots = () => data.points.forEach((p) => {
+      garage?.setSpot(p.id, markFor(p.id), p.id === current ? 'active' : guesses.has(p.id) ? 'done' : 'open');
+    });
+
+    const select = (id: string, fromUser: boolean) => {
+      current = id;
+      chips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.point === id)));
+      details.forEach((d) => { d.hidden = d.dataset.pointDetail !== id; });
+      paintSpots();
+      if (!fromUser) return;
+      chips.find((c) => c.dataset.point === id)?.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+      window.dataLayer?.push({ event: 'inspect_point_view', point_id: id });
+    };
+
+    const summarise = () => {
+      q('[data-count]').textContent = String(guesses.size);
+      data.pillars.forEach((pillar, i) => {
+        if (!pillar.needs.every((id) => guesses.has(id))) return;
+        const row = q(`[data-pillar="${i}"]`);
+        const status = row.querySelector<HTMLElement>('[data-pillar-status]')!;
+        status.textContent = pillar.status;
+        status.classList.toggle('text-muted', pillar.status === 'AMAN');
+        status.classList.toggle('text-accent', pillar.status !== 'AMAN');
+        row.querySelector('[data-pillar-note]')!.textContent = status.dataset.note!;
+      });
+      if (guesses.size < data.points.length) return;
+      const matched = data.points.filter((p) => guesses.get(p.id) === p.answer).length;
+      q('[data-score]').textContent = `Tebakanmu sama dengan form di ${matched} dari ${data.points.length} titik.`;
+      q('[data-result]').hidden = false;
+      q('[data-pending]').hidden = true;
+    };
+
+    const answer = (article: HTMLElement, code: string) => {
+      const id = article.dataset.pointDetail!;
+      if (guesses.has(id)) return;
+      guesses.set(id, code);
+      const point = data.points[indexOf(id)];
+      article.querySelectorAll<HTMLButtonElement>('[data-guess-code]').forEach((b) => {
+        b.setAttribute('aria-pressed', String(b.dataset.guessCode === code));
+        b.disabled = true;
+      });
+      article.querySelector('[data-verdict]')!.textContent = code === point.answer
+        ? 'Sama dengan tebakanmu.'
+        : `Tebakanmu: ${code}, ${data.conditions[code]}.`;
+      article.querySelector<HTMLElement>('[data-reveal]')!.hidden = false;
+      const chip = chips.find((c) => c.dataset.point === id)!;
+      chip.querySelector('[data-point-mark]')!.textContent = point.answer;
+      const next = data.points.find((p) => !guesses.has(p.id));
+      const nextButton = article.querySelector<HTMLButtonElement>('[data-next]')!;
+      if (!next) nextButton.textContent = 'Lihat rekomendasi';
+      paintSpots();
+      summarise();
+      window.dataLayer?.push({ event: 'inspect_point_answer', point_id: id, guess: code, matched: code === point.answer });
+    };
+
+    chips.forEach((c) => c.addEventListener('click', () => select(c.dataset.point!, true)));
+    details.forEach((article) => {
+      article.querySelectorAll<HTMLButtonElement>('[data-guess-code]').forEach((b) => b.addEventListener('click', () => answer(article, b.dataset.guessCode!)));
+      article.querySelector('[data-next]')!.addEventListener('click', () => {
+        const next = data.points.find((p) => !guesses.has(p.id));
+        if (next) select(next.id, true);
+        else q('[data-result]').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    });
+    bodyToggle.addEventListener('click', () => {
+      solid = !solid;
+      garage?.setSolid(solid);
+      bodyToggle.textContent = solid ? 'Lihat isi mobil' : 'Tampilkan bodi';
+    });
+    q('[data-zoom-in]').addEventListener('click', () => garage?.zoom(0.82));
+    q('[data-zoom-out]').addEventListener('click', () => garage?.zoom(1.22));
+
+    // three.js is the heaviest thing on the page: load it after first paint.
+    const boot = async () => {
+      const { createGarage } = await import('../../scripts/garage/scene');
+      garage = await createGarage(canvas, {
+        fuel: 'efi',
+        matic: true,
+        slot: 'mesin',
+        hotspots: data.points.map(({ id, label, at }) => ({ id, label, at })),
+        onSpot: (id) => select(id, true),
+        onPick: () => {},
+        onOpen: () => {},
+        onSub: () => {},
+        onExplode: () => {},
+        onHover: (hover) => {
+          const point = hover?.spot ? data.points[indexOf(hover.spot)] : null;
+          tip.hidden = !point;
+          if (!point || !hover) return;
+          tip.textContent = point.label;
+          tip.style.left = `${canvas.offsetLeft + hover.x}px`;
+          tip.style.top = `${canvas.offsetTop + hover.y}px`;
+        },
+      });
+      if (!garage) throw new Error('WebGL unavailable');
+      stage.dataset.ready = '';
+      bodyToggle.hidden = q('[data-zoom]').hidden = q('[data-hint]').hidden = false;
+      paintSpots();
+    };
+    const idle = window.requestIdleCallback ?? ((fn: () => void) => setTimeout(fn, 200));
+    // Without 3D the ten buttons below still run the whole inspection.
+    idle(() => { boot().catch(() => { stage.hidden = true; }); });
+  }
+</script>

@@ -1,0 +1,254 @@
+{"kind":"deck","id":"pr/8jnmpo","name":"Deck"}
+{"kind":"layout","layoutId":"de0c2358-db91-425b-833f-d6dd03faa59d","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"a4a82d23-0016-46bf-916c-1fcb7d9277bf","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/78771d","slide":1,"title":"PITCAR ACADEMY","textShapes":6}
+{"kind":"shape","id":"sh/yl8365kj","slide":1,"bbox":[0,0,12,720]}
+{"kind":"shape","id":"sh/l8zmhkja","slide":1,"bbox":[598,0,682,720]}
+{"kind":"textbox","id":"sh/k7ql8f2p","slide":1,"text":"PITCAR ACADEMY","textPreview":"PITCAR ACADEMY","textChars":14,"textLines":1,"bbox":[54,54,360,22]}
+{"kind":"textbox","id":"sh/7a14ju1g","slide":1,"text":"WEBSITE\nBEFORE & AFTER","textPreview":"WEBSITE | BEFORE & AFTER","textChars":22,"textLines":2,"bbox":[54,146,520,182]}
+{"kind":"textbox","id":"sh/m9s3apkv","slide":1,"text":"Dari landing page bergaya kampanye menjadi institusi vokasi yang jelas, kredibel, dan siap mengelola lead.","textPreview":"Dari landing page bergaya kampanye menjadi institusi vokasi yang jelas, kredibel, dan siap mengelola lead.","textChars":106,"textLines":1,"bbox":[54,354,476,112]}
+{"kind":"shape","id":"sh/9cjml4j6","slide":1,"bbox":[54,506,472,1]}
+{"kind":"textbox","id":"sh/8balcz21","slide":1,"text":"Visual redesign • Conversion funnel • Backend readiness","textPreview":"Visual redesign • Conversion funnel • Backend readiness","textChars":55,"textLines":1,"bbox":[54,526,472,24]}
+{"kind":"textbox","id":"sh/ve14nu1c","slide":1,"text":"30 Agustus 2026","textPreview":"30 Agustus 2026","textChars":15,"textLines":1,"bbox":[54,635,200,20]}
+{"kind":"shape","id":"sh/uds3epkr","slide":1,"bbox":[634,70,602,540]}
+{"kind":"shape","id":"sh/h8bupsj6","slide":1,"bbox":[992,624,188,30]}
+{"kind":"textbox","id":"sh/ul0bud0v","slide":1,"text":"AFTER • CURRENT","textPreview":"AFTER • CURRENT","textChars":15,"textLines":1,"bbox":[1002,631,168,16]}
+{"kind":"image","id":"im/ve9gza5w","slide":1,"name":"","geometry":"roundRect","alt":"Tampilan terbaru hero Pitcar Academy pada desktop","bbox":[638,74,594,532]}
+{"kind":"notes","id":"nt/78771d","slide":1,"text":"Buka dengan konteks bahwa ini bukan sekadar pergantian warna. Fokus presentasi adalah perubahan positioning, hierarki informasi, dan kesiapan funnel agar website lebih mudah dipercaya serta lebih mudah ditindaklanjuti oleh tim sales.\n\n[Sources]\n- Current repository screenshot (HEAD a42306a), captured locally on 2026-08-30.\n- Internal repository: docs/landing-page-revamp-proposal.md."}
+{"kind":"slide","id":"sl/x2z710","slide":2,"title":"WEBSITE REVAMP","textShapes":21}
+{"kind":"shape","id":"sh/m9wz2pwj","slide":2,"bbox":[0,0,1280,8]}
+{"kind":"textbox","id":"sh/9cnixkva","slide":2,"text":"WEBSITE REVAMP","textPreview":"WEBSITE REVAMP","textChars":14,"textLines":1,"bbox":[48,26,320,16]}
+{"kind":"textbox","id":"sh/obeh4zep","slide":2,"text":"Perubahannya bukan kosmetik—arah ceritanya ikut berubah","textPreview":"Perubahannya bukan kosmetik—arah ceritanya ikut berubah","textChars":55,"textLines":1,"bbox":[48,50,1120,58]}
+{"kind":"shape","id":"sh/be50zud0","slide":2,"bbox":[48,683,1184,1]}
+{"kind":"textbox","id":"sh/adwz6pcv","slide":2,"text":"PITCAR ACADEMY • BEFORE / AFTER","textPreview":"PITCAR ACADEMY • BEFORE / AFTER","textChars":31,"textLines":1,"bbox":[48,692,420,14]}
+{"kind":"textbox","id":"sh/xg7i14v6","slide":2,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[1180,692,52,14]}
+{"kind":"textbox","id":"sh/wfeh8zul","slide":2,"text":"Sebelumnya, hero bekerja seperti iklan kampanye. Sekarang, hero langsung menjelaskan cara belajar dan bukti operasionalnya.","textPreview":"Sebelumnya, hero bekerja seperti iklan kampanye. Sekarang, hero langsung menjelaskan cara belajar dan bukti operasionalnya.","textChars":123,"textLines":1,"bbox":[48,116,1110,46]}
+{"kind":"textbox","id":"sh/jip03edc","slide":2,"text":"BEFORE","textPreview":"BEFORE","textChars":6,"textLines":1,"bbox":[62,188,110,20]}
+{"kind":"shape","id":"sh/yhgja9cr","slide":2,"bbox":[62,224,286,102]}
+{"kind":"textbox","id":"sh/87ux4fah","slide":2,"text":"Aspirasi","textPreview":"Aspirasi","textChars":8,"textLines":1,"bbox":[80,240,240,18]}
+{"kind":"textbox","id":"sh/ts3edkr2","slide":2,"text":"Bangun skill & mulai karier","textPreview":"Bangun skill & mulai karier","textChars":27,"textLines":1,"bbox":[80,267,248,40]}
+{"kind":"shape","id":"sh/65cf25sb","slide":2,"bbox":[363,262,42,26]}
+{"kind":"shape","id":"sh/76lwba9w","slide":2,"bbox":[422,224,286,102]}
+{"kind":"textbox","id":"sh/gvex8zad","slide":2,"text":"Janji","textPreview":"Janji","textChars":5,"textLines":1,"bbox":[440,240,240,18]}
+{"kind":"textbox","id":"sh/hwnyh4ry","slide":2,"text":"OJT, sertifikat, rekrutmen","textPreview":"OJT, sertifikat, rekrutmen","textChars":26,"textLines":1,"bbox":[440,267,248,40]}
+{"kind":"shape","id":"sh/utcf6ps7","slide":2,"bbox":[723,262,42,26]}
+{"kind":"shape","id":"sh/vulgfu9s","slide":2,"bbox":[782,224,286,102]}
+{"kind":"textbox","id":"sh/4zexczqp","slide":2,"text":"Aksi","textPreview":"Aksi","textChars":4,"textLines":1,"bbox":[800,240,240,18]}
+{"kind":"textbox","id":"sh/50nyl4ru","slide":2,"text":"Konsultasi program","textPreview":"Konsultasi program","textChars":18,"textLines":1,"bbox":[800,267,248,40]}
+{"kind":"textbox","id":"sh/dgje54je","slide":2,"text":"AFTER","textPreview":"AFTER","textChars":5,"textLines":1,"bbox":[62,372,110,20]}
+{"kind":"shape","id":"sh/cfaxwzit","slide":2,"bbox":[62,408,286,102]}
+{"kind":"textbox","id":"sh/re1w3u18","slide":2,"text":"Konteks nyata","textPreview":"Konteks nyata","textChars":13,"textLines":1,"bbox":[80,424,240,18]}
+{"kind":"textbox","id":"sh/qdsfup0n","slide":2,"text":"Belajar di bengkel aktif","textPreview":"Belajar di bengkel aktif","textChars":24,"textLines":1,"bbox":[80,451,248,40]}
+{"kind":"shape","id":"sh/1k3y94ja","slide":2,"bbox":[363,446,42,26]}
+{"kind":"shape","id":"sh/0jux0zip","slide":2,"bbox":[422,408,286,102]}
+{"kind":"textbox","id":"sh/zilw7e14","slide":2,"text":"Bukti","textPreview":"Bukti","textChars":5,"textLines":1,"bbox":[440,424,240,18]}
+{"kind":"textbox","id":"sh/ehsfy90j","slide":2,"text":"Metode, alat, trainer, OJT","textPreview":"Metode, alat, trainer, OJT","textChars":26,"textLines":1,"bbox":[440,451,248,40]}
+{"kind":"shape","id":"sh/hozexkj6","slide":2,"bbox":[723,446,42,26]}
+{"kind":"shape","id":"sh/gnqxof2l","slide":2,"bbox":[782,408,286,102]}
+{"kind":"textbox","id":"sh/6tobylgj","slide":2,"text":"Keputusan","textPreview":"Keputusan","textChars":9,"textLines":1,"bbox":[800,424,240,18]}
+{"kind":"textbox","id":"sh/7uxc7qho","slide":2,"text":"Pilih program lalu konsultasi","textPreview":"Pilih program lalu konsultasi","textChars":29,"textLines":1,"bbox":[800,451,248,40]}
+{"kind":"shape","id":"sh/sv6t0vy9","slide":2,"bbox":[62,554,1082,84]}
+{"kind":"textbox","id":"sh/twfu9gzu","slide":2,"text":"Intinya","textPreview":"Intinya","textChars":7,"textLines":1,"bbox":[84,573,90,18]}
+{"kind":"textbox","id":"sh/uxov2lgf","slide":2,"text":"Website kini menjual proses belajar yang dapat dipahami—bukan hanya hasil akhir yang diinginkan.","textPreview":"Website kini menjual proses belajar yang dapat dipahami—bukan hanya hasil akhir yang diinginkan.","textChars":96,"textLines":1,"bbox":[180,568,930,34]}
+{"kind":"notes","id":"nt/x2z710","slide":2,"text":"Tekankan pergeseran urutan persuasi. Versi lama menarik secara emosional, tetapi menumpuk outcome dan benefit sejak awal. Versi baru memulai dari konteks yang konkret—bengkel nyata—lalu membuktikan metode dan baru mengarahkan ke pilihan program.\n\n[Sources]\n- Visual baseline: repository commit ec27408, captured locally on 2026-08-30.\n- Current repository: HEAD a42306a, captured locally on 2026-08-30.\n- Internal repository: docs/landing-page-revamp-proposal.md."}
+{"kind":"slide","id":"sl/2fus89","slide":3,"title":"WEBSITE REVAMP","textShapes":16}
+{"kind":"shape","id":"sh/rml4f2t8","slide":3,"bbox":[0,0,1280,8]}
+{"kind":"textbox","id":"sh/cnu5o7at","slide":3,"text":"WEBSITE REVAMP","textPreview":"WEBSITE REVAMP","textChars":14,"textLines":1,"bbox":[48,26,320,16]}
+{"kind":"textbox","id":"sh/do3mhcby","slide":3,"text":"Before: kuat sebagai kampanye, lemah sebagai institusi","textPreview":"Before: kuat sebagai kampanye, lemah sebagai institusi","textChars":54,"textLines":1,"bbox":[48,50,1120,58]}
+{"kind":"shape","id":"sh/epcnqhsj","slide":3,"bbox":[48,683,1184,1]}
+{"kind":"textbox","id":"sh/zql4jmt4","slide":3,"text":"PITCAR ACADEMY • BEFORE / AFTER","textPreview":"PITCAR ACADEMY • BEFORE / AFTER","textChars":31,"textLines":1,"bbox":[48,692,420,14]}
+{"kind":"textbox","id":"sh/0ru5srap","slide":3,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[1180,692,52,14]}
+{"kind":"shape","id":"sh/1s36lwba","slide":3,"bbox":[50,126,716,406]}
+{"kind":"shape","id":"sh/fu147it0","slide":3,"bbox":[78,548,182,30]}
+{"kind":"textbox","id":"sh/7u1wz65c","slide":3,"text":"BASELINE • ec27408","textPreview":"BASELINE • ec27408","textChars":18,"textLines":1,"bbox":[88,555,162,16]}
+{"kind":"shape","id":"sh/6tsv61or","slide":3,"bbox":[810,150,34,34]}
+{"kind":"textbox","id":"sh/twje1gni","slide":3,"text":"01","textPreview":"01","textChars":2,"textLines":1,"bbox":[810,158,34,18]}
+{"kind":"textbox","id":"sh/8vad8b6x","slide":3,"text":"Pesan terlalu aspiratif","textPreview":"Pesan terlalu aspiratif","textChars":23,"textLines":1,"bbox":[858,149,338,26]}
+{"kind":"textbox","id":"sh/j6hwv65g","slide":3,"text":"Headline memimpin dengan karier; konteks belajar dan bukti bengkel baru terasa setelahnya.","textPreview":"Headline memimpin dengan karier; konteks belajar dan bukti bengkel baru terasa setelahnya.","textChars":90,"textLines":1,"bbox":[858,182,338,67]}
+{"kind":"shape","id":"sh/y58v21ov","slide":3,"bbox":[810,270,386,1]}
+{"kind":"shape","id":"sh/lszexwn6","slide":3,"bbox":[810,296,34,34]}
+{"kind":"textbox","id":"sh/krqd4r6l","slide":3,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[810,304,34,18]}
+{"kind":"textbox","id":"sh/b2hcrm54","slide":3,"text":"Aksen visual terlalu kampanye","textPreview":"Aksen visual terlalu kampanye","textChars":29,"textLines":1,"bbox":[858,295,338,26]}
+{"kind":"textbox","id":"sh/a1ovyhoj","slide":3,"text":"Latar gelap, glow, badge, dan banyak penekanan membuat kesan promo lebih dominan.","textPreview":"Latar gelap, glow, badge, dan banyak penekanan membuat kesan promo lebih dominan.","textChars":81,"textLines":1,"bbox":[858,328,338,67]}
+{"kind":"shape","id":"sh/exofah8b","slide":3,"bbox":[810,416,386,1]}
+{"kind":"shape","id":"sh/zyxwjmpw","slide":3,"bbox":[810,442,34,34]}
+{"kind":"textbox","id":"sh/0z6xcrqh","slide":3,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[810,450,34,18]}
+{"kind":"textbox","id":"sh/10felw72","slide":3,"text":"Hero memuat terlalu banyak janji","textPreview":"Hero memuat terlalu banyak janji","textChars":32,"textLines":1,"bbox":[858,441,338,26]}
+{"kind":"textbox","id":"sh/m1ofeh8n","slide":3,"text":"Benefit, OJT, sertifikat, rekrutmen, dan CTA bersaing dalam satu viewport.","textPreview":"Benefit, OJT, sertifikat, rekrutmen, dan CTA bersaing dalam satu viewport.","textChars":74,"textLines":1,"bbox":[858,474,338,67]}
+{"kind":"textbox","id":"sh/n2hwnmp8","slide":3,"text":"KENAPA PERLU DIUBAH","textPreview":"KENAPA PERLU DIUBAH","textChars":19,"textLines":1,"bbox":[810,592,170,18]}
+{"kind":"textbox","id":"sh/o3qxgrqt","slide":3,"text":"Untuk mempercepat trust—terutama bagi calon peserta dan orang tua yang menilai kredibilitas lembaga.","textPreview":"Untuk mempercepat trust—terutama bagi calon peserta dan orang tua yang menilai kredibilitas lembaga.","textChars":100,"textLines":1,"bbox":[810,614,380,44]}
+{"kind":"image","id":"im/ze54vq9c","slide":3,"name":"","geometry":"roundRect","alt":"Tampilan hero Pitcar Academy sebelum visual rebuild","bbox":[54,130,708,398]}
+{"kind":"notes","id":"nt/2fus89","slide":3,"text":"Jangan menilai versi lama sebagai desain buruk. Ia efektif membangun energi dan urgensi. Masalahnya adalah kecocokan positioning: Pitcar Academy perlu terlihat sebagai lembaga vokasi yang bertumpu pada operasi bengkel, bukan sebagai course ad yang bergantung pada gaya promosi.\n\n[Sources]\n- Visual baseline: repository commit ec27408, captured locally on 2026-08-30.\n- Internal repository: docs/landing-page-revamp-proposal.md."}
+{"kind":"slide","id":"sl/u5i5ev","slide":4,"title":"WEBSITE REVAMP","textShapes":16}
+{"kind":"shape","id":"sh/vmpwb6dg","slide":4,"bbox":[0,0,1280,8]}
+{"kind":"textbox","id":"sh/gnydkbe1","slide":4,"text":"WEBSITE REVAMP","textPreview":"WEBSITE REVAMP","textChars":14,"textLines":1,"bbox":[48,26,320,16]}
+{"kind":"textbox","id":"sh/ho7edwvm","slide":4,"text":"After: bukti bengkel menjadi pesan utama","textPreview":"After: bukti bengkel menjadi pesan utama","textChars":40,"textLines":1,"bbox":[48,50,1120,58]}
+{"kind":"shape","id":"sh/mhwvehwz","slide":4,"bbox":[48,683,1184,1]}
+{"kind":"textbox","id":"sh/7ipw7mdk","slide":4,"text":"PITCAR ACADEMY • BEFORE / AFTER","textPreview":"PITCAR ACADEMY • BEFORE / AFTER","textChars":31,"textLines":1,"bbox":[48,692,420,14]}
+{"kind":"textbox","id":"sh/8jydgrep","slide":4,"text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[1180,692,52,14]}
+{"kind":"shape","id":"sh/tk7e9wva","slide":4,"bbox":[62,150,34,34]}
+{"kind":"textbox","id":"sh/ytwvahwn","slide":4,"text":"01","textPreview":"01","textChars":2,"textLines":1,"bbox":[62,158,34,18]}
+{"kind":"textbox","id":"sh/zu5cjmd8","slide":4,"text":"Headline lebih konkret","textPreview":"Headline lebih konkret","textChars":22,"textLines":1,"bbox":[110,149,350,26]}
+{"kind":"textbox","id":"sh/b6d8rqh4","slide":4,"text":"‘Belajar mekanik di bengkel nyata’ langsung menjelaskan diferensiasi dan metode.","textPreview":"‘Belajar mekanik di bengkel nyata’ langsung menjelaskan diferensiasi dan metode.","textChars":80,"textLines":1,"bbox":[110,182,350,67]}
+{"kind":"shape","id":"sh/q547yl0j","slide":4,"bbox":[62,270,408,1]}
+{"kind":"shape","id":"sh/d8vqt0za","slide":4,"bbox":[62,296,34,34]}
+{"kind":"textbox","id":"sh/c7mp0vip","slide":4,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[62,304,34,18]}
+{"kind":"textbox","id":"sh/zax8vqh0","slide":4,"text":"Bahasa visual lebih institusional","textPreview":"Bahasa visual lebih institusional","textChars":33,"textLines":1,"bbox":[110,295,350,26]}
+{"kind":"textbox","id":"sh/y947250f","slide":4,"text":"Putih, hitam, dan merah memberi rasa editorial—lebih tenang, jelas, dan kredibel.","textPreview":"Putih, hitam, dan merah memberi rasa editorial—lebih tenang, jelas, dan kredibel.","textChars":81,"textLines":1,"bbox":[110,328,350,67]}
+{"kind":"shape","id":"sh/lcfqx0z6","slide":4,"bbox":[62,416,408,1]}
+{"kind":"shape","id":"sh/0b6p4vil","slide":4,"bbox":[62,442,34,34]}
+{"kind":"textbox","id":"sh/fetoj6hw","slide":4,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[62,450,34,18]}
+{"kind":"textbox","id":"sh/edk7q10b","slide":4,"text":"Arah keputusan lebih rapi","textPreview":"Arah keputusan lebih rapi","textChars":25,"textLines":1,"bbox":[110,441,350,26]}
+{"kind":"textbox","id":"sh/ilsjetob","slide":4,"text":"Proof list ringkas, foto utama, CTA konsultasi, dan CTA program memiliki hirarki.","textPreview":"Proof list ringkas, foto utama, CTA konsultasi, dan CTA program memiliki hirarki.","textChars":81,"textLines":1,"bbox":[110,474,350,67]}
+{"kind":"shape","id":"sh/36lkny5g","slide":4,"bbox":[506,126,722,410]}
+{"kind":"shape","id":"sh/5832p8nm","slide":4,"bbox":[1004,548,184,30]}
+{"kind":"textbox","id":"sh/uhsjatoz","slide":4,"text":"CURRENT • a42306a","textPreview":"CURRENT • a42306a","textChars":17,"textLines":1,"bbox":[1014,555,164,16]}
+{"kind":"shape","id":"sh/vi10jy5k","slide":4,"bbox":[62,584,1160,72]}
+{"kind":"textbox","id":"sh/gja1c365","slide":4,"text":"KENAPA LEBIH KUAT","textPreview":"KENAPA LEBIH KUAT","textChars":17,"textLines":1,"bbox":[84,603,160,18]}
+{"kind":"textbox","id":"sh/hkj2l8nq","slide":4,"text":"Calon peserta memahami apa yang terjadi saat belajar sebelum diminta mempercayai outcome-nya.","textPreview":"Calon peserta memahami apa yang terjadi saat belajar sebelum diminta mempercayai outcome-nya.","textChars":93,"textLines":1,"bbox":[248,598,938,30]}
+{"kind":"image","id":"im/7atcnmds","slide":4,"name":"","geometry":"roundRect","alt":"Tampilan hero Pitcar Academy setelah visual rebuild","bbox":[510,130,714,402]}
+{"kind":"notes","id":"nt/u5i5ev","slide":4,"text":"Versi baru mengurangi beban visual tanpa kehilangan karakter Pitcar. Foto mekanik tidak lagi menjadi dekorasi di samping headline kampanye; foto itu menjadi bukti dari kalimat utama. Ini penting untuk menghubungkan brand Academy dengan ekosistem bengkel PITCAR.\n\n[Sources]\n- Current repository screenshot (HEAD a42306a), captured locally on 2026-08-30.\n- Internal repository: docs/design-system.md.\n- Internal repository: docs/landing-page-revamp-proposal.md."}
+{"kind":"slide","id":"sl/xiq9ua","slide":5,"title":"WEBSITE REVAMP","textShapes":15}
+{"kind":"shape","id":"sh/nih0fy9k","slide":5,"bbox":[0,0,1280,8]}
+{"kind":"textbox","id":"sh/8jq1o3q5","slide":5,"text":"WEBSITE REVAMP","textPreview":"WEBSITE REVAMP","textChars":14,"textLines":1,"bbox":[48,26,320,16]}
+{"kind":"textbox","id":"sh/9kzih8rq","slide":5,"text":"Perbandingan langsung: pesan lebih spesifik, keputusan lebih mudah","textPreview":"Perbandingan langsung: pesan lebih spesifik, keputusan lebih mudah","textChars":66,"textLines":1,"bbox":[48,50,1120,58]}
+{"kind":"shape","id":"sh/ydojit83","slide":5,"bbox":[48,683,1184,1]}
+{"kind":"textbox","id":"sh/zex0by98","slide":5,"text":"PITCAR ACADEMY • BEFORE / AFTER","textPreview":"PITCAR ACADEMY • BEFORE / AFTER","textChars":31,"textLines":1,"bbox":[48,692,420,14]}
+{"kind":"textbox","id":"sh/0fq1kjqt","slide":5,"text":"05","textPreview":"05","textChars":2,"textLines":1,"bbox":[1180,692,52,14]}
+{"kind":"textbox","id":"sh/lgzidore","slide":5,"text":"BEFORE","textPreview":"BEFORE","textChars":6,"textLines":1,"bbox":[60,120,140,22]}
+{"kind":"textbox","id":"sh/qpoze9sr","slide":5,"text":"AFTER","textPreview":"AFTER","textChars":5,"textLines":1,"bbox":[660,120,140,22]}
+{"kind":"shape","id":"sh/bqx07e9c","slide":5,"bbox":[56,146,562,320]}
+{"kind":"shape","id":"sh/etg32l0z","slide":5,"bbox":[656,146,562,320]}
+{"kind":"shape","id":"sh/0vil4vi5","slide":5,"bbox":[60,488,1154,2]}
+{"kind":"textbox","id":"sh/ni94fqhg","slide":5,"text":"Pesan","textPreview":"Pesan","textChars":5,"textLines":1,"bbox":[60,500,100,22]}
+{"kind":"textbox","id":"sh/mh036l0b","slide":5,"text":"Aspirasi karier","textPreview":"Aspirasi karier","textChars":15,"textLines":1,"bbox":[170,500,430,22]}
+{"kind":"textbox","id":"sh/9krmh0zm","slide":5,"text":"Metode belajar nyata","textPreview":"Metode belajar nyata","textChars":20,"textLines":1,"bbox":[660,500,520,22]}
+{"kind":"shape","id":"sh/ojil8vi1","slide":5,"bbox":[60,536,1154,1]}
+{"kind":"textbox","id":"sh/3mpk361c","slide":5,"text":"Visual","textPreview":"Visual","textChars":6,"textLines":1,"bbox":[60,548,100,22]}
+{"kind":"textbox","id":"sh/2lw3u10r","slide":5,"text":"Kampanye, gelap, banyak aksen","textPreview":"Kampanye, gelap, banyak aksen","textChars":29,"textLines":1,"bbox":[170,548,430,22]}
+{"kind":"textbox","id":"sh/6h4729kf","slide":5,"text":"Editorial, terang, fokus","textPreview":"Editorial, terang, fokus","textChars":24,"textLines":1,"bbox":[660,548,520,22]}
+{"kind":"shape","id":"sh/7idobe10","slide":5,"bbox":[60,584,1154,1]}
+{"kind":"textbox","id":"sh/sjmp4z2l","slide":5,"text":"Aksi","textPreview":"Aksi","textChars":4,"textLines":1,"bbox":[60,596,100,22]}
+{"kind":"textbox","id":"sh/tkv6d4j6","slide":5,"text":"Satu dorongan konsultasi","textPreview":"Satu dorongan konsultasi","textChars":24,"textLines":1,"bbox":[170,596,430,22]}
+{"kind":"textbox","id":"sh/yd47ypkj","slide":5,"text":"Konsultasi + eksplor program","textPreview":"Konsultasi + eksplor program","textChars":28,"textLines":1,"bbox":[660,596,520,22]}
+{"kind":"image","id":"im/c7u9kbyd","slide":5,"name":"","geometry":"roundRect","alt":"Before hero desktop","bbox":[60,150,554,312]}
+{"kind":"image","id":"im/q5sri1gn","slide":5,"name":"","geometry":"roundRect","alt":"After hero desktop","bbox":[660,150,554,312]}
+{"kind":"notes","id":"nt/xiq9ua","slide":5,"text":"Ini adalah slide utama untuk pembacaan before/after. Arahkan audiens melihat tiga hal: perubahan kata pertama yang dibaca, perubahan suasana visual, lalu perubahan pilihan tindakan. Kedua screenshot diambil dari build lokal dengan ukuran desktop yang sama.\n\n[Sources]\n- Visual baseline: repository commit ec27408, captured locally on 2026-08-30.\n- Current repository: HEAD a42306a, captured locally on 2026-08-30."}
+{"kind":"slide","id":"sl/5eoulx","slide":6,"title":"WEBSITE REVAMP","textShapes":28}
+{"kind":"shape","id":"sh/kbu9kjah","slide":6,"bbox":[0,0,1280,8]}
+{"kind":"textbox","id":"sh/jal8rytw","slide":6,"text":"WEBSITE REVAMP","textPreview":"WEBSITE REVAMP","textChars":14,"textLines":1,"bbox":[48,26,320,16]}
+{"kind":"textbox","id":"sh/i9critsb","slide":6,"text":"Empat perubahan yang paling berdampak","textPreview":"Empat perubahan yang paling berdampak","textChars":37,"textLines":1,"bbox":[48,50,1120,58]}
+{"kind":"shape","id":"sh/tgnax8by","slide":6,"bbox":[48,683,1184,1]}
+{"kind":"textbox","id":"sh/sfe9o3at","slide":6,"text":"PITCAR ACADEMY • BEFORE / AFTER","textPreview":"PITCAR ACADEMY • BEFORE / AFTER","textChars":31,"textLines":1,"bbox":[48,692,420,14]}
+{"kind":"textbox","id":"sh/7e5svyt8","slide":6,"text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[1180,692,52,14]}
+{"kind":"shape","id":"sh/6dcrmtsn","slide":6,"bbox":[60,132,560,220]}
+{"kind":"textbox","id":"sh/h4na18ba","slide":6,"text":"01","textPreview":"01","textChars":2,"textLines":1,"bbox":[84,154,48,20]}
+{"kind":"textbox","id":"sh/gje9s3ap","slide":6,"text":"Hierarki konten","textPreview":"Hierarki konten","textChars":15,"textLines":1,"bbox":[142,150,430,30]}
+{"kind":"textbox","id":"sh/qh4nuxcb","slide":6,"text":"YANG BERUBAH","textPreview":"YANG BERUBAH","textChars":12,"textLines":1,"bbox":[84,204,130,16]}
+{"kind":"textbox","id":"sh/rido32dg","slide":6,"text":"Hero → fakta bengkel → problem → metode → outcome → program.","textPreview":"Hero → fakta bengkel → problem → metode → outcome → program.","textChars":60,"textLines":1,"bbox":[84,226,510,45]}
+{"kind":"shape","id":"sh/sj65w7u1","slide":6,"bbox":[84,280,510,2]}
+{"kind":"textbox","id":"sh/dkf65cvm","slide":6,"text":"KENAPA","textPreview":"KENAPA","textChars":6,"textLines":1,"bbox":[84,294,70,14]}
+{"kind":"textbox","id":"sh/elonyhc7","slide":6,"text":"Pengunjung mendapat alasan percaya sebelum bertemu harga dan CTA.","textPreview":"Pengunjung mendapat alasan percaya sebelum bertemu harga dan CTA.","textChars":65,"textLines":1,"bbox":[158,290,436,44]}
+{"kind":"shape","id":"sh/fmxo7mds","slide":6,"bbox":[654,132,560,220]}
+{"kind":"textbox","id":"sh/0n650rud","slide":6,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[678,154,48,20]}
+{"kind":"textbox","id":"sh/1of69wvy","slide":6,"text":"UX & CTA","textPreview":"UX & CTA","textChars":8,"textLines":1,"bbox":[736,150,430,30]}
+{"kind":"textbox","id":"sh/upknmdc3","slide":6,"text":"YANG BERUBAH","textPreview":"YANG BERUBAH","textChars":12,"textLines":1,"bbox":[678,204,130,16]}
+{"kind":"textbox","id":"sh/vqt4vido","slide":6,"text":"Navigasi ringkas, dua CTA hero, CTA program membawa konteks.","textPreview":"Navigasi ringkas, dua CTA hero, CTA program membawa konteks.","textChars":60,"textLines":1,"bbox":[678,226,510,45]}
+{"kind":"shape","id":"sh/ju9k3etg","slide":6,"bbox":[678,280,510,2]}
+{"kind":"textbox","id":"sh/yt03u9sv","slide":6,"text":"KENAPA","textPreview":"KENAPA","textChars":6,"textLines":1,"bbox":[678,294,70,14]}
+{"kind":"textbox","id":"sh/lwr25ob6","slide":6,"text":"Orang bisa mengeksplorasi tanpa kehilangan jalur konsultasi.","textPreview":"Orang bisa mengeksplorasi tanpa kehilangan jalur konsultasi.","textChars":60,"textLines":1,"bbox":[752,290,436,44]}
+{"kind":"shape","id":"sh/kvilwjal","slide":6,"bbox":[60,384,560,220]}
+{"kind":"textbox","id":"sh/bqpkzet4","slide":6,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[84,406,48,20]}
+{"kind":"textbox","id":"sh/apgjq9sj","slide":6,"text":"Performance & akses","textPreview":"Performance & akses","textChars":19,"textLines":1,"bbox":[142,402,430,30]}
+{"kind":"textbox","id":"sh/xsr21oba","slide":6,"text":"YANG BERUBAH","textPreview":"YANG BERUBAH","textChars":12,"textLines":1,"bbox":[84,456,130,16]}
+{"kind":"textbox","id":"sh/crylsjap","slide":6,"text":"Aset diringankan; interaksi, focus state, touch target, dan mobile dijaga.","textPreview":"Aset diringankan; interaksi, focus state, touch target, dan mobile dijaga.","textChars":74,"textLines":1,"bbox":[84,478,510,45]}
+{"kind":"shape","id":"sh/vmtkbyt8","slide":6,"bbox":[84,532,510,2]}
+{"kind":"textbox","id":"sh/ulk32ts3","slide":6,"text":"KENAPA","textPreview":"KENAPA","textChars":6,"textLines":1,"bbox":[84,546,70,14]}
+{"kind":"textbox","id":"sh/s7uhwvql","slide":6,"text":"Mengurangi friksi pada perangkat dan koneksi yang menjadi titik masuk utama.","textPreview":"Mengurangi friksi pada perangkat dan koneksi yang menjadi titik masuk utama.","textChars":76,"textLines":1,"bbox":[158,542,436,44]}
+{"kind":"shape","id":"sh/d83i50rq","slide":6,"bbox":[654,384,560,220]}
+{"kind":"textbox","id":"sh/q5czu58f","slide":6,"text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[678,406,48,20]}
+{"kind":"textbox","id":"sh/r6l03q90","slide":6,"text":"SEO & measurement","textPreview":"SEO & measurement","textChars":17,"textLines":1,"bbox":[736,402,430,30]}
+{"kind":"textbox","id":"sh/0veh0fqh","slide":6,"text":"YANG BERUBAH","textPreview":"YANG BERUBAH","textChars":12,"textLines":1,"bbox":[678,456,130,16]}
+{"kind":"textbox","id":"sh/1wni9kr2","slide":6,"text":"Canonical, OG, sitemap, JSON-LD, serta event funnel yang terstruktur.","textPreview":"Canonical, OG, sitemap, JSON-LD, serta event funnel yang terstruktur.","textChars":69,"textLines":1,"bbox":[678,478,510,45]}
+{"kind":"shape","id":"sh/e9wzy58b","slide":6,"bbox":[678,532,510,2]}
+{"kind":"textbox","id":"sh/fu507a9w","slide":6,"text":"KENAPA","textPreview":"KENAPA","textChars":6,"textLines":1,"bbox":[678,546,70,14]}
+{"kind":"textbox","id":"sh/ozeh4fqd","slide":6,"text":"Halaman lebih mudah ditemukan, dibagikan, dan dievaluasi dari data.","textPreview":"Halaman lebih mudah ditemukan, dibagikan, dan dievaluasi dari data.","textChars":67,"textLines":1,"bbox":[752,542,436,44]}
+{"kind":"notes","id":"nt/5eoulx","slide":6,"text":"Pisahkan perubahan menjadi empat lapisan agar keputusan tidak berhenti pada selera desain. Hierarki dan CTA memengaruhi pemahaman; performance dan accessibility memengaruhi kemampuan mengakses; SEO dan measurement memengaruhi akuisisi serta evaluasi setelah rilis.\n\n[Sources]\n- Internal repository: docs/landing-page-revamp-proposal.md.\n- Internal repository: docs/release-checklist.md.\n- Current implementation under src/components/, src/styles/global.css, and src/pages/."}
+{"kind":"slide","id":"sl/fmt82h","slide":7,"title":"CONVERSION SYSTEM","textShapes":24}
+{"kind":"shape","id":"sh/nu147uho","slide":7,"bbox":[0,0,1280,8]}
+{"kind":"textbox","id":"sh/ova50zi9","slide":7,"text":"CONVERSION SYSTEM","textPreview":"CONVERSION SYSTEM","textChars":17,"textLines":1,"bbox":[48,26,320,16]}
+{"kind":"textbox","id":"sh/pwjm94zu","slide":7,"text":"Di balik tampilan: konsultasi kini menjadi funnel yang terukur","textPreview":"Di balik tampilan: konsultasi kini menjadi funnel yang terukur","textChars":62,"textLines":1,"bbox":[48,50,1120,58]}
+{"kind":"shape","id":"sh/e58nup07","slide":7,"bbox":[48,683,1184,1]}
+{"kind":"textbox","id":"sh/f6h43uhs","slide":7,"text":"PITCAR ACADEMY • BEFORE / AFTER","textPreview":"PITCAR ACADEMY • BEFORE / AFTER","textChars":31,"textLines":1,"bbox":[48,692,420,14]}
+{"kind":"textbox","id":"sh/0ra5wzid","slide":7,"text":"07","textPreview":"07","textChars":2,"textLines":1,"bbox":[1180,692,52,14]}
+{"kind":"textbox","id":"sh/1sjm54zi","slide":7,"text":"Iterasi terbaru mempertahankan lead form, tetapi memangkasnya menjadi 6 field—3 diketik, 3 cukup sekali tap.","textPreview":"Iterasi terbaru mempertahankan lead form, tetapi memangkasnya menjadi 6 field—3 diketik, 3 cukup sekali tap.","textChars":108,"textLines":1,"bbox":[58,118,600,44]}
+{"kind":"shape","id":"sh/q18nq50v","slide":7,"bbox":[58,186,510,72]}
+{"kind":"textbox","id":"sh/r2h4zahg","slide":7,"text":"01","textPreview":"01","textChars":2,"textLines":1,"bbox":[76,210,38,18]}
+{"kind":"textbox","id":"sh/fq9wjmhs","slide":7,"text":"CTA","textPreview":"CTA","textChars":3,"textLines":1,"bbox":[126,200,150,24]}
+{"kind":"textbox","id":"sh/up0fahg7","slide":7,"text":"Membawa source & program","textPreview":"Membawa source & program","textChars":24,"textLines":1,"bbox":[126,226,404,18]}
+{"kind":"shape","id":"sh/hsrelwzy","slide":7,"bbox":[58,280,510,72]}
+{"kind":"textbox","id":"sh/grixcryd","slide":7,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[76,304,38,18]}
+{"kind":"textbox","id":"sh/3u9gnmho","slide":7,"text":"Short form","textPreview":"Short form","textChars":10,"textLines":1,"bbox":[126,294,150,24]}
+{"kind":"textbox","id":"sh/2t0fe1g3","slide":7,"text":"Konteks sebelum chat","textPreview":"Konteks sebelum chat","textChars":20,"textLines":1,"bbox":[126,320,404,18]}
+{"kind":"shape","id":"sh/pwbypwzu","slide":7,"bbox":[58,374,510,72]}
+{"kind":"textbox","id":"sh/4vixgry9","slide":7,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[76,398,38,18]}
+{"kind":"textbox","id":"sh/jypwb2hk","slide":7,"text":"Lead API","textPreview":"Lead API","textChars":8,"textLines":1,"bbox":[126,388,150,24]}
+{"kind":"textbox","id":"sh/ixgf2xgz","slide":7,"text":"Simpan, deduplikasi, scoring","textPreview":"Simpan, deduplikasi, scoring","textChars":28,"textLines":1,"bbox":[126,414,404,18]}
+{"kind":"shape","id":"sh/mpor694z","slide":7,"bbox":[58,468,510,72]}
+{"kind":"textbox","id":"sh/nqx8zu5k","slide":7,"text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[76,492,38,18]}
+{"kind":"textbox","id":"sh/8r698zmp","slide":7,"text":"Sales","textPreview":"Sales","textChars":5,"textLines":1,"bbox":[126,482,150,24]}
+{"kind":"textbox","id":"sh/9szq14na","slide":7,"text":"Dashboard + WhatsApp","textPreview":"Dashboard + WhatsApp","textChars":20,"textLines":1,"bbox":[126,508,404,18]}
+{"kind":"shape","id":"sh/y1or2p4n","slide":7,"bbox":[616,140,608,383]}
+{"kind":"shape","id":"sh/03694zmt","slide":7,"bbox":[620,550,18,18]}
+{"kind":"textbox","id":"sh/l4fqx4ne","slide":7,"text":"✓","textPreview":"✓","textChars":1,"textLines":1,"bbox":[620,552,18,14]}
+{"kind":"textbox","id":"sh/qx4ryp4r","slide":7,"text":"Lead tidak hilang jika chat batal dibuka","textPreview":"Lead tidak hilang jika chat batal dibuka","textChars":40,"textLines":1,"bbox":[646,548,166,52]}
+{"kind":"shape","id":"sh/byd8ra5c","slide":7,"bbox":[818,550,18,18]}
+{"kind":"textbox","id":"sh/ts3uxs7u","slide":7,"text":"✓","textPreview":"✓","textChars":1,"textLines":1,"bbox":[818,552,18,14]}
+{"kind":"textbox","id":"sh/srut4n69","slide":7,"text":"Attribution dan submission ID ikut tersimpan","textPreview":"Attribution dan submission ID ikut tersimpan","textChars":44,"textLines":1,"bbox":[844,548,166,52]}
+{"kind":"shape","id":"sh/rq1cvipo","slide":7,"bbox":[1016,550,18,18]}
+{"kind":"textbox","id":"sh/6psb2do3","slide":7,"text":"✓","textPreview":"✓","textChars":1,"textLines":1,"bbox":[1016,552,18,14]}
+{"kind":"textbox","id":"sh/5ojut87i","slide":7,"text":"Consultant menerima konteks sebelum follow-up","textPreview":"Consultant menerima konteks sebelum follow-up","textChars":45,"textLines":1,"bbox":[1042,548,166,52]}
+{"kind":"textbox","id":"sh/4nat036x","slide":7,"text":"Catatan: scoring dan routing sudah ada di backend; rule final tetap perlu persetujuan sales.","textPreview":"Catatan: scoring dan routing sudah ada di backend; rule final tetap perlu persetujuan sales.","textChars":92,"textLines":1,"bbox":[620,624,600,28]}
+{"kind":"image","id":"im/o76x8rqh","slide":7,"name":"","geometry":"roundRect","alt":"Tampilan form konsultasi Pitcar Academy","bbox":[620,144,600,375]}
+{"kind":"notes","id":"nt/fmt82h","slide":7,"text":"Perubahan visual dan backend saling melengkapi. Form tidak dibuat untuk menggantikan WhatsApp, tetapi untuk memastikan intent dan attribution tercatat sebelum percakapan. Backend mengendalikan validasi, idempotency, scoring, routing consultant, dan deep link WhatsApp.\n\n[Sources]\n- Internal repository: docs/lead-api-contract.md.\n- Current repository implementation: src/components/LeadForm.astro and backend/.\n- Form screenshot captured from current local build on 2026-08-30; displayed data is synthetic QA data."}
+{"kind":"slide","id":"sl/wt53ls","slide":8,"title":"RELEASE DECISION","textShapes":25}
+{"kind":"shape","id":"sh/gvmdsnut","slide":8,"bbox":[0,0,1280,8]}
+{"kind":"textbox","id":"sh/vutcjit8","slide":8,"text":"RELEASE DECISION","textPreview":"RELEASE DECISION","textChars":16,"textLines":1,"bbox":[48,26,320,16]}
+{"kind":"textbox","id":"sh/utkvqdcn","slide":8,"text":"Redesign selesai; nilai bisnisnya dibuktikan di staging","textPreview":"Redesign selesai; nilai bisnisnya dibuktikan di staging","textChars":55,"textLines":1,"bbox":[48,50,1120,58]}
+{"kind":"shape","id":"sh/tsbuh8bi","slide":8,"bbox":[48,683,1184,1]}
+{"kind":"textbox","id":"sh/8r2do3ux","slide":8,"text":"PITCAR ACADEMY • BEFORE / AFTER","textPreview":"PITCAR ACADEMY • BEFORE / AFTER","textChars":31,"textLines":1,"bbox":[48,692,420,14]}
+{"kind":"textbox","id":"sh/7qtcfitc","slide":8,"text":"08","textPreview":"08","textChars":2,"textLines":1,"bbox":[1180,692,52,14]}
+{"kind":"textbox","id":"sh/6pkvmdcr","slide":8,"text":"Yang sudah siap","textPreview":"Yang sudah siap","textChars":15,"textLines":1,"bbox":[60,128,320,24]}
+{"kind":"shape","id":"sh/dofetcbm","slide":8,"bbox":[62,176,18,18]}
+{"kind":"textbox","id":"sh/sn6d07u1","slide":8,"text":"✓","textPreview":"✓","textChars":1,"textLines":1,"bbox":[62,178,18,14]}
+{"kind":"textbox","id":"sh/md072p8r","slide":8,"text":"Visual rebuild dan production build berhasil","textPreview":"Visual rebuild dan production build berhasil","textChars":44,"textLines":1,"bbox":[96,174,430,44]}
+{"kind":"shape","id":"sh/ne98vu9c","slide":8,"bbox":[62,228,468,1]}
+{"kind":"shape","id":"sh/8fip4zqx","slide":8,"bbox":[62,254,18,18]}
+{"kind":"textbox","id":"sh/90bqx4ri","slide":8,"text":"✓","textPreview":"✓","textChars":1,"textLines":1,"bbox":[62,256,18,14]}
+{"kind":"textbox","id":"sh/y907ypsv","slide":8,"text":"Lead API + idempotency + scoring + routing","textPreview":"Lead API + idempotency + scoring + routing","textChars":42,"textLines":1,"bbox":[96,252,430,44]}
+{"kind":"shape","id":"sh/za98ru9g","slide":8,"bbox":[62,306,468,1]}
+{"kind":"shape","id":"sh/0bip0fq1","slide":8,"bbox":[62,332,18,18]}
+{"kind":"textbox","id":"sh/lcrqtkr6","slide":8,"text":"✓","textPreview":"✓","textChars":1,"textLines":1,"bbox":[62,334,18,14]}
+{"kind":"textbox","id":"sh/i5kra98z","slide":8,"text":"Dashboard Filament untuk pipeline sales","textPreview":"Dashboard Filament untuk pipeline sales","textChars":39,"textLines":1,"bbox":[96,330,430,44]}
+{"kind":"shape","id":"sh/j6t83e9k","slide":8,"bbox":[62,384,468,1]}
+{"kind":"shape","id":"sh/fa54v6pw","slide":8,"bbox":[62,410,18,18]}
+{"kind":"textbox","id":"sh/epcn218b","slide":8,"text":"✓","textPreview":"✓","textChars":1,"textLines":1,"bbox":[62,412,18,14]}
+{"kind":"textbox","id":"sh/1cnmxg72","slide":8,"text":"SEO teknis dan 8 event funnel","textPreview":"SEO teknis dan 8 event funnel","textChars":29,"textLines":1,"bbox":[96,408,430,44]}
+{"kind":"shape","id":"sh/gbe54bqh","slide":8,"bbox":[572,120,650,444]}
+{"kind":"textbox","id":"sh/3e5ozqp8","slide":8,"text":"SEBELUM PRODUCTION","textPreview":"SEBELUM PRODUCTION","textChars":18,"textLines":1,"bbox":[604,152,300,20]}
+{"kind":"shape","id":"sh/2dwn6lon","slide":8,"bbox":[604,200,40,40]}
+{"kind":"textbox","id":"sh/pgn61g7y","slide":8,"text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[604,210,40,18]}
+{"kind":"textbox","id":"sh/ofe58b6t","slide":8,"text":"Hubungkan sistem","textPreview":"Hubungkan sistem","textChars":16,"textLines":1,"bbox":[662,198,500,26]}
+{"kind":"textbox","id":"sh/bipo3qp4","slide":8,"text":"Set env/domain, CORS, migration, consultant roster, dan queue.","textPreview":"Set env/domain, CORS, migration, consultant roster, dan queue.","textChars":62,"textLines":1,"bbox":[662,229,500,52]}
+{"kind":"shape","id":"sh/qhgnaloj","slide":8,"bbox":[604,312,40,40]}
+{"kind":"textbox","id":"sh/8ny5kvmx","slide":8,"text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[604,322,40,18]}
+{"kind":"textbox","id":"sh/98rmt0ni","slide":8,"text":"Kunci keputusan bisnis","textPreview":"Kunci keputusan bisnis","textChars":22,"textLines":1,"bbox":[662,310,500,26]}
+{"kind":"textbox","id":"sh/mlg3il4r","slide":8,"text":"Setujui scoring, SLA, privacy/retention, harga, promo, serta klaim.","textPreview":"Setujui scoring, SLA, privacy/retention, harga, promo, serta klaim.","textChars":67,"textLines":1,"bbox":[662,341,500,52]}
+{"kind":"shape","id":"sh/nmp4rq5c","slide":8,"bbox":[604,424,40,40]}
+{"kind":"textbox","id":"sh/0jylgvml","slide":8,"text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[604,434,40,18]}
+{"kind":"textbox","id":"sh/lk7mp0n6","slide":8,"text":"Buktikan end-to-end","textPreview":"Buktikan end-to-end","textChars":19,"textLines":1,"bbox":[662,422,500,26]}
+{"kind":"textbox","id":"sh/yhg3el4v","slide":8,"text":"Submit staging → database → dashboard → WhatsApp; lalu GA4 dan Lighthouse production.","textPreview":"Submit staging → database → dashboard → WhatsApp; lalu GA4 dan Lighthouse production.","textChars":85,"textLines":1,"bbox":[662,453,500,52]}
+{"kind":"shape","id":"sh/zip4nq50","slide":8,"bbox":[60,586,1162,70]}
+{"kind":"textbox","id":"sh/cfelcbmp","slide":8,"text":"REKOMENDASI","textPreview":"REKOMENDASI","textChars":11,"textLines":1,"bbox":[82,608,138,16]}
+{"kind":"textbox","id":"sh/dgnmlgna","slide":8,"text":"Lanjut ke staging terkontrol—ukur conversion, jangan mengulang redesign dari nol.","textPreview":"Lanjut ke staging terkontrol—ukur conversion, jangan mengulang redesign dari nol.","textChars":81,"textLines":1,"bbox":[232,600,948,28]}
+{"kind":"notes","id":"nt/wt53ls","slide":8,"text":"Tutup dengan keputusan yang jelas. Redesign dan fondasi sistem sudah cukup untuk masuk staging. Fokus berikutnya bukan menambah section baru, melainkan menghubungkan environment, menyetujui rule bisnis, lalu membuktikan jalur lead dari frontend sampai tindak lanjut sales.\n\n[Sources]\n- Internal repository: docs/release-checklist.md.\n- Internal repository: docs/environment-setup.md.\n- Current repository implementation under backend/ and src/.\n- Local build verification completed for baseline and current versions on 2026-08-30."}

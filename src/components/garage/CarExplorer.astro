@@ -1,0 +1,533 @@
+---
+import { carParts, examples, fuelGroups, vehicles, MATIC_PART } from '../../data/carParts';
+import PartDiagram from './PartDiagram.astro';
+import ModelCredit from './ModelCredit.astro';
+
+// Line-drawn poster: shown while the 3D model loads and wherever WebGL is unavailable.
+const VIEW = { w: 1200, h: 470 };
+
+const vehicle = vehicles[0];
+const first = carParts.find((part) => part.id === vehicle.parts[0])!;
+const client = {
+  vehicles: vehicles.map(({ id, group, label, body, parts }) => ({ id, group, label, body, parts })),
+  groups: Object.fromEntries(fuelGroups.map((g) => [g.id, g.label])),
+  maticPart: MATIC_PART,
+};
+---
+
+<section id="garasi" class="scroll-mt-28 pt-44 sm:pt-40" aria-labelledby="hero-title">
+  <div class="shell">
+    <div class="grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-10">
+      <h1 id="hero-title" class="g-display max-w-[16ch] lg:col-span-7">
+        Belajar mekanik di bengkel nyata.
+      </h1>
+
+      <div class="lg:col-span-5 lg:pb-2">
+        <p class="lead max-w-prose">
+          Teori, praktik intensif, dan 2 bulan OJT di ekosistem bengkel PITCAR.
+          Mulai dari sini: putar mobil di bawah, pilih jenis mesinnya, lalu bongkar tiap komponennya.
+        </p>
+        <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap [&>a]:whitespace-nowrap">
+          <a href="#konsultasi" data-lead-cta data-source-cta="hero_primary" class="btn btn-primary">
+            Konsultasi Program Gratis
+          </a>
+          <a href="#program" class="btn btn-ghost">Lihat Program &amp; Biaya</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 lg:mt-10" data-garage data-config={JSON.stringify(client)}>
+      <div class="g-picker">
+        <div class="g-pick">
+          <p id="pick-fuel" class="g-label text-muted">Bahan bakar</p>
+          <div class="g-callouts !mt-0" role="group" aria-labelledby="pick-fuel">
+            {fuelGroups.map((g) => (
+              <button type="button" class="g-callout g-label" data-group-select={g.id} aria-pressed={g.id === vehicle.group ? 'true' : 'false'}>
+                {g.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div class="g-pick">
+          <p id="pick-system" class="g-label text-muted">Sistem</p>
+          <div class="g-callouts !mt-0" role="group" aria-labelledby="pick-system">
+            {vehicles.map((v) => (
+              <button
+                type="button"
+                class="g-callout g-label"
+                data-fuel-select={v.id}
+                data-group={v.group}
+                aria-pressed={v.id === vehicle.id ? 'true' : 'false'}
+                hidden={v.group !== vehicle.group}
+              >
+                {v.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div class="g-pick">
+          <p id="pick-gearbox" class="g-label text-muted">Transmisi</p>
+          <div class="g-callouts !mt-0" role="group" aria-labelledby="pick-gearbox">
+            <button type="button" class="g-callout g-label" data-gearbox-select="manual" aria-pressed="true">Manual</button>
+            <button type="button" class="g-callout g-label" data-gearbox-select="matic" aria-pressed="false">Matic</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-5 border-t border-body">
+        {vehicles.flatMap((v) => (['manual', 'matic'] as const).map((gearbox) => (
+          <dl class="g-examples" data-examples={`${v.id}-${gearbox}`} hidden={v.id !== vehicle.id || gearbox !== 'manual'}>
+            <div>
+              <dt class="g-label text-muted">Contoh mobil modern</dt>
+              <dd>{examples[v.id][gearbox].modern}</dd>
+            </div>
+            <div>
+              <dt class="g-label text-muted">Contoh mobil klasik</dt>
+              <dd>{examples[v.id][gearbox].classic}</dd>
+            </div>
+          </dl>
+        )))}
+      </div>
+
+      <div class="g-stage mt-5" data-stage data-active={first.slot}>
+        <svg class="g-car" viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} width={VIEW.w} height={VIEW.h} aria-hidden="true" focusable="false">
+          <defs>
+            <radialGradient id="g-underglow" cx="50%" cy="50%" r="50%">
+              <stop offset="0" stop-color="#cc0000" stop-opacity="0.9" />
+              <stop offset="1" stop-color="#cc0000" stop-opacity="0" />
+            </radialGradient>
+            <linearGradient id="g-fade" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fff" stop-opacity="1" />
+              <stop offset="1" stop-color="#fff" stop-opacity="0" />
+            </linearGradient>
+            <mask id="g-reflect-mask" maskUnits="userSpaceOnUse" x="0" y="380" width="1200" height="90">
+              <rect x="0" y="380" width="1200" height="90" fill="url(#g-fade)" />
+            </mask>
+            <g id="g-shell">
+              <path pathLength="1" class="g-shell-line g-shell-draw" d="M118 330L112 262Q112 236 138 226L250 208C300 150 360 112 440 104L640 100C700 104 760 150 800 196L1010 222Q1070 232 1084 268L1090 320Q1090 338 1070 338L923 338A76 76 0 1 0 777 338L373 338A76 76 0 1 0 227 338L134 338Q118 338 118 330Z" />
+              <path class="g-shell-line" d="M296 204C336 160 378 128 446 121L634 117C686 121 728 156 760 198Z" />
+              <path class="g-shell-line" d="M548 119V334M772 200L778 262M330 210Q318 262 338 290" />
+              <path class="g-shell-line" d="M1052 240L1078 250L1080 266L1050 262Z" />
+              <path class="g-shell-line" d="M606 300L614 226Q617 210 629 212L636 300M592 300H690M742 250L722 222M714 240L730 204" />
+              <circle class="g-shell-line" cx="850" cy="318" r="62" />
+              <circle class="g-shell-line" cx="850" cy="318" r="42" />
+              <circle class="g-shell-line" cx="300" cy="318" r="62" />
+              <circle class="g-shell-line" cx="300" cy="318" r="42" />
+            </g>
+          </defs>
+
+          <ellipse class="g-underglow" cx="600" cy="384" rx="520" ry="30" fill="url(#g-underglow)" />
+          <g class="g-reflection" mask="url(#g-reflect-mask)">
+            <use href="#g-shell" transform="translate(0 760) scale(1 -1)" />
+          </g>
+          <path class="g-ground" d="M30 380H1170" />
+          <use href="#g-shell" />
+          <path class="g-taillight" d="M116 252L140 244V268L114 272Z" />
+
+          <g class="g-part" data-part="transmisi">
+            <rect class="g-hit" x="330" y="250" width="600" height="62" />
+            <path d="M930 248L912 252L880 262L800 268V296L880 300L912 306L930 300" />
+            <path class="g-thin" d="M800 278L330 308M800 288L330 316" />
+            <circle cx="300" cy="318" r="13" />
+          </g>
+
+          <g class="g-part" data-part="suspensi">
+            <rect class="g-hit" x="270" y="228" width="60" height="76" />
+            <path d="M284 236H316M300 236l-11 6 22 9-22 9 22 9-22 9 11 8V300" />
+            <path class="g-thin" d="M300 318L392 306" />
+          </g>
+
+          <g class="g-part" data-part="rem">
+            <rect class="g-hit" x="812" y="280" width="76" height="76" />
+            <rect class="g-hit" x="262" y="304" width="76" height="52" />
+            <circle cx="850" cy="318" r="30" />
+            <path stroke-width="5" d="M868 292A32 32 0 0 1 882 318" />
+            <circle cx="300" cy="318" r="30" />
+            <path stroke-width="5" d="M318 292A32 32 0 0 1 332 318" />
+            <rect class="g-fill" x="796" y="250" width="20" height="9" />
+            <path class="g-thin" d="M790 254L772 286l12 4M806 259V300L826 306M806 300V332H336L326 326" />
+          </g>
+
+          <g class="g-part is-active" data-part="mesin">
+            <rect class="g-hit" x="926" y="222" width="92" height="92" />
+            <rect class="g-fill" x="930" y="240" width="84" height="58" />
+            <rect class="g-fill" x="934" y="226" width="76" height="14" />
+            <path class="g-thin" d="M951 240V298M972 240V298M993 240V298" />
+            <path d="M936 298L944 310H1000L1008 298" />
+          </g>
+
+          <g class="g-part" data-part="pendingin">
+            <rect class="g-hit" x="1016" y="228" width="34" height="90" />
+            <rect class="g-fill" x="1036" y="238" width="12" height="76" />
+            <path class="g-thin" d="M1036 250H1048M1036 262H1048M1036 274H1048M1036 286H1048M1036 298H1048" />
+            <ellipse cx="1025" cy="276" rx="4" ry="24" />
+            <path d="M1010 234C1022 226 1034 230 1040 238M1008 304C1020 314 1032 316 1040 314" />
+          </g>
+
+          <g class="g-part" data-part="ac">
+            <rect class="g-hit" x="746" y="218" width="46" height="38" />
+            <rect class="g-hit" x="1050" y="238" width="16" height="74" />
+            <rect class="g-fill" x="752" y="224" width="34" height="26" />
+            <path class="g-thin" d="M760 224V250M769 224V250M778 224V250" />
+            <rect class="g-fill" x="1054" y="242" width="6" height="66" />
+            <circle class="g-fill" cx="1000" cy="290" r="9" />
+            <path class="g-thin" d="M1057 242L1012 232L815 208L786 226M1008 294C1030 322 1056 324 1057 308" />
+          </g>
+
+          <g class="g-part" data-part="bahanbakar">
+            <rect class="g-hit" x="806" y="218" width="46" height="32" />
+            <rect class="g-fill" x="812" y="224" width="34" height="20" />
+            <path class="g-thin" d="M846 232H934M812 240L786 264" />
+            <rect x="776" y="262" width="10" height="6" />
+          </g>
+        </svg>
+
+        <p class="g-loading g-readout" role="status">Memuat model 3D</p>
+        <noscript><style>.g-stage .g-car{display:block}.g-stage .g-loading{display:none}</style></noscript>
+
+        <canvas
+          class="g-canvas"
+          data-canvas
+          tabindex="0"
+          aria-label="Model 3D mobil. Geser, atau tekan tombol panah, untuk memutar. Klik dua kali komponen untuk membongkarnya. Semua komponen juga bisa dipilih lewat tombol di bawah."
+        ></canvas>
+
+        <span class="g-bracket g-bracket-tl" aria-hidden="true"></span>
+        <span class="g-bracket g-bracket-tr" aria-hidden="true"></span>
+        <span class="g-bracket g-bracket-bl" aria-hidden="true"></span>
+        <span class="g-bracket g-bracket-br" aria-hidden="true"></span>
+
+        <div class="g-hud g-hud-tl">
+          <p class="g-readout g-readout-strong"><span class="g-dot" aria-hidden="true"></span><span data-hud-title></span></p>
+          <p class="g-readout" data-hud-sub>{vehicle.body}</p>
+        </div>
+
+        <div class="g-hud g-hud-tr">
+          <button type="button" class="g-hud-btn" data-body-toggle hidden>Tampilkan bodi</button>
+          <button type="button" class="g-hud-btn" data-bench-close hidden>&larr; Kembali ke mobil</button>
+        </div>
+
+        <div class="g-hud g-hud-zoom" data-zoom hidden>
+          <button type="button" class="g-hud-btn" data-zoom-in aria-label="Perbesar">+</button>
+          <button type="button" class="g-hud-btn" data-zoom-out aria-label="Perkecil">&minus;</button>
+        </div>
+
+        <div class="g-hud g-hud-bl">
+          <p class="g-readout" data-hint hidden>Geser untuk memutar. Klik dua kali komponen untuk membongkar.</p>
+          <label class="g-explode g-readout" data-explode hidden>
+            <span>Geser untuk merakit atau membongkar: <output>000%</output></span>
+            <input type="range" min="0" max="100" value="100" />
+            <span class="g-explode-ends" aria-hidden="true"><span>Terakit</span><span>Terbongkar</span></span>
+          </label>
+        </div>
+
+        <div class="g-hud g-hud-br">
+          <button type="button" class="btn btn-primary" data-bench-open hidden>
+            <span>Bongkar <span data-bench-name>{first.label}</span></span>
+          </button>
+          <button type="button" class="g-hud-btn" data-run aria-pressed="false" hidden>Gerakkan komponen</button>
+        </div>
+
+        <p class="g-tip g-readout" data-tip hidden></p>
+      </div>
+      <ModelCredit class="mt-2 sm:text-right" />
+
+      <p class="g-label mt-6 text-muted" data-chips-label>Pilih komponen untuk melihat cara kerjanya</p>
+      <ul class="g-callouts" data-part-chips aria-label="Komponen mobil">
+        {carParts.map((part) => (
+          <li hidden={!vehicle.parts.includes(part.id)}>
+            <button
+              type="button"
+              class="g-callout g-label"
+              data-select={part.id}
+              data-slot={part.slot}
+              data-label={part.label}
+              aria-pressed={part.id === first.id ? 'true' : 'false'}
+              aria-controls="inspektor"
+            >
+              {part.label}
+            </button>
+          </li>
+        ))}
+      </ul>
+      <ul class="g-callouts" data-sub-chips aria-label="Bagian komponen" hidden></ul>
+      <p class="mt-4 max-w-prose leading-relaxed" data-sub-info aria-live="polite" hidden></p>
+    </div>
+
+    <div id="inspektor" class="g-panel mt-10 scroll-mt-28 lg:mt-6" data-panel aria-live="polite">
+      {carParts.map((part) => (
+        <article data-detail={part.id} hidden={part.id !== first.id} class="grid gap-x-10 gap-y-8 py-8 lg:grid-cols-12 lg:py-10">
+          <div class="flex flex-wrap items-start justify-between gap-4 lg:col-span-12">
+            <h2 class="g-h3">{part.name}</h2>
+            <button type="button" class="g-pause g-label" data-pause aria-pressed="false">
+              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+                <path data-icon-pause d="M2 1h3.5v12H2zM8.5 1H12v12H8.5z" />
+                <path data-icon-play d="M3 1l9 6-9 6z" />
+              </svg>
+              <span data-pause-label>Jeda animasi</span>
+            </button>
+          </div>
+
+          <div class="lg:col-span-4">
+            <PartDiagram id={part.id} title={part.name} />
+          </div>
+
+          <div class="lg:col-span-5">
+            <p class="text-lg leading-relaxed">{part.job}</p>
+            <ol class="mt-6 space-y-3.5">
+              {part.steps.map((step, index) => (
+                <li class="flex gap-4 leading-relaxed text-muted">
+                  <span class="g-num w-4 shrink-0 pt-0.5 text-lg text-accent" aria-hidden="true">{index + 1}</span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <div class="lg:col-span-3">
+            <h3 class="g-label text-muted">Saat bermasalah</h3>
+            <p class="mt-2 leading-relaxed">{part.symptom}</p>
+
+            <h3 class="g-label mt-7 text-muted">Dipraktikkan di program</h3>
+            <p class="mt-2 leading-relaxed">
+              {part.program.note ?? `${part.program.level}, materi ${part.program.material}. Kamu mengerjakannya langsung pada kendaraan di bengkel.`}
+            </p>
+            <a
+              href="#konsultasi"
+              data-lead-cta
+              data-program-interest={part.program.interest}
+              data-source-cta={`part_${part.id}`}
+              class="btn btn-primary mt-5 w-full"
+            >
+              Tanya program {part.program.level}
+            </a>
+            {part.online && (
+              <a href={part.online.href} class="btn btn-ghost mt-3 w-full">
+                {part.online.label}, {part.online.price}
+              </a>
+            )}
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  import type { Garage, Fuel, Slot } from '../../scripts/garage/scene';
+
+  type Group = 'bensin' | 'diesel';
+  interface Vehicle { id: Fuel; group: Group; label: string; body: string; parts: string[] }
+  interface Sub { name: string; info: string }
+
+  const root = document.querySelector<HTMLElement>('[data-garage]');
+  const panel = document.querySelector<HTMLElement>('[data-panel]');
+
+  if (root && panel) {
+    const config: { vehicles: Vehicle[]; groups: Record<Group, string>; maticPart: string } = JSON.parse(root.dataset.config!);
+    const stage = root.querySelector<HTMLElement>('[data-stage]')!;
+    const q = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+    const all = <T extends HTMLElement>(sel: string) => [...root.querySelectorAll<T>(sel)];
+    const groupButtons = all<HTMLButtonElement>('[data-group-select]');
+    const fuelButtons = all<HTMLButtonElement>('[data-fuel-select]');
+    const gearboxButtons = all<HTMLButtonElement>('[data-gearbox-select]');
+    const chips = all<HTMLButtonElement>('[data-select]');
+    const posterParts = [...stage.querySelectorAll<SVGGElement>('[data-part]')];
+    const details = [...panel.querySelectorAll<HTMLElement>('[data-detail]')];
+    const canvas = q<HTMLCanvasElement>('[data-canvas]');
+    const partList = q('[data-part-chips]');
+    const subList = q('[data-sub-chips]');
+    const subInfo = q('[data-sub-info]');
+    const chipsLabel = q('[data-chips-label]');
+    const hudTitle = q('[data-hud-title]');
+    const hudSub = q('[data-hud-sub]');
+    const hint = q('[data-hint]');
+    const tip = q('[data-tip]');
+    const zoom = q('[data-zoom]');
+    const bodyToggle = q<HTMLButtonElement>('[data-body-toggle]');
+    const openButton = q<HTMLButtonElement>('[data-bench-open]');
+    const closeButton = q<HTMLButtonElement>('[data-bench-close]');
+    const runButton = q<HTMLButtonElement>('[data-run]');
+    const explode = q('[data-explode]');
+    const slider = explode.querySelector('input')!;
+    const percent = explode.querySelector('output')!;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    let garage: Garage | null = null;
+    let vehicle = config.vehicles[0];
+    let matic = false;
+    // Switching Bensin/Diesel returns to the system last looked at in that group.
+    const lastIn: Record<Group, Fuel> = { bensin: 'efi', diesel: 'commonrail' };
+    let active = chips.find((c) => c.getAttribute('aria-pressed') === 'true')!;
+    let onBench = false;
+    let subs: Sub[] = [];
+
+    const parts = () => vehicle.parts.map((id) => (matic && id === 'transmisi' ? config.maticPart : id));
+    const chipFor = (slot: string) => chips.find((c) => c.dataset.slot === slot && parts().includes(c.dataset.select!))!;
+    const press = (buttons: HTMLButtonElement[], on: (b: HTMLButtonElement) => boolean) =>
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(on(b))));
+
+    const showCarHud = () => {
+      hudTitle.textContent = `${config.groups[vehicle.group]} // ${vehicle.label} // ${matic ? 'Matic' : 'Manual'}`;
+      hudSub.textContent = vehicle.body;
+    };
+
+    const setRunning = (on: boolean) => {
+      garage?.setRunning(on);
+      runButton.setAttribute('aria-pressed', String(on));
+      runButton.textContent = on ? 'Hentikan gerakan' : 'Gerakkan komponen';
+    };
+
+    const leaveBench = () => {
+      if (!onBench) return;
+      onBench = false;
+      setRunning(false);
+      garage?.closeBench();
+      partList.hidden = false;
+      subList.hidden = subInfo.hidden = closeButton.hidden = explode.hidden = runButton.hidden = true;
+      openButton.hidden = hint.hidden = bodyToggle.hidden = false;
+      chipsLabel.textContent = 'Pilih komponen untuk melihat cara kerjanya';
+      showCarHud();
+    };
+
+    // The button names what pressing it will do, not the state it is in.
+    let solid = false;
+    const setSolid = (next: boolean) => {
+      solid = next;
+      garage?.setSolid(solid);
+      bodyToggle.textContent = solid ? 'Lihat isi mobil' : 'Tampilkan bodi';
+    };
+
+    const select = (chip: HTMLButtonElement, fromUser: boolean) => {
+      leaveBench();
+      active = chip;
+      const id = chip.dataset.select!;
+      const slot = chip.dataset.slot as Slot;
+      stage.dataset.active = slot;
+      press(chips, (c) => c === chip);
+      posterParts.forEach((p) => p.classList.toggle('is-active', p.dataset.part === slot));
+      details.forEach((d) => { d.hidden = d.dataset.detail !== id; });
+      q('[data-bench-name]').textContent = chip.dataset.label!;
+      garage?.setSlot(slot);
+
+      if (!fromUser) return;
+      // Choosing a part is asking to see it: drop the paint.
+      setSolid(false);
+      window.dataLayer?.push({ event: 'part_view', part_id: id });
+    };
+
+    const selectSub = (index: number) => {
+      garage?.selectSub(index);
+      press([...subList.querySelectorAll('button')], (b) => b.dataset.sub === String(index));
+      subInfo.replaceChildren(
+        Object.assign(document.createElement('strong'), { textContent: `${subs[index].name}. ` }),
+        subs[index].info,
+      );
+    };
+
+    const enterBench = () => {
+      if (!garage) return;
+      const bench = garage.openBench();
+      subs = bench.subs;
+      onBench = true;
+      subList.replaceChildren(...subs.map((sub, i) => {
+        const li = document.createElement('li');
+        const b = Object.assign(document.createElement('button'), { type: 'button', className: 'g-callout g-label', textContent: sub.name });
+        b.dataset.sub = String(i);
+        b.setAttribute('aria-pressed', 'false');
+        b.addEventListener('click', () => selectSub(i));
+        li.append(b);
+        return li;
+      }));
+      subInfo.textContent = 'Klik satu bagian untuk melihat fungsinya. Geser penggeser ke kiri untuk merakitnya kembali, lalu klik bagian untuk melepasnya satu per satu.';
+      partList.hidden = openButton.hidden = hint.hidden = bodyToggle.hidden = true;
+      subList.hidden = subInfo.hidden = closeButton.hidden = explode.hidden = false;
+      runButton.hidden = !bench.canRun;
+      chipsLabel.textContent = 'Bagian-bagiannya';
+      hudTitle.textContent = `Komponen // ${active.dataset.label}`;
+      hudSub.textContent = bench.title;
+      tip.hidden = true;
+      if (bench.canRun && !reduce.matches) setRunning(true);
+      window.dataLayer?.push({ event: 'part_bench', part_id: active.dataset.select });
+    };
+
+    const configure = (next: Vehicle, nextMatic: boolean, fromUser: boolean) => {
+      leaveBench();
+      vehicle = next;
+      matic = nextMatic;
+      lastIn[vehicle.group] = vehicle.id;
+      press(groupButtons, (b) => b.dataset.groupSelect === vehicle.group);
+      press(fuelButtons, (b) => b.dataset.fuelSelect === vehicle.id);
+      press(gearboxButtons, (b) => (b.dataset.gearboxSelect === 'matic') === matic);
+      fuelButtons.forEach((b) => { b.hidden = b.dataset.group !== vehicle.group; });
+      const key = `${vehicle.id}-${matic ? 'matic' : 'manual'}`;
+      all('[data-examples]').forEach((el) => { el.hidden = el.dataset.examples !== key; });
+      const shown = parts();
+      chips.forEach((c) => { c.parentElement!.hidden = !shown.includes(c.dataset.select!); });
+      // Keep the chips in the vehicle's own order, engine first.
+      shown.forEach((id) => partList.append(chips.find((c) => c.dataset.select === id)!.parentElement!));
+      garage?.setConfig(vehicle.id, matic);
+      select(chipFor(active.dataset.slot!), false);
+      showCarHud();
+      if (fromUser) window.dataLayer?.push({ event: 'vehicle_view', vehicle_id: vehicle.id, gearbox: matic ? 'matic' : 'manual' });
+    };
+
+    const byId = (id: string) => config.vehicles.find((v) => v.id === id)!;
+    groupButtons.forEach((b) => b.addEventListener('click', () => configure(byId(lastIn[b.dataset.groupSelect as Group]), matic, true)));
+    fuelButtons.forEach((b) => b.addEventListener('click', () => configure(byId(b.dataset.fuelSelect!), matic, true)));
+    gearboxButtons.forEach((b) => b.addEventListener('click', () => configure(vehicle, b.dataset.gearboxSelect === 'matic', true)));
+    chips.forEach((c) => c.addEventListener('click', () => select(c, true)));
+    posterParts.forEach((p) => p.addEventListener('click', () => select(chipFor(p.dataset.part!), true)));
+    openButton.addEventListener('click', enterBench);
+    closeButton.addEventListener('click', leaveBench);
+    bodyToggle.addEventListener('click', () => setSolid(!solid));
+    runButton.addEventListener('click', () => setRunning(runButton.getAttribute('aria-pressed') !== 'true'));
+    q('[data-zoom-in]').addEventListener('click', () => garage?.zoom(0.82));
+    q('[data-zoom-out]').addEventListener('click', () => garage?.zoom(1.22));
+    slider.addEventListener('input', () => garage?.setExplode(Number(slider.value) / 100));
+
+    showCarHud();
+
+    // three.js is the heaviest thing on the page: load it after first paint.
+    const boot = async () => {
+      const { createGarage } = await import('../../scripts/garage/scene');
+      garage = await createGarage(canvas, {
+        fuel: vehicle.id,
+        matic,
+        slot: active.dataset.slot as Slot,
+        onPick: (slot) => select(chipFor(slot), true),
+        onOpen: (slot) => { select(chipFor(slot), true); enterBench(); },
+        onSub: selectSub,
+        onHover: (hover) => {
+          tip.hidden = !hover;
+          if (!hover) return;
+          tip.textContent = hover.slot ? chipFor(hover.slot).dataset.label! : subs[hover.sub!]?.name ?? '';
+          tip.style.left = `${canvas.offsetLeft + hover.x}px`;
+          tip.style.top = `${canvas.offsetTop + hover.y}px`;
+        },
+        onExplode: (t) => {
+          const value = Math.round(t * 100);
+          percent.textContent = `${String(value).padStart(3, '0')}%`;
+          if (document.activeElement !== slider) slider.value = String(value);
+        },
+      });
+      if (!garage) throw new Error('WebGL unavailable');
+      stage.dataset.ready = '';
+      openButton.hidden = hint.hidden = bodyToggle.hidden = zoom.hidden = false;
+    };
+    const idle = window.requestIdleCallback ?? ((fn: () => void) => setTimeout(fn, 200));
+    // No 3D on this device: fall back to the line drawing, which still selects parts.
+    idle(() => { boot().catch(() => { stage.dataset.fallback = ''; }); });
+
+    panel.querySelectorAll<HTMLButtonElement>('[data-pause]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const paused = !panel.hasAttribute('data-paused');
+        panel.toggleAttribute('data-paused', paused);
+        panel.querySelectorAll<HTMLButtonElement>('[data-pause]').forEach((b) => {
+          b.setAttribute('aria-pressed', String(paused));
+          b.querySelector('[data-pause-label]')!.textContent = paused ? 'Putar animasi' : 'Jeda animasi';
+        });
+      });
+    });
+  }
+</script>

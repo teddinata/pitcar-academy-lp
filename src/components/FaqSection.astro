@@ -1,84 +1,59 @@
 ---
-// FAQ Section — Accordion style FAQ
-// No extra CTA — conversion handled by Hero (top), Sticky Float, and Bottom Banner
-
 interface Props {
   faqs: Array<{ question: string; answer: string }>;
-  whatsappNumber?: string;
+  /** Defaults to the offline consultation; a product page points at its own checkout. */
+  cta?: { note: string; href: string; label: string; sourceCta: string };
 }
 
 const { faqs } = Astro.props;
+const cta = Astro.props.cta ?? {
+  note: 'Belum terjawab? Tanyakan langsung ke Education Consultant.',
+  href: Astro.url.pathname === '/' ? '#konsultasi' : '/#konsultasi',
+  label: 'Konsultasi Program Gratis',
+  sourceCta: 'faq_consultation',
+};
 ---
 
-<section id="faq" class="section-padding bg-page border-t border-slate-200/60 dark:border-slate-800 overflow-hidden" aria-label="Pertanyaan Umum">
-  <div class="container-custom">
-    {/* Header */}
-    <div class="headline-container">
-      <span class="inline-flex items-center gap-2 bg-brand-50 text-secondary font-bold text-xs uppercase tracking-wider px-4 py-2 rounded-full border border-brand-200 mb-5">
-        <span class="w-2 h-2 rounded-full bg-primary"></span>
-        FAQ
-      </span>
-      <h2 class="heading-primary mb-5">
-        Pertanyaan Yang Sering <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent italic">Ditanyakan</span>
-      </h2>
-      <p class="section-subtitle">Temukan jawaban untuk pertanyaan umum seputar program pelatihan kami.</p>
-    </div>
+<section id="faq" class="band band-alt border-t border-line scroll-mt-28" aria-labelledby="faq-title">
+  <div class="shell">
+    <div class="grid gap-12 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-4">
+        <p class="eyebrow text-accent">FAQ</p>
+        <h2 id="faq-title" class="display-2 mt-6">Pertanyaan yang sering muncul</h2>
+        <p class="lead mt-5 text-muted">{cta.note}</p>
+        <a href={cta.href} data-lead-cta data-source-cta={cta.sourceCta} class="btn btn-ghost mt-7">
+          {cta.label}
+        </a>
+      </div>
 
-    {/* FAQ List */}
-    <div class="max-w-3xl mx-auto space-y-4">
-      {faqs.map((faq, index) => (
-        <div class="faq-item bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200 overflow-hidden">
-          <button
-            class="w-full flex items-center justify-between p-5 sm:p-6 text-left focus-visible:outline-none hover:bg-slate-50/80 transition-colors"
-            data-faq-index={index}
-            aria-expanded="false"
-          >
-            <span class="font-bold text-slate-900 text-base sm:text-lg pr-4">{faq.question}</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="faq-chevron shrink-0 text-slate-500 transition-transform duration-300" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="faq-answer-content max-h-0 overflow-hidden transition-all duration-300" data-faq-index={index}>
-            <div class="px-5 sm:px-6 pb-6 pt-1 text-slate-700 text-sm sm:text-base leading-relaxed border-t border-slate-100">
-              {faq.answer}
-            </div>
-          </div>
+      <!-- Native <details>: keyboard and screen-reader behaviour for free, no
+           JavaScript, and no max-height that could clip a long answer. -->
+      <div class="lg:col-span-8">
+        <div class="border-t border-line">
+          {faqs.map((faq) => (
+            <details name="faq" class="faq group border-b border-line">
+              <summary
+                class="flex cursor-pointer list-none items-start justify-between gap-6 py-5 text-lg font-semibold leading-snug transition-colors hover:text-accent"
+              >
+                {faq.question}
+                <svg
+                  aria-hidden="true"
+                  class="mt-1 h-5 w-5 shrink-0 text-muted transition-transform duration-200 group-open:rotate-45"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                ><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+              </summary>
+              <p class="max-w-prose pb-6 leading-relaxed text-muted">{faq.answer}</p>
+            </details>
+          ))}
         </div>
-      ))}
-    </div>
-
-    {/* Contact Prompt — Reference to main CTAs instead of redundant button */}
-    <div class="text-center mt-14 p-8 bg-slate-900 rounded-2xl border border-slate-800 max-w-xl mx-auto shadow-xl">
-      <h3 class="text-xl font-black text-white mb-2">Masih punya pertanyaan lain?</h3>
-      <p class="text-slate-300 text-sm mb-4">Tim konsultan pendidikan kami siap membantu memberikan informasi lebih detail.</p>
-      <p class="text-sm text-slate-400">💬 Gunakan tombol WhatsApp di pojok kanan bawah layar untuk bertanya langsung.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<style is:global>
-  .faq-chevron.rotated {
-    transform: rotate(180deg);
-  }
-  .faq-answer-content.open {
-    max-height: 400px !important;
+<style>
+  /* Safari still shows the default disclosure triangle without this. */
+  .faq summary::-webkit-details-marker {
+    display: none;
   }
 </style>
-
-<script>
-  function initFaq() {
-    document.querySelectorAll('[data-faq-index]').forEach(button => {
-      if (button.tagName === 'BUTTON') {
-        button.addEventListener('click', () => {
-          const idx = button.getAttribute('data-faq-index');
-          const content = document.querySelector(`[data-faq-index="${idx}"][class*="faq-answer"]`);
-          const chevron = button.querySelector('.faq-chevron');
-          if (content && chevron) {
-            content.classList.toggle('open');
-            chevron.classList.toggle('rotated');
-            button.setAttribute('aria-expanded', String(content.classList.contains('open')));
-          }
-        });
-      }
-    });
-  }
-  initFaq();
-</script>

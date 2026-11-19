@@ -2,13 +2,25 @@ name: Deploy to VPS
 on:
   push:
     branches: [main]
+  # Manual run from the Actions tab: lets the backend go live first when a
+  # release needs it (merge with [skip ci], deploy the API, then run this).
+  workflow_dispatch:
 
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
     env:
-      WA_PHONE_NUMBER: ${{ secrets.WA_PHONE_NUMBER }}
-      WA_WEBHOOK_URL: ${{ secrets.WA_WEBHOOK_URL }}
+      # Existing repo secret, mapped to the name the code reads. Kept as-is so
+      # the secret does not have to be re-created.
+      PUBLIC_EDUCATION_CONSULTANT_WHATSAPP: ${{ secrets.WA_PHONE_NUMBER }}
+      # Analytics has a default in code; set here so it is visible in the build.
+      PUBLIC_GA_ID: ${{ secrets.PUBLIC_GA_ID || 'G-FNT01JRZN7' }}
+      PUBLIC_HOTJAR_ID: ${{ secrets.PUBLIC_HOTJAR_ID || '6772321' }}
+      PUBLIC_META_PIXEL_ID: ${{ secrets.PUBLIC_META_PIXEL_ID || '1364110365687038' }}
+      SITE_URL: https://academy.pitcar.co.id
+      # Lead API. Empty until the backend is deployed — the form then hands the
+      # summary to WhatsApp directly instead of failing in front of a visitor.
+      PUBLIC_LEAD_API_BASE_URL: ${{ secrets.PUBLIC_LEAD_API_BASE_URL }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -20,7 +32,8 @@ jobs:
           
       - name: Install Dependencies & Build
         run: |
-          test -n "$WA_PHONE_NUMBER" || (echo "WA_PHONE_NUMBER secret is required" && exit 1)
+          test -n "$PUBLIC_EDUCATION_CONSULTANT_WHATSAPP" || (echo "WA_PHONE_NUMBER secret is required" && exit 1)
+          test -n "$PUBLIC_GA_ID" || (echo "PUBLIC_GA_ID resolved empty" && exit 1)
           npm install
           npm run build
           

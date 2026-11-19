@@ -1,0 +1,199 @@
+<script>
+  // `unknown` because gtag also accepts event_callback (a function) and
+  // event_timeout alongside the plain analytics dimensions.
+  type FunnelEventParams = Record<string, unknown>;
+  type LeadAttributionSnapshot = {
+    landing_page: string;
+    referrer: string | null;
+    utm_source: string | null;
+    utm_medium: string | null;
+    utm_campaign: string | null;
+    utm_content: string | null;
+    utm_term: string | null;
+  };
+
+  const pendingEventKey = 'pitcar_academy_pending_analytics_event_v1';
+  const pendingCtaKey = 'pitcar_academy_pending_cta_v1';
+  const attributionKey = 'pitcar_academy_attribution_v1';
+
+  function readCurrentAttribution(): LeadAttributionSnapshot {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      landing_page: window.location.href,
+      referrer: document.referrer || null,
+      utm_source: params.get('utm_source'),
+      utm_medium: params.get('utm_medium'),
+      utm_campaign: params.get('utm_campaign'),
+      utm_content: params.get('utm_content'),
+      utm_term: params.get('utm_term'),
+    };
+  }
+
+  const currentAttribution = readCurrentAttribution();
+  let leadAttribution = currentAttribution;
+  try {
+    const storedAttribution = sessionStorage.getItem(attributionKey);
+    const hasCurrentCampaign = Object.entries(currentAttribution)
+      .some(([key, value]) => key.startsWith('utm_') && Boolean(value));
+    if (storedAttribution && !hasCurrentCampaign) {
+      leadAttribution = JSON.parse(storedAttribution) as LeadAttributionSnapshot;
+    } else {
+      sessionStorage.setItem(attributionKey, JSON.stringify(currentAttribution));
+    }
+  } catch {
+    // Current-page attribution remains available when session storage is blocked.
+  }
+  window.getLeadAttribution = () => ({ ...leadAttribution });
+
+  function getAttribution(): FunnelEventParams {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      page_location: window.location.href,
+      page_referrer: document.referrer || null,
+      utm_source: params.get('utm_source'),
+      utm_medium: params.get('utm_medium'),
+      utm_campaign: params.get('utm_campaign'),
+      utm_content: params.get('utm_content'),
+      utm_term: params.get('utm_term'),
+    };
+  }
+
+  function compact(params: FunnelEventParams): FunnelEventParams {
+    return Object.fromEntries(
+      Object.entries(params).filter(([, value]) => value !== null && value !== undefined && value !== ''),
+    );
+  }
+
+  /**
+   * Sends an event, then navigates as soon as gtag confirms delivery — or
+   * after `timeout` if it never does. The live site already works this way.
+   * A fixed delay either loses the event or wastes time; this does neither.
+   */
+  window.trackFunnelEventThen = (eventName, params, url, timeout = 1200) => {
+    let navigated = false;
+    const go = () => {
+      if (navigated) return;
+      navigated = true;
+      window.location.assign(url);
+    };
+    window.setTimeout(go, timeout);
+    window.trackFunnelEvent?.(eventName, { ...params, event_callback: go, event_timeout: timeout });
+  };
+
+  // Cloudflare injects Zaraz's own script asynchronously, so `window.zaraz`
+  // can still be missing when an early CTA is clicked. Events are held until
+  // it appears rather than dropped — but only for a bounded window, because a
+  // site without Zaraz enabled must not poll forever.
+  // Zaraz rules match on their own event names, which are configured in the
+  // Cloudflare dashboard and outlive any one deploy. Renaming here keeps GA4
+  // on the names its existing reports and conversions are already built on.
+  const zarazEventNames: Record<string, string> = {
+    lead_submit_success: 'AddToCart',
+  };
+
+  const zarazQueue: Array<[string, FunnelEventParams]> = [];
+  let zarazDeadline = 0;
+
+  function flushZaraz(): boolean {
+    if (typeof window.zaraz?.track !== 'function') return false;
+    while (zarazQueue.length) {
+      const queued = zarazQueue.shift();
+      if (queued) window.zaraz.track(queued[0], queued[1]);
+    }
+    return true;
+  }
+
+  function trackZaraz(eventName: string, params: FunnelEventParams): void {
+    zarazQueue.push([zarazEventNames[eventName] ?? eventName, params]);
+    if (flushZaraz()) return;
+
+    // Extend the wait on each new event, then let it lapse.
+    const nextDeadline = Date.now() + 10_000;
+    const alreadyWaiting = zarazDeadline > Date.now();
+    zarazDeadline = nextDeadline;
+    if (alreadyWaiting) return;
+
+    const timer = window.setInterval(() => {
+      if (flushZaraz() || Date.now() > zarazDeadline) {
+        window.clearInterval(timer);
+        zarazQueue.length = 0;
+      }
+    }, 250);
+  }
+
+  window.trackFunnelEvent = (eventName, params = {}) => {
+    window.dataLayer = window.dataLayer || [];
+    if (!window.gtag) {
+      // Same shape as the official gtag stub: gtag.js replays `arguments`
+      // objects queued on dataLayer, not plain arrays.
+      window.gtag = function () {
+        window.dataLayer?.push(arguments);
+      };
+    }
+    const payload = compact({ ...getAttribution(), ...params });
+    window.gtag('event', eventName, payload);
+
+    // gtag's navigation callback has no meaning to Zaraz and is not
+    // serialisable, so it never leaves this function.
+    const { event_callback: _callback, event_timeout: _timeout, ...zarazPayload } = payload;
+    trackZaraz(eventName, zarazPayload);
+  };
+
+  try {
+    const rawPendingEvent = sessionStorage.getItem(pendingEventKey);
+    if (rawPendingEvent) {
+      sessionStorage.removeItem(pendingEventKey);
+      const pendingEvent = JSON.parse(rawPendingEvent) as {
+        name?: string;
+        params?: FunnelEventParams;
+      };
+      if (pendingEvent.name) window.trackFunnelEvent(pendingEvent.name, pendingEvent.params);
+    }
+  } catch {
+    // Analytics must never block the conversion funnel when storage is unavailable.
+  }
+
+  document.addEventListener('click', (event) => {
+    const element = (event.target as Element | null)?.closest<HTMLElement>('[data-lead-cta], [data-lead-whatsapp]');
+    if (!element) return;
+
+    const form = document.querySelector<HTMLFormElement>('#lead-form');
+    const programSelect = form?.elements.namedItem('program_interest') as HTMLSelectElement | null;
+    const sourceInput = form?.elements.namedItem('source_cta') as HTMLInputElement | null;
+    const params: FunnelEventParams = {
+      source_cta: element.dataset.sourceCta || sourceInput?.value || 'unknown',
+      program_interest: element.dataset.programInterest || programSelect?.value || 'undecided',
+    };
+
+    if (element.matches('[data-lead-whatsapp]')) {
+      window.trackFunnelEvent?.('whatsapp_open', params);
+      // The live site fires `whatsapp_click`. Kept so any GA4 conversion or
+      // report already built on that name keeps working. Mark only ONE of the
+      // two as a conversion, or every WhatsApp hand-off counts twice.
+      window.trackFunnelEvent?.('whatsapp_click', params);
+      return;
+    }
+
+    const anchor = element.closest<HTMLAnchorElement>('a[href]');
+    if (anchor) {
+      try {
+        const destination = new URL(anchor.href, window.location.href);
+        const leavesDocument = destination.origin !== window.location.origin
+          || destination.pathname !== window.location.pathname
+          || destination.search !== window.location.search;
+        if (leavesDocument) {
+          sessionStorage.setItem(pendingEventKey, JSON.stringify({
+            name: 'cta_click',
+            params: compact({ ...getAttribution(), ...params }),
+          }));
+          sessionStorage.setItem(pendingCtaKey, JSON.stringify(params));
+          return;
+        }
+      } catch {
+        // Fall through and record the click on the current document.
+      }
+    }
+
+    window.trackFunnelEvent?.('cta_click', params);
+  });
+</script>

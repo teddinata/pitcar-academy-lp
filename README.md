@@ -1,12 +1,12 @@
 # Pitcar Academy Landing Page
 
-Landing page conversion-oriented untuk Pitcar Academy — fokus WhatsApp CTA, SEO-friendly, responsif.
+Landing page conversion-oriented untuk Pitcar Academy. Funnel utama: CTA → short lead form → Laravel Lead API → WhatsApp Education Consultant.
 
 ## 📁 Struktur Proyek
 
 ```
 pitcar-academy-lp/
-├── public/                 # Static assets (favicon, robots.txt)
+├── public/                 # Static image and favicon assets
 ├── src/
 │   ├── components/         # Reusable components
 │   │   ├── Header.astro
@@ -16,18 +16,25 @@ pitcar-academy-lp/
 │   │   ├── AdvantageSection.astro
 │   │   ├── FaqSection.astro
 │   │   ├── CtaSection.astro
+│   │   ├── LeadForm.astro
+│   │   ├── FunnelAnalytics.astro
 │   │   ├── SeoHead.astro
 │   │   └── WhatsAppButton.astro
 │   ├── content.config.ts   # ← EDIT INI untuk update konten!
+│   ├── lib/leads.ts        # Typed Lead API client dan WhatsApp fallback
 │   ├── layouts/
 │   │   └── BaseLayout.astro
 │   ├── pages/
 │   │   ├── index.astro     # Landing page utama
 │   │   ├── faq.astro       # FAQ page
+│   │   ├── robots.txt.ts   # Generated dari SITE_URL
+│   │   ├── sitemap.xml.ts  # Generated dari SITE_URL
 │   │   └── admin/          # RESERVED — LMS placeholder
 │   │       └── index.astro
 │   └── styles/
 │       └── global.css
+├── backend/                # Laravel Lead API + Filament dashboard — see backend/README.md
+├── docs/                   # Lead API contract, release checklist, revamp proposal
 ├── astro.config.mjs
 ├── tailwind.config.js
 ├── Dockerfile
@@ -40,8 +47,39 @@ pitcar-academy-lp/
 ### Development
 ```bash
 npm install
+cp .env.example .env
 npm run dev        # http://localhost:4321
 ```
+
+Node 18.20.8+ is required (Astro 5) — Node 16 stops the dev server outright.
+Full local setup, including seeding the dashboard with sample leads, is in
+[docs/local-development.md](docs/local-development.md).
+
+The lead API lives in `backend/`:
+
+```bash
+cd backend && composer install && php artisan migrate && php artisan serve
+```
+
+Then set `PUBLIC_LEAD_API_BASE_URL=http://127.0.0.1:8000` in `.env` and restart
+the dev server. Full variable reference and the common mistakes are in
+[docs/environment-setup.md](docs/environment-setup.md).
+
+The sales dashboard lives at `/admin` on the backend (Filament): lead list with
+filters, assignment, consultation notes, status history and CSV export.
+
+### Two delivery modes
+
+The form adapts to whether a lead API is configured at build time:
+
+| `PUBLIC_LEAD_API_BASE_URL` | Behaviour |
+| --- | --- |
+| set | Lead is stored first; WhatsApp opens only after a successful response, carrying the `lead_code`. On failure nothing auto-opens — the visitor gets retry, copy-summary and a WhatsApp fallback. |
+| empty | WhatsApp-direct: the API call is skipped and WhatsApp opens with the full summary. No lead row is created. |
+
+The second mode exists so the landing page can ship before the API is live
+without showing visitors an error. Analytics tags every funnel event with
+`delivery_mode` (`api` or `whatsapp_direct`) so the two are separable in GA4.
 
 ### Production Build
 ```bash
@@ -51,15 +89,66 @@ npm run preview    # Preview build locally
 
 ## ⚙️ Konfigurasi Konten
 
-Edit `src/content.config.ts` untuk mengubah semua konten tanpa menyentuh kode:
+Edit `src/content.config.ts` untuk mengubah konten bisnis tanpa menyentuh komponen:
 
-- **Nomor WhatsApp**: Set `WA_PHONE_NUMBER` di file `.env` (format `62XXXXXXXXXX`)
-- **Webhook pendaftaran**: Set `WA_WEBHOOK_URL` di file `.env`
-- **Deploy GitHub Actions**: Tambahkan `WA_PHONE_NUMBER` dan `WA_WEBHOOK_URL` sebagai repository secrets
+- **Nomor WhatsApp**: secret repo `WA_PHONE_NUMBER` (format `62XXXXXXXXXX`).
+  Workflow deploy memetakannya ke `PUBLIC_EDUCATION_CONSULTANT_WHATSAPP`.
+- **Webhook Cekat AI**: secret `WA_WEBHOOK_URL`. Sekarang dipanggil dari
+  backend Laravel setelah lead tersimpan, bukan dari browser — lihat
+  `docs/deployment-backend.md`.
+- **Google Analytics**: `PUBLIC_GA_ID`, default `G-FNT01JRZN7` di kode.
+- **Google Tag Manager**: `PUBLIC_GTM_ID`, default `GTM-WRX9JBBT` di kode. GA4 tetap dimuat langsung; jangan konfigurasi properti GA4 yang sama di GTM.
 - **Paket Belajar**: Edit array `packages[]`
 - **Keunggulan**: Edit array `advantages[]`
 - **FAQ**: Edit array `faqs[]`
 - **SEO Meta Tags**: Di masing-masing halaman (`index.astro`, `faq.astro`)
+
+Konfigurasi integrasi melalui environment variables:
+
+```dotenv
+SITE_URL=https://academy.pitcar.co.id
+PUBLIC_LEAD_API_BASE_URL=https://api.example.com
+PUBLIC_EDUCATION_CONSULTANT_WHATSAPP=6281234567890
+PUBLIC_EDUCATION_CONSULTANT_WHATSAPP_DISPLAY=+62 812-3456-7890
+PUBLIC_GA_ID=G-XXXXXXXXXX
+PUBLIC_GTM_ID=GTM-XXXXXXX
+```
+
+Semua `PUBLIC_*` terlihat di browser. Jangan menyimpan API key, token, atau credential Laravel/CRM di repository ini.
+
+## Lead funnel
+
+1. CTA mengarah ke form `#konsultasi`; CTA paket otomatis memilih program.
+2. Form menangkap data kontak, qualification fields, UTM, referrer, dan sumber CTA.
+3. Frontend mengirim typed payload ke `POST /api/leads`.
+4. Setelah sukses, frontend membuka `whatsapp_url` dari backend atau membuat fallback URL dari nomor consultant.
+5. Bila API gagal, pengguna diberi peringatan jelas dan pending lead disimpan lokal untuk retry—bukan dibuang diam-diam.
+
+Attribution first-touch disimpan selama sesi agar UTM dan source CTA tidak hilang ketika pengunjung berpindah antara homepage dan FAQ. Analytics funnel mengirim event berikut tanpa PII:
+
+- `cta_click`
+- `lead_form_view`
+- `lead_form_start`
+- `lead_form_step_1_complete`
+- `lead_submit`
+- `lead_submit_success`
+- `lead_submit_failed`
+- `whatsapp_open`
+
+Event membawa `source_cta`, `program_interest`, dan UTM. Event sukses/WhatsApp juga membawa `lead_code` serta `qualification` bila sudah tersedia.
+
+Kontrak lengkap Laravel: [`docs/lead-api-contract.md`](docs/lead-api-contract.md).
+
+## SEO dan social preview
+
+- `astro.config.mjs` adalah sumber origin situs.
+- Canonical, `og:url`, `og:image`, dan Twitter Card dinormalisasi menggunakan `URL`, sehingga input relatif maupun absolut tidak akan di-join dua kali.
+- `sitemap.xml` dibuat saat build dari `src/pages/sitemap.xml.ts`.
+- `robots.txt` dibuat saat build dari `src/pages/robots.txt.ts` agar domain staging/production mengikuti `SITE_URL`.
+- JSON-LD organisasi, program, penawaran, dan FAQ dirender di `<head>`.
+- OG image tersedia di `public/og-image.webp` dengan ukuran 1200×630.
+
+Checklist integrasi backend, staging, analytics, dan release tersedia di [`docs/release-checklist.md`](docs/release-checklist.md).
 
 ## 🐳 Deploy ke VPS (Docker)
 
@@ -138,16 +227,41 @@ jobs:
 |-------|-----------|
 | `/` | Landing Page utama |
 | `/faq` | Halaman FAQ lengkap |
-| `/admin` | Placeholder — siap jadi LMS (React/Vue) |
+| `/kelas-online` | Halaman jualan kelas online — `noindex` sampai siap |
+| `/kelas` | Dashboard siswa (prototipe) |
+| `/kelas/[slug]` | Pemutar pelajaran, 27 halaman |
+| `/kelas/profil` | Profil dan statistik belajar |
 
-## 🔮 Roadmap ke LMS
+Dashboard lead untuk tim sales **tidak ada di sini**. Ia bagian dari backend
+Laravel — lihat tabel di bawah.
 
-Untuk menambahkan LMS di `/admin`:
+Panduan deploy backend: [docs/deployment-backend.md](docs/deployment-backend.md).
 
-1. Hapus `src/pages/admin/index.astro`
-2. Buat app baru: `cd src/pages/admin && npx create-react-app .` atau `npm create vue@latest`
-3. Update `nginx.conf` dengan proxy pass ke dev server saat development
-4. Atau gunakan monorepo approach (Astro root + React/Vue subdir)
+## 🔐 Dua panel yang berbeda
+
+| Panel | Untuk siapa | URL |
+|-------|-------------|-----|
+| Dashboard lead | Sales & admin | `{host backend}/admin` — lokal `http://127.0.0.1:8000/admin` |
+| Area belajar | Peserta kelas online | `{host frontend}/kelas` — lokal `http://localhost:4321/kelas` |
+
+Keduanya kebetulan sama-sama memakai path `/admin` dan `/kelas`, tetapi berada
+di **host yang berbeda**. Dashboard lead berjalan di aplikasi Laravel, bukan di
+landing page Astro.
+
+Rute panel lead: `/admin/leads`, `/admin/education-consultants`, `/admin/users`.
+
+## 🔮 Roadmap LMS
+
+Prototipe area belajar sudah ada di `/kelas` sebagai halaman statis Astro
+dengan data contoh. Yang belum ada:
+
+1. Autentikasi peserta — saat ini nama peserta di-hardcode
+2. Penyimpanan progres — sekarang hanya bertahan di memori halaman
+3. Hosting video — setiap slot pemutar masih kosong
+4. Checkout — payment gateway masih di luar scope
+
+Placeholder lama di `/admin` sudah dihapus: namanya menyesatkan untuk area
+peserta, dan path itu bertabrakan dengan dashboard lead di backend.
 
 ---
 

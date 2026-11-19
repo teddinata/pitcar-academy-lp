@@ -1,0 +1,105 @@
+---
+import LearnShell from '../../components/learn/LearnShell.astro';
+---
+
+<LearnShell title="Kelas saya">
+  <div data-dashboard>
+    <h1 class="g-h2">Kelas saya</h1>
+
+    <p class="lead mt-6" data-view="loading" aria-live="polite">Memuat kelasmu.</p>
+
+    <section class="mt-6 max-w-xl" data-view="error" role="alert" hidden>
+      <p class="lead" data-error-text></p>
+      <div class="mt-6"><button type="button" class="btn btn-primary" data-retry>Coba lagi</button></div>
+    </section>
+
+    <section class="mt-6 max-w-xl" data-view="empty" hidden>
+      <p class="lead">Belum ada kelas di akun <strong class="break-all" data-email></strong>.</p>
+      <p class="mt-3 text-muted">Kalau kamu sudah membeli, kemungkinan emailnya berbeda. Keluar, lalu masuk dengan email yang dipakai saat membeli.</p>
+      <div class="mt-6"><a href="/kelas-online/" class="btn btn-primary">Lihat kelas online</a></div>
+    </section>
+
+    <ul class="mt-8 border-t border-body" data-view="list" hidden></ul>
+
+    <p class="mt-10 max-w-prose text-sm text-muted" data-pass-nudge hidden>
+      <span data-pass-nudge-text></span> <a href="/belajar/akun/" data-pass-nudge-link></a>.
+    </p>
+  </div>
+
+  <template id="course-row">
+    <li class="grid gap-x-8 gap-y-4 border-b border-line py-6 sm:grid-cols-[1fr_auto] sm:items-center">
+      <div class="min-w-0">
+        <h2 class="g-h3" data-title></h2>
+        <div class="learn-bar mt-4" role="progressbar" aria-valuemin="0" aria-valuemax="100"><span></span></div>
+        <p class="mt-3 text-sm text-muted" data-detail></p>
+      </div>
+      <div class="flex items-center justify-between gap-6 sm:justify-end">
+        <span class="g-num text-5xl" data-percent></span>
+        <a class="btn btn-primary" data-action></a>
+      </div>
+    </li>
+  </template>
+</LearnShell>
+
+<script>
+  import { api, ApiError, requireSession } from '../../scripts/learn/api';
+
+  type Course = { slug: string; title: string; percent: number; lessons: number; completed: number; next: { id: number; title: string } | null };
+  type Payload = { student: { name: string; email: string; password: 'none' | 'system' | 'own' }; courses: Course[] };
+
+  const root = document.querySelector<HTMLElement>('[data-dashboard]')!;
+  const show = (view: string) => root.querySelectorAll<HTMLElement>('[data-view]').forEach((el) => (el.hidden = el.dataset.view !== view));
+  const list = root.querySelector<HTMLElement>('[data-view="list"]')!;
+  const template = document.querySelector<HTMLTemplateElement>('#course-row')!;
+
+  function row(course: Course): Node {
+    const node = template.content.cloneNode(true) as DocumentFragment;
+    const q = <T extends HTMLElement>(sel: string) => node.querySelector<T>(sel)!;
+    const done = course.lessons > 0 && course.completed === course.lessons;
+
+    q('[data-title]').textContent = course.title;
+    q('[data-percent]').textContent = course.percent + '%';
+    const bar = q('[role="progressbar"]');
+    bar.setAttribute('aria-valuenow', String(course.percent));
+    bar.setAttribute('aria-label', `Progres ${course.title}`);
+    (bar.firstElementChild as HTMLElement).style.width = course.percent + '%';
+
+    q('[data-detail]').textContent =
+      course.lessons === 0
+        ? 'Video kelas ini belum diunggah.'
+        : done
+          ? `Semua ${course.lessons} video selesai.`
+          : `${course.completed} dari ${course.lessons} video selesai. Berikutnya: ${course.next?.title ?? ''}`;
+
+    const action = q<HTMLAnchorElement>('[data-action]');
+    action.href = `/belajar/kelas/?k=${encodeURIComponent(course.slug)}`;
+    action.textContent = done ? 'Tonton ulang' : course.percent > 0 ? 'Lanjutkan' : 'Mulai belajar';
+    return node;
+  }
+
+  async function load() {
+    show('loading');
+    try {
+      const data = await api<Payload>('/learn/courses');
+      document.querySelector('[data-student-name]')!.textContent = data.student.name;
+      root.querySelector('[data-email]')!.textContent = data.student.email;
+if (data.student.password !== 'own') {
+        root.querySelector('[data-pass-nudge-text]')!.textContent =
+          data.student.password === 'system' ? 'Kamu masih memakai kata sandi dari sistem.' : 'Akun ini belum punya kata sandi.';
+        root.querySelector('[data-pass-nudge-link]')!.textContent = data.student.password === 'system' ? 'Ganti dengan kata sandimu sendiri' : 'Buat kata sandi';
+        root.querySelector<HTMLElement>('[data-pass-nudge]')!.hidden = false;
+      }
+      if (data.courses.length === 0) return show('empty');
+      list.replaceChildren(...data.courses.map(row));
+      show('list');
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 401) return;
+      root.querySelector('[data-error-text]')!.textContent = e instanceof ApiError ? e.message : 'Daftar kelas tidak bisa dimuat.';
+      show('error');
+    }
+  }
+
+  root.querySelector('[data-retry]')!.addEventListener('click', load);
+
+  if (requireSession()) load();
+</script>

@@ -1,0 +1,140 @@
+---
+/**
+ * Social-proof sales popup, fed by real paid orders from Scalev (synced by
+ * the Laravel `scalev:sync-purchases` cron and served by
+ * GET /api/purchases/recent — masked names + purchase time only).
+ *
+ * Deliberate restraint rules:
+ * - No data / API down  → the popup simply never appears.
+ * - Loops for the whole visit: shows 6s, hides, next buyer 5s later.
+ * - First appearance is delayed 5s so it never interrupts the first paint.
+ * - aria-hidden: it is decorative marketing noise; screen readers skip it.
+ */
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+import inspectionImage from '../assets/kelas-inspeksi/kelas-inspeksi-mobil-bekas.png';
+
+interface Props {
+  /** Product label shown in the popup line. */
+  productName: string;
+  /**
+   * Key from `services.scalev.products` in the backend. The feed then only
+   * holds buyers of this class, so one page never names another's buyers.
+   */
+  product: string;
+  /** Square thumbnail: an imported asset, or a public path already sized for 2x. */
+  image?: ImageMetadata | string;
+}
+
+const { productName, product, image = inspectionImage } = Astro.props;
+
+// Same backend the lead form posts to; PUBLIC_API_BASE_URL wins if both are
+// set so the popup can outlive the lead-form variable name.
+const apiBase = (import.meta.env.PUBLIC_API_BASE_URL ?? import.meta.env.PUBLIC_LEAD_API_BASE_URL ?? '')
+  .trim()
+  .replace(/\/+$/, '');
+const endpoint = apiBase ? `${apiBase}/api/purchases/recent?product=${encodeURIComponent(product)}` : '';
+---
+
+<div
+  id="sales-popup"
+  class="pointer-events-none fixed left-4 top-16 z-40 max-w-[22rem] translate-y-3 opacity-0 transition duration-300 sm:bottom-6 sm:left-6 sm:top-auto"
+  aria-hidden="true"
+>
+  <div class="flex items-center gap-3 rounded-xl border border-accent-fill/60 bg-ground p-3 shadow-[0_4px_28px_rgba(204,0,0,0.30),0_2px_10px_rgba(0,0,0,0.10)]">
+    {typeof image === 'string' ? (
+      <img src={image} width="48" height="48" alt="" loading="lazy" class="h-12 w-12 shrink-0 rounded-lg object-cover" />
+    ) : (
+      <Image
+        src={image}
+        format="webp"
+        width={96}
+        height={96}
+        densities={[1, 2]}
+        alt=""
+        loading="lazy"
+        class="h-12 w-12 shrink-0 rounded-lg"
+      />
+    )}
+    <div class="min-w-0">
+      <p class="text-sm leading-snug text-body">
+        <span class="font-semibold" id="sales-popup-name">…</span> baru saja membeli
+        <span class="font-semibold">{productName}</span>
+      </p>
+      <p class="mt-0.5 flex items-center gap-1 text-xs text-muted">
+        <svg aria-hidden="true" class="h-3.5 w-3.5 shrink-0 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        <span>Verified buyer · <span id="sales-popup-time">baru saja</span></span>
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+  @media (prefers-reduced-motion: reduce) {
+    #sales-popup {
+      transition: none;
+    }
+  }
+</style>
+
+<script define:vars={{ endpoint, productName }}>
+  (function () {
+    var popup = document.getElementById('sales-popup');
+    var nameEl = document.getElementById('sales-popup-name');
+    var timeEl = document.getElementById('sales-popup-time');
+
+    // Tuning knobs. The popup loops for the whole visit: show → 5s gap → next.
+    var FIRST_DELAY = 5000;
+    var SHOW_MS = 6000;
+    var GAP_MS = 8000;
+    var STALE_DAYS = 30;
+
+    function relativeTime(iso) {
+      var minutes = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+      if (minutes < 2) return 'baru saja';
+      if (minutes < 60) return minutes + ' menit lalu';
+      var hours = Math.floor(minutes / 60);
+      if (hours < 24) return hours + ' jam lalu';
+      var days = Math.floor(hours / 24);
+      if (days === 1) return 'kemarin';
+      if (days < STALE_DAYS) return days + ' hari lalu';
+      return null; // too old to be believable social proof
+    }
+
+    if (!endpoint) return;
+
+    fetch(endpoint, { headers: { Accept: 'application/json' } })
+      .then(function (res) {
+        return res.ok ? res.json() : Promise.reject(new Error(String(res.status)));
+      })
+      .then(function (feed) {
+        // Fresh-enough purchases only, oldest last.
+        var queue = (feed.purchases || []).filter(function (p) {
+          return relativeTime(p.purchased_at) !== null;
+        });
+        if (queue.length === 0) return;
+
+        var index = 0;
+
+        function show() {
+          var purchase = queue[index % queue.length];
+          nameEl.textContent = purchase.name;
+          timeEl.textContent = relativeTime(purchase.purchased_at);
+
+          popup.classList.remove('translate-y-3', 'opacity-0');
+
+          setTimeout(function () {
+            popup.classList.add('translate-y-3', 'opacity-0');
+
+            index++;
+            setTimeout(show, GAP_MS);
+          }, SHOW_MS);
+        }
+
+        setTimeout(show, FIRST_DELAY);
+      })
+      .catch(function () {
+        /* backend down or throttled: stay silent, the page sells on its own */
+      });
+  })();
+</script>

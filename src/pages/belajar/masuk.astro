@@ -1,0 +1,152 @@
+---
+import LearnShell from '../../components/learn/LearnShell.astro';
+---
+
+<LearnShell title="Masuk" signedOut>
+  <div class="max-w-xl" data-login>
+    <section data-view="opening" aria-live="polite" hidden>
+      <h1 class="g-h2">Sedang membuka kelasmu</h1>
+      <p class="lead mt-4">Tunggu sebentar.</p>
+    </section>
+
+    <section data-view="form" hidden>
+      <h1 class="g-h2" tabindex="-1">Masuk ke kelas</h1>
+      <p class="learn-error mt-5" data-notice role="alert" hidden></p>
+
+      <div class="mt-6 flex border-b border-line" role="group" aria-label="Cara masuk">
+        <button type="button" class="learn-tab" data-mode="password" aria-pressed="true">Kata sandi</button>
+        <button type="button" class="learn-tab" data-mode="link" aria-pressed="false">Tautan lewat email</button>
+      </div>
+
+      <form class="mt-6 flex flex-col gap-5" novalidate>
+        <p class="text-muted" data-for="password">Pakai email dan kata sandi yang kamu terima setelah membayar.</p>
+        <p class="text-muted" data-for="link" hidden>Isi email yang kamu pakai saat membeli. Kami kirim tautan masuk ke sana, tanpa kata sandi.</p>
+        <div class="flex flex-col gap-1.5">
+          <label for="login-email" class="text-sm font-semibold">Email</label>
+          <input id="login-email" name="email" type="email" autocomplete="username" inputmode="email" required class="learn-input" aria-describedby="login-email-err" />
+          <p id="login-email-err" class="learn-error" data-error="email" hidden></p>
+        </div>
+        <div class="flex flex-col gap-1.5" data-for="password">
+          <label for="login-password" class="text-sm font-semibold">Kata sandi</label>
+          <input id="login-password" name="password" type="password" autocomplete="current-password" autocapitalize="characters" class="learn-input font-mono" aria-describedby="login-password-err" />
+          <p id="login-password-err" class="learn-error" data-error="password" hidden></p>
+        </div>
+        <div>
+          <button type="submit" class="btn btn-primary w-full sm:w-auto" data-submit>Masuk</button>
+        </div>
+      </form>
+      <p class="mt-8 border-t border-line pt-5 text-sm text-muted">Belum punya kelas? <a href="/kelas-online/">Lihat kelas online</a>.</p>
+    </section>
+
+    <section data-view="sent" aria-live="polite" hidden>
+      <h1 class="g-h2" tabindex="-1">Periksa emailmu</h1>
+      <p class="lead mt-4">Kalau <strong class="break-all" data-sent-email></strong> terdaftar sebagai peserta, tautan masuk sudah kami kirim ke sana.</p>
+      <p class="mt-4 text-muted">Tautannya hanya bisa dipakai sekali. Belum masuk dalam beberapa menit? Periksa folder spam, atau pastikan emailnya sama dengan yang dipakai saat membeli.</p>
+      <div class="mt-7">
+        <button type="button" class="btn btn-ghost" data-again>Pakai email lain</button>
+      </div>
+    </section>
+  </div>
+</LearnShell>
+
+<script>
+  import { api, ApiError, session } from '../../scripts/learn/api';
+
+  const root = document.querySelector<HTMLElement>('[data-login]')!;
+  const $ = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+  const show = (view: string) => {
+    root.querySelectorAll<HTMLElement>('[data-view]').forEach((el) => (el.hidden = el.dataset.view !== view));
+    root.querySelector<HTMLElement>(`[data-view="${view}"] h1[tabindex]`)?.focus();
+  };
+
+  const params = new URLSearchParams(location.search);
+  // Only same-site paths are followed after login.
+  const next = /^\/(?!\/)/.test(params.get('next') ?? '') ? params.get('next')! : '/belajar/';
+  const form = $<HTMLFormElement>('form');
+  const input = $<HTMLInputElement>('#login-email');
+  const password = $<HTMLInputElement>('#login-password');
+  const notice = $('[data-notice]');
+  const submit = $<HTMLButtonElement>('[data-submit]');
+  const labels = { password: ['Masuk', 'Memeriksa'], link: ['Kirim tautan masuk', 'Mengirim'] } as const;
+  let mode: 'password' | 'link' = 'password';
+
+  function setError(field: 'email' | 'password', message: string | null) {
+    const el = root.querySelector<HTMLElement>(`[data-error="${field}"]`)!;
+    el.textContent = message ?? '';
+    el.hidden = !message;
+    (field === 'email' ? input : password).setAttribute('aria-invalid', String(Boolean(message)));
+  }
+
+  function setMode(next: 'password' | 'link') {
+    mode = next;
+    root.querySelectorAll<HTMLElement>('[data-mode]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
+    root.querySelectorAll<HTMLElement>('[data-for]').forEach((el) => (el.hidden = el.dataset.for !== mode));
+    submit.textContent = labels[mode][0];
+    setError('email', null);
+    setError('password', null);
+    notice.hidden = true;
+  }
+
+  root.querySelectorAll<HTMLElement>('[data-mode]').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode as 'password' | 'link')));
+
+  async function openWith(token: string) {
+    show('opening');
+    try {
+      const data = await api<{ session: string }>('/learn/session', { method: 'POST', body: { token }, auth: false });
+      session.set(data.session);
+      location.replace(next);
+    } catch (e) {
+      history.replaceState(null, '', '/belajar/masuk/');
+      show('form');
+      setMode('link');
+      notice.textContent = e instanceof ApiError ? e.message : 'Tautan masuk tidak bisa dibuka. Minta tautan baru.';
+      notice.hidden = false;
+    }
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    notice.hidden = true;
+    const email = input.value.trim();
+    setError('email', /^\S+@\S+\.\S+$/.test(email) ? null : 'Format email belum benar.');
+    setError('password', mode === 'link' || password.value.trim() ? null : 'Kata sandi wajib diisi.');
+    const first = root.querySelector<HTMLElement>('[aria-invalid="true"]');
+    if (first) return first.focus();
+
+    submit.disabled = true;
+    submit.textContent = labels[mode][1];
+    try {
+      if (mode === 'password') {
+        const data = await api<{ session: string }>('/learn/login', { method: 'POST', body: { email, password: password.value }, auth: false });
+        session.set(data.session);
+        location.replace(next);
+        return;
+      }
+      await api('/learn/login-link', { method: 'POST', body: { email }, auth: false });
+      $('[data-sent-email]').textContent = email;
+      show('sent');
+    } catch (e) {
+      const text = !(e instanceof ApiError)
+        ? 'Tidak bisa masuk sekarang. Coba lagi.'
+        : e.status === 429 && mode === 'link'
+          ? 'Terlalu banyak percobaan. Tunggu satu menit, lalu coba lagi.'
+          : e.errors?.email?.[0] ?? e.errors?.password?.[0] ?? e.message;
+      notice.textContent = text;
+      notice.hidden = false;
+    } finally {
+      submit.disabled = false;
+      submit.textContent = labels[mode][0];
+    }
+  });
+
+  $('[data-again]').addEventListener('click', () => {
+    show('form');
+    setMode('link');
+    input.focus();
+  });
+
+  const token = params.get('token');
+  if (token) openWith(token);
+  else if (session.get()) location.replace(next);
+  else show('form');
+</script>

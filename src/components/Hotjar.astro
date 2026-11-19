@@ -1,0 +1,55 @@
+---
+interface Props {
+  id?: string;
+}
+
+const { id } = Astro.props;
+---
+
+{id && (
+  <>
+    {/* The recorder loads after paint, so the TLS handshake would otherwise
+        land in the middle of the page becoming interactive. */}
+    <link rel="preconnect" href="https://static.hotjar.com" />
+    <link rel="dns-prefetch" href="https://static.hotjar.com" />
+  </>
+)}
+
+{id && (
+  <script is:inline define:vars={{ id }}>
+    (() => {
+      // Hotjar's own snippet appends the script during head parsing, which
+      // puts a third-party request in front of the hero image. Waiting for
+      // load keeps it behind LCP.
+      //
+      // Deliberately not deferred to requestIdleCallback the way the
+      // analytics tag is: recording that starts seconds late misses the
+      // scroll and rage-clicks that are the reason to run it at all.
+      window.hj = window.hj || function () { (window.hj.q = window.hj.q || []).push(arguments); };
+      window._hjSettings = { hjid: Number(id), hjsv: 6 };
+
+      let loaded = false;
+      const loadHotjar = () => {
+        if (loaded) return;
+        loaded = true;
+
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = `https://static.hotjar.com/c/hotjar-${window._hjSettings.hjid}.js?sv=${window._hjSettings.hjsv}`;
+        document.head.appendChild(script);
+      };
+
+      if (document.readyState === 'complete') {
+        loadHotjar();
+      } else {
+        window.addEventListener('load', loadHotjar, { once: true });
+      }
+
+      // Someone who interacts before load is exactly the session worth
+      // capturing, so any input brings it forward.
+      ['pointerdown', 'keydown'].forEach((eventName) => {
+        window.addEventListener(eventName, loadHotjar, { once: true, passive: true });
+      });
+    })();
+  </script>
+)}

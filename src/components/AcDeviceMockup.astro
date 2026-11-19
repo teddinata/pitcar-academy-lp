@@ -1,0 +1,278 @@
+---
+// Laptop + phone mock-up for the AC course hero. Built in HTML/CSS rather
+// than one exported PNG: it stays sharp on retina screens, weighs a fraction
+// of the inspection page's 1.1 MB mock-up, and a new poster only means
+// swapping the two screen images. Everything inside scales with the
+// container width (cqw), so the proportions hold from 320 px to desktop.
+interface Props {
+  modules: { title: string }[];
+  alt: string;
+}
+
+const { modules, alt } = Astro.props;
+---
+
+<figure class="ac-mockup" role="img" aria-label={alt}>
+  <div class="ac-mockup__laptop" aria-hidden="true">
+    <div class="ac-mockup__lid">
+      <span class="ac-mockup__camera"></span>
+      <div class="ac-mockup__screen">
+        <img
+          src="/kelas-ac/screen-laptop.webp"
+          width="1008"
+          height="630"
+          alt=""
+          fetchpriority="high"
+          decoding="async"
+        />
+        <div class="ac-mockup__player">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"></path></svg>
+          <span class="ac-mockup__track"><span></span></span>
+          <span class="ac-mockup__time">04:12</span>
+        </div>
+      </div>
+    </div>
+    <div class="ac-mockup__base"></div>
+  </div>
+
+  <div class="ac-mockup__phone" aria-hidden="true">
+    <div class="ac-mockup__phone-screen">
+      <span class="ac-mockup__island"></span>
+      <div class="ac-mockup__video">
+        <img src="/kelas-ac/screen-video.webp" width="490" height="276" alt="" loading="lazy" decoding="async" />
+        <span class="ac-mockup__play">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"></path></svg>
+        </span>
+      </div>
+      <p class="ac-mockup__label">Kelas AC Mobil · 4 video</p>
+      <ol class="ac-mockup__list">
+        {modules.map((m, i) => (
+          <li class={i === 0 ? 'is-active' : ''}>
+            <span class="ac-mockup__num">{String(i + 1).padStart(2, '0')}</span>
+            <span class="ac-mockup__title">{m.title}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</figure>
+
+<style>
+  .ac-mockup {
+    container-type: inline-size;
+    position: relative;
+    margin: 0;
+    /* Laptop on the left, phone over its lower-right corner, where it covers
+       the mechanic's shoulder and not the poster's title. */
+    aspect-ratio: 100 / 70;
+  }
+
+  /* ---------- Laptop ---------- */
+  .ac-mockup__laptop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 90cqw;
+    filter: drop-shadow(0 3cqw 4cqw rgb(0 0 0 / 0.18));
+  }
+  .ac-mockup__lid {
+    position: relative;
+    padding: 2.4cqw 2.4cqw 2.6cqw;
+    border-radius: 2.6cqw 2.6cqw 0.6cqw 0.6cqw;
+    background: #0d0d0d;
+    box-shadow: inset 0 0 0 0.25cqw #2b2b2b;
+  }
+  .ac-mockup__camera {
+    position: absolute;
+    top: 0.9cqw;
+    left: 50%;
+    width: 0.8cqw;
+    height: 0.8cqw;
+    margin-left: -0.4cqw;
+    border-radius: 50%;
+    background: #262626;
+  }
+  .ac-mockup__screen {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 10;
+    border-radius: 0.4cqw;
+    background: #111;
+  }
+  .ac-mockup__screen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .ac-mockup__player {
+    position: absolute;
+    inset: auto 0 0 0;
+    display: flex;
+    align-items: center;
+    gap: 1.4cqw;
+    padding: 4cqw 2cqw 1.6cqw;
+    color: #fff;
+    background: linear-gradient(to top, rgb(0 0 0 / 0.72), transparent);
+  }
+  .ac-mockup__player svg {
+    width: 2.4cqw;
+    height: 2.4cqw;
+    flex-shrink: 0;
+  }
+  .ac-mockup__track {
+    position: relative;
+    flex: 1;
+    height: 0.45cqw;
+    border-radius: 1cqw;
+    background: rgb(255 255 255 / 0.35);
+  }
+  .ac-mockup__track span {
+    position: absolute;
+    inset: 0 62% 0 0;
+    border-radius: inherit;
+    background: #e10600;
+  }
+  .ac-mockup__time {
+    font-size: 1.5cqw;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .ac-mockup__base {
+    position: relative;
+    width: 112%;
+    height: 2.2cqw;
+    margin-left: -6%;
+    border-radius: 0 0 3cqw 3cqw;
+    background: linear-gradient(to bottom, #d6d6d4 0%, #bdbdbb 55%, #8f8f8d 100%);
+  }
+  .ac-mockup__base::before {
+    /* The finger notch on the front edge. */
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 14%;
+    height: 0.9cqw;
+    transform: translateX(-50%);
+    border-radius: 0 0 1.2cqw 1.2cqw;
+    background: #a9a9a7;
+  }
+
+  /* ---------- Phone ---------- */
+  .ac-mockup__phone {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 27cqw;
+    aspect-ratio: 9 / 19;
+    padding: 1.1cqw;
+    border-radius: 4.6cqw;
+    background: #0d0d0d;
+    box-shadow:
+      inset 0 0 0 0.3cqw #2b2b2b,
+      0 3cqw 5cqw rgb(0 0 0 / 0.28);
+  }
+  .ac-mockup__phone-screen {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    padding-top: 6.4cqw;
+    border-radius: 3.6cqw;
+    background: #fafaf9;
+    color: #0a0a0a;
+  }
+  .ac-mockup__island {
+    position: absolute;
+    top: 1.3cqw;
+    left: 50%;
+    width: 8cqw;
+    height: 2.2cqw;
+    transform: translateX(-50%);
+    border-radius: 2cqw;
+    background: #0d0d0d;
+  }
+  .ac-mockup__video {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #111;
+  }
+  .ac-mockup__video img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .ac-mockup__play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: 6.4cqw;
+    height: 6.4cqw;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: #e10600;
+    color: #fff;
+    box-shadow: 0 0.6cqw 1.6cqw rgb(0 0 0 / 0.35);
+  }
+  .ac-mockup__play svg {
+    width: 3cqw;
+    height: 3cqw;
+    margin-left: 0.3cqw;
+  }
+  .ac-mockup__label {
+    margin: 0;
+    padding: 2.2cqw 2.2cqw 1.2cqw;
+    font-size: 1.35cqw;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #cc0000;
+    line-height: 1.2;
+  }
+  .ac-mockup__list {
+    margin: 0;
+    padding: 0 1.4cqw;
+    list-style: none;
+  }
+  .ac-mockup__list li {
+    display: flex;
+    align-items: center;
+    gap: 1.4cqw;
+    padding: 1.35cqw 0.8cqw;
+    border-top: 0.15cqw solid #e7e5e4;
+    font-size: 1.5cqw;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  .ac-mockup__list li.is-active {
+    border-radius: 0.8cqw;
+    border-top-color: transparent;
+    background: #fdecec;
+  }
+  .ac-mockup__list li.is-active + li {
+    border-top-color: transparent;
+  }
+  .ac-mockup__num {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 3.6cqw;
+    height: 3.6cqw;
+    border-radius: 0.7cqw;
+    background: #0a0a0a;
+    color: #fff;
+    font-size: 1.3cqw;
+    font-weight: 700;
+  }
+  .is-active .ac-mockup__num {
+    background: #cc0000;
+  }
+  .ac-mockup__title {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+</style>

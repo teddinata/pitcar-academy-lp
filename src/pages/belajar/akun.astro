@@ -1,0 +1,134 @@
+---
+import LearnShell from '../../components/learn/LearnShell.astro';
+import { contact } from '../../content.config';
+
+const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent('Halo Pitcar Academy, saya ingin memperbarui data akun kelas online saya.')}`;
+---
+
+<LearnShell title="Akun">
+  <div data-account>
+    <h1 class="g-h2">Akun</h1>
+
+    <p class="lead mt-6" data-view="loading" aria-live="polite">Memuat akunmu.</p>
+
+    <section class="mt-6 max-w-xl" data-view="error" role="alert" hidden>
+      <p class="lead" data-error-text></p>
+      <div class="mt-6"><button type="button" class="btn btn-primary" data-retry>Coba lagi</button></div>
+    </section>
+
+    <div data-view="ready" hidden>
+      <dl class="mt-8 grid max-w-xl gap-x-8 gap-y-3 border-y border-line py-5 sm:grid-cols-[auto_1fr]">
+        <dt class="text-muted">Nama</dt><dd data-field="name"></dd>
+        <dt class="text-muted">Email</dt><dd class="break-all" data-field="email"></dd>
+        <dt class="text-muted">WhatsApp</dt><dd data-field="whatsapp"></dd>
+      </dl>
+      <p class="mt-3 max-w-xl text-sm text-muted">Ada data yang salah? <a href={helpHref} target="_blank" rel="noopener">Hubungi kami lewat WhatsApp</a>.</p>
+
+      <section class="mt-12 max-w-xl" aria-labelledby="pass-title">
+        <h2 id="pass-title" class="g-h3">Kata sandi</h2>
+        <p class="mt-3 text-muted" data-pass-intro></p>
+        <form class="mt-6 flex flex-col gap-5" novalidate data-pass-form>
+          <div class="flex flex-col gap-1.5">
+            <label for="new-pass" class="text-sm font-semibold">Kata sandi baru</label>
+            <input id="new-pass" name="password" type="password" autocomplete="new-password" minlength="8" required class="learn-input" aria-describedby="new-pass-hint new-pass-err" />
+            <p id="new-pass-hint" class="text-sm text-muted">Minimal 8 karakter. Huruf besar dan kecil dibedakan.</p>
+            <p id="new-pass-err" class="learn-error" data-pass-error="password" hidden></p>
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label for="new-pass-again" class="text-sm font-semibold">Ulangi kata sandi baru</label>
+            <input id="new-pass-again" name="password_confirmation" type="password" autocomplete="new-password" required class="learn-input" aria-describedby="new-pass-again-err" />
+            <p id="new-pass-again-err" class="learn-error" data-pass-error="password_confirmation" hidden></p>
+          </div>
+          <label class="flex min-h-11 cursor-pointer items-center gap-3 text-sm">
+            <input type="checkbox" class="h-5 w-5 cursor-pointer accent-[#cc0000]" data-pass-show />
+            Tampilkan kata sandi
+          </label>
+          <p class="learn-error" data-pass-error="form" role="alert" hidden></p>
+          <div>
+            <button type="submit" class="btn btn-ghost w-full sm:w-auto" data-pass-submit>Simpan kata sandi</button>
+          </div>
+          <p class="text-sm" data-pass-done role="status" tabindex="-1" hidden>Kata sandi sudah diganti. Perangkat lain yang masih masuk ke akun ini sudah dikeluarkan.</p>
+        </form>
+      </section>
+    </div>
+  </div>
+</LearnShell>
+
+<script>
+  import { api, ApiError, requireSession } from '../../scripts/learn/api';
+
+  type Payload = { student: { name: string; email: string; whatsapp: string | null; password: 'none' | 'system' | 'own' } };
+  const root = document.querySelector<HTMLElement>('[data-account]')!;
+  const show = (view: string) => root.querySelectorAll<HTMLElement>('[data-view]').forEach((el) => (el.hidden = el.dataset.view !== view));
+  const intro = {
+    none: 'Akun ini belum punya kata sandi. Buat satu supaya bisa masuk tanpa menunggu email.',
+    system: 'Kamu masih memakai kata sandi dari sistem. Ganti dengan kata sandi pilihanmu sendiri; yang lama langsung tidak berlaku.',
+    own: 'Isi kata sandi baru untuk mengganti yang sekarang.',
+  };
+
+  async function load() {
+    show('loading');
+    try {
+      const { student } = await api<Payload>('/learn/courses');
+      document.querySelector('[data-student-name]')!.textContent = student.name;
+      root.querySelector('[data-field="name"]')!.textContent = student.name;
+      root.querySelector('[data-field="email"]')!.textContent = student.email;
+      root.querySelector('[data-field="whatsapp"]')!.textContent = student.whatsapp ? '+' + student.whatsapp : 'Belum diisi';
+      root.querySelector('[data-pass-intro]')!.textContent = intro[student.password];
+      show('ready');
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 401) return;
+      root.querySelector('[data-error-text]')!.textContent = e instanceof ApiError ? e.message : 'Akun tidak bisa dimuat.';
+      show('error');
+    }
+  }
+
+  root.querySelector('[data-retry]')!.addEventListener('click', load);
+
+  const passForm = root.querySelector<HTMLFormElement>('[data-pass-form]')!;
+  const passFields = [...passForm.querySelectorAll<HTMLInputElement>('input[name]')];
+  const passSubmit = passForm.querySelector<HTMLButtonElement>('[data-pass-submit]')!;
+  const passDone = passForm.querySelector<HTMLElement>('[data-pass-done]')!;
+
+  function passError(field: string, message: string | null) {
+    const el = passForm.querySelector<HTMLElement>(`[data-pass-error="${field}"]`)!;
+    el.textContent = message ?? '';
+    el.hidden = !message;
+    passFields.find((f) => f.name === field)?.setAttribute('aria-invalid', String(Boolean(message)));
+  }
+
+  passForm.querySelector<HTMLInputElement>('[data-pass-show]')!.addEventListener('change', (event) => {
+    const visible = (event.target as HTMLInputElement).checked;
+    passFields.forEach((f) => (f.type = visible ? 'text' : 'password'));
+  });
+
+  passForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    passDone.hidden = true;
+    const [password, again] = passFields.map((f) => f.value);
+    passError('password', password.length < 8 ? 'Kata sandi minimal 8 karakter.' : null);
+    passError('password_confirmation', password.length >= 8 && again !== password ? 'Ulangi kata sandi dengan isi yang sama.' : null);
+    passError('form', null);
+    const first = passFields.find((f) => f.getAttribute('aria-invalid') === 'true');
+    if (first) return first.focus();
+
+    passSubmit.disabled = true;
+    passSubmit.textContent = 'Menyimpan';
+    try {
+      await api('/learn/password', { method: 'POST', body: { password, password_confirmation: again } });
+      passForm.reset();
+      passFields.forEach((f) => (f.type = 'password'));
+      root.querySelector('[data-pass-intro]')!.textContent = intro.own;
+      passDone.hidden = false;
+      passDone.focus();
+    } catch (e) {
+      if (e instanceof ApiError && e.errors?.password) passError('password', e.errors.password[0]);
+      else passError('form', e instanceof ApiError ? (e.status === 429 ? 'Terlalu sering. Tunggu satu menit, lalu coba lagi.' : e.message) : 'Kata sandi tidak bisa disimpan. Coba lagi.');
+    } finally {
+      passSubmit.disabled = false;
+      passSubmit.textContent = 'Simpan kata sandi';
+    }
+  });
+
+  if (requireSession()) load();
+</script>

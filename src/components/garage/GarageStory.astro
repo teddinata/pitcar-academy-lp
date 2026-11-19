@@ -1,0 +1,211 @@
+---
+import {
+  capabilities,
+  facilities,
+  learningMethod,
+  problemResolution,
+  problems,
+  studentJourney,
+  trainers,
+  trustNumbers,
+  trustStatement,
+} from '../../content.config';
+
+const visibleNumbers = trustNumbers.filter((item) => item.publish);
+
+function describe(name: string, role: string): string {
+  return role.toLowerCase().includes('pitcar') ? `${name}, ${role}` : `${name}, ${role} di Pitcar Academy`;
+}
+---
+
+{visibleNumbers.length > 0 && (
+  <section class="g-section g-section-tight mt-16 lg:mt-24" aria-labelledby="trust-title">
+    <div class="shell grid gap-10 lg:grid-cols-12 lg:items-end">
+      <div class="lg:col-span-5">
+        <h2 id="trust-title" class="g-h3">Belajar dari ekosistem bengkel yang benar-benar beroperasi.</h2>
+        <p class="mt-4 max-w-prose leading-relaxed text-muted">{trustStatement}</p>
+      </div>
+      <dl class="grid gap-8 sm:grid-cols-3 lg:col-span-7">
+        {visibleNumbers.map((item) => (
+          <div class="border-t border-line pt-4">
+            <dd class="g-num text-5xl md:text-6xl">{item.value}</dd>
+            <dt class="mt-2 text-sm leading-relaxed text-muted">{item.label}</dt>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+)}
+
+<section class="g-section" aria-labelledby="problem-title">
+  <div class="shell">
+    <div class="grid gap-12 lg:grid-cols-12 lg:gap-16">
+      <h2 id="problem-title" class="g-h2 lg:col-span-5">Kenapa belajar teori saja tidak cukup?</h2>
+      <ul class="space-y-9 lg:col-span-7 lg:pt-2">
+        {problems.map((problem) => (
+          <li class="g-node">
+            <h3 class="g-h3">{problem.title}</h3>
+            <p class="mt-2 max-w-prose leading-relaxed text-muted">{problem.description}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="mt-16 grid gap-8 lg:mt-24 lg:grid-cols-12 lg:items-center lg:gap-16">
+      <figure class="g-photo lg:col-span-5">
+        <img
+          src="/mechanic-hero.webp"
+          alt="Mekanik Pitcar Academy melakukan diagnosa mesin kendaraan di area kerja bengkel"
+          width="720"
+          height="720"
+          loading="lazy"
+          decoding="async"
+          class="aspect-[4/3] w-full object-cover object-top"
+        />
+      </figure>
+      <p class="g-h2 lg:col-span-7">{problemResolution}</p>
+    </div>
+  </div>
+</section>
+
+<section id="metode" class="g-section scroll-mt-28" aria-labelledby="method-title">
+  <div class="shell">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <h2 id="method-title" class="g-h2">Pitcar Learning Method</h2>
+      <p class="max-w-md leading-relaxed text-muted">
+        Lima tahap yang dilalui setiap peserta, dari konsep dasar sampai siap masuk dunia kerja.
+      </p>
+    </div>
+
+    {/* Numbered like gears: the order is the content. */}
+    <ol class="mt-12 grid border-t border-body md:grid-cols-5">
+      {learningMethod.map((step, index) => (
+        <li class="flex gap-5 border-b border-line py-6 md:block md:border-b-0 md:border-r md:py-7 md:pr-6 md:pl-6 md:first:pl-0 md:last:border-r-0">
+          <span class="g-num w-8 shrink-0 text-5xl text-muted md:block md:w-auto md:text-7xl" aria-hidden="true">{index + 1}</span>
+          <div>
+            <h3 class="g-h3 md:mt-4">{step.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-muted">{step.description}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<section id="perjalanan" class="g-section scroll-mt-28" aria-labelledby="journey-title">
+  <div class="shell grid gap-12 lg:grid-cols-12 lg:gap-16">
+    <div class="lg:col-span-5">
+      <div class="lg:sticky lg:top-36">
+        <h2 id="journey-title" class="g-h2">Kalau saya masuk, saya akan melakukan apa?</h2>
+        <p class="lead mt-5">Enam fase dari hari pertama sampai kelulusan.</p>
+      </div>
+    </div>
+
+    <div class="g-road lg:col-span-7">
+      <span class="g-road-fill" aria-hidden="true"></span>
+      <ol class="space-y-10">
+      {studentJourney.map((phase) => (
+        <li class="relative pl-12">
+          <span class="absolute left-[0.4375rem] top-2 h-2.5 w-2.5 bg-body" aria-hidden="true"></span>
+          <p class="g-label text-accent">{phase.phase}</p>
+          <h3 class="g-h3 mt-1.5">{phase.title}</h3>
+          <p class="mt-2 max-w-prose leading-relaxed text-muted">{phase.description}</p>
+        </li>
+      ))}
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="g-section" aria-labelledby="capabilities-title">
+  <div class="shell grid gap-12 lg:grid-cols-12 lg:gap-16">
+    <div class="lg:col-span-7">
+      <h2 id="capabilities-title" class="g-h2 max-w-[18ch]">Setelah menyelesaikan program, kamu diharapkan mampu:</h2>
+      <p class="lead mt-5 max-w-prose">
+        Bukan daftar mata pelajaran. Ini pekerjaan yang bisa kamu kerjakan sendiri setelah lulus.
+      </p>
+      <ul class="mt-10 border-t border-body">
+        {capabilities.map((item) => (
+          <li class="flex items-baseline gap-4 border-b border-line py-4 text-lg leading-snug">
+            <span class="h-2 w-2 shrink-0 -translate-y-0.5 bg-accent" aria-hidden="true"></span>
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <figure class="g-photo self-start lg:col-span-5 lg:mt-24">
+      <img
+        src="/3.webp"
+        alt="Suasana ritme pekerjaan harian di bengkel PITCAR"
+        width="720"
+        height="1280"
+        loading="lazy"
+        decoding="async"
+        class="aspect-[3/4] w-full object-cover"
+      />
+    </figure>
+  </div>
+</section>
+
+<section class="g-section" aria-labelledby="workshop-title">
+  <div class="shell">
+    <div class="grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-16">
+      <h2 id="workshop-title" class="g-h2 lg:col-span-7">Belajar dengan tools yang digunakan di bengkel.</h2>
+      <p class="leading-relaxed text-muted lg:col-span-5">
+        Bukan hanya demo. Peserta berlatih memahami prosedur kerja menggunakan peralatan yang relevan dengan pekerjaan mekanik sehari-hari.
+      </p>
+    </div>
+
+    <div class="mt-12 grid gap-4 sm:grid-cols-12 lg:gap-5">
+      <figure class="g-photo sm:col-span-7">
+        <img src="/1.webp" alt="Trainer mendampingi peserta saat praktik pada kendaraan" width="1600" height="1200" loading="lazy" decoding="async" class="aspect-[4/3] w-full object-cover" />
+      </figure>
+      <figure class="sm:col-span-5 sm:mt-16">
+        <img src="/2.webp" alt="Mekanik bekerja mengikuti standar prosedur bengkel" width="1600" height="1200" loading="lazy" decoding="async" class="aspect-[4/3] w-full object-cover" />
+      </figure>
+      <figure class="sm:col-span-8 sm:col-start-3">
+        <img src="/mechanic-practice.webp" alt="Peserta Pitcar Academy praktik langsung di area kerja bengkel" width="720" height="720" loading="lazy" decoding="async" class="aspect-[16/9] w-full object-cover" />
+      </figure>
+    </div>
+
+    <dl class="mt-14 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+      {facilities.map((item) => (
+        <div class="g-node">
+          <dt class="g-h3">{item.title}</dt>
+          <dd class="mt-2 text-sm leading-relaxed text-muted">{item.description}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
+
+<section class="g-section" aria-labelledby="trainers-title">
+  <div class="shell">
+    <div class="grid gap-6 lg:grid-cols-12 lg:gap-16">
+      <h2 id="trainers-title" class="g-h2 lg:col-span-6">Kamu akan belajar dari siapa?</h2>
+      <p class="leading-relaxed text-muted lg:col-span-6 lg:pt-3">
+        Trainer Pitcar Academy adalah praktisi yang mengerjakan kendaraan customer, bukan pengajar yang hanya membaca modul.
+      </p>
+    </div>
+
+    <ul class="mt-12 grid gap-10 sm:grid-cols-3 sm:gap-5">
+      {trainers.map((trainer, index) => (
+        <li class:list={[index === 1 && 'sm:mt-12']}>
+          {trainer.photo ? (
+            <img src={trainer.photo} alt={describe(trainer.name, trainer.role)} width="800" height="1000" loading="lazy" decoding="async" class="aspect-[4/5] w-full object-cover" />
+          ) : (
+            <div class="flex aspect-[4/5] w-full items-center justify-center border border-line text-sm text-muted" role="img" aria-label={`Foto ${trainer.name} belum tersedia`}>
+              Foto menyusul
+            </div>
+          )}
+          <h3 class="g-h3 mt-5">{trainer.name}</h3>
+          <p class="mt-1 text-sm font-semibold text-accent">{trainer.role}</p>
+          <ul class="mt-4 space-y-1.5 text-sm leading-relaxed text-muted">
+            {trainer.credentials.map((credential) => <li>{credential}</li>)}
+          </ul>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

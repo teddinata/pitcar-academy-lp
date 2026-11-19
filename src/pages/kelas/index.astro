@@ -1,0 +1,127 @@
+---
+import CourseLayout from '../../layouts/CourseLayout.astro';
+import { courseModules, courseStats, digitalCourse } from '../../content.config';
+
+const flat = courseModules.flatMap((m, mi) => m.lessons.map((l) => ({ ...l, moduleIndex: mi, moduleTitle: m.title })));
+// "Continue" should land on the first thing not finished, not the first lesson.
+const next = flat.find((l) => !l.done) ?? flat[0];
+const percent = Math.round((courseStats.completed / courseStats.lessons) * 100);
+const certificateReady = courseStats.completed === courseStats.lessons;
+---
+
+<CourseLayout title="Dashboard">
+  <section class="band">
+    <div class="shell">
+      <p class="eyebrow">{digitalCourse.eyebrow}</p>
+      <h1 class="display-2 mt-5 max-w-3xl">Fundamental Otomotif untuk Pemula</h1>
+
+      <!-- Continue where you left off: the one action that matters on return. -->
+      <div class="mt-8 border border-line bg-surface p-6 sm:p-8">
+        <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <div class="min-w-0">
+            <p class="text-xs font-bold uppercase tracking-[0.14em] text-muted">Lanjutkan belajar</p>
+            <h2 class="display-3 mt-2">{next.title}</h2>
+            <p class="mt-1.5 text-sm text-muted">
+              Modul {next.moduleIndex + 1} · {next.moduleTitle} · {next.duration}
+            </p>
+          </div>
+          <a href={`/kelas/${next.slug}/`} class="btn btn-primary shrink-0">
+            {courseStats.completed === 0 ? 'Mulai belajar' : 'Lanjutkan'}
+            <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+          </a>
+        </div>
+
+        <div class="mt-7 border-t border-line pt-6">
+          <div class="flex items-baseline justify-between text-sm">
+            <span class="font-semibold">{courseStats.completed} dari {courseStats.lessons} pelajaran selesai</span>
+            <span class="tabular-nums text-muted">{percent}%</span>
+          </div>
+          <div class="mt-2 h-2 overflow-hidden rounded-full bg-line">
+            <div class="h-full bg-accent-fill transition-[width] duration-500" style={`width: ${percent}%`}></div>
+          </div>
+        </div>
+      </div>
+
+      <dl class="mt-6 grid gap-px border border-line bg-line sm:grid-cols-3">
+        <div class="bg-ground px-5 py-5">
+          <dt class="text-xs uppercase tracking-wider text-muted">Total materi</dt>
+          <dd class="mt-1 font-display text-2xl font-bold">{courseStats.totalDuration}</dd>
+        </div>
+        <div class="bg-ground px-5 py-5">
+          <dt class="text-xs uppercase tracking-wider text-muted">Modul</dt>
+          <dd class="mt-1 font-display text-2xl font-bold">{courseStats.modules}</dd>
+        </div>
+        <div class="bg-ground px-5 py-5">
+          <dt class="text-xs uppercase tracking-wider text-muted">Akses</dt>
+          <dd class="mt-1 font-display text-2xl font-bold">Selamanya</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="band band-alt border-t border-line" aria-labelledby="outline-title">
+    <div class="shell">
+      <h2 id="outline-title" class="display-3">Daftar materi</h2>
+
+      <div class="mt-8 border-t border-line">
+        {courseModules.map((m, mi) => {
+          const done = m.lessons.filter((l) => l.done).length;
+          return (
+            <details class="course-module border-b border-line" open={mi === 0 || m.lessons.some((l) => !l.done)}>
+              <summary class="flex cursor-pointer list-none items-start justify-between gap-6 py-5">
+                <div class="min-w-0">
+                  <p class="font-display text-sm font-semibold uppercase tracking-[0.14em] text-accent">
+                    Modul {String(mi + 1).padStart(2, '0')}
+                  </p>
+                  <h3 class="display-3 mt-1.5">{m.title}</h3>
+                  <p class="mt-1 text-sm text-muted">{done}/{m.lessons.length} selesai · {m.summary}</p>
+                </div>
+                <svg aria-hidden="true" class="mt-2 h-5 w-5 shrink-0 text-muted transition-transform duration-200 group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </summary>
+
+              <ul class="pb-5">
+                {m.lessons.map((l) => (
+                  <li>
+                    <a href={`/kelas/${l.slug}/`} class="flex min-h-11 items-center gap-3 border-t border-line py-3 transition-colors hover:bg-ground">
+                      {l.done ? (
+                        <svg aria-hidden="true" class="h-5 w-5 shrink-0 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><polyline points="8.5 12.5 11 15 16 9.5"></polyline></svg>
+                      ) : (
+                        <svg aria-hidden="true" class="h-5 w-5 shrink-0 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle></svg>
+                      )}
+                      <span class:list={['min-w-0 flex-1 text-sm', l.done ? 'text-muted' : 'font-semibold']}>{l.title}</span>
+                      {l.free && <span class="shrink-0 text-[0.6875rem] font-bold uppercase tracking-wider text-accent">Gratis</span>}
+                      <span class="shrink-0 tabular-nums text-sm text-muted">{l.duration}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <section class="band border-t border-line" aria-labelledby="cert-title">
+    <div class="shell">
+      <div class="flex flex-col gap-6 border border-line bg-surface p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+        <div>
+          <h2 id="cert-title" class="display-3">Sertifikat penyelesaian</h2>
+          <p class="mt-2 max-w-prose text-sm text-muted">
+            {certificateReady
+              ? 'Seluruh modul selesai. Sertifikatmu siap diunduh.'
+              : `Selesaikan ${courseStats.lessons - courseStats.completed} pelajaran lagi untuk membuka sertifikat.`}
+          </p>
+        </div>
+        <button type="button" class="btn btn-ghost shrink-0" disabled={!certificateReady}>
+          {certificateReady ? 'Unduh sertifikat' : 'Belum tersedia'}
+        </button>
+      </div>
+    </div>
+  </section>
+</CourseLayout>
+
+<style>
+  .course-module summary::-webkit-details-marker { display: none; }
+  .course-module[open] summary svg { transform: rotate(180deg); }
+</style>

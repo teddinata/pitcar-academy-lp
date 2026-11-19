@@ -1,0 +1,38 @@
+---
+interface Props {
+  id?: string;
+  placement: 'head' | 'body';
+}
+
+const { id, placement } = Astro.props;
+const containerUrl = id
+  ? `https://www.googletagmanager.com/ns.html?id=${encodeURIComponent(id)}`
+  : '';
+---
+
+{id && placement === 'head' && (
+  <script is:inline define:vars={{ id }}>
+    ((w, d, s, l, i) => {
+      w[l] = w[l] || [];
+      w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+      const firstScript = d.getElementsByTagName(s)[0];
+      const script = d.createElement(s);
+      const dataLayer = l !== 'dataLayer' ? `&l=${l}` : '';
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtm.js?id=${i}${dataLayer}`;
+      firstScript.parentNode.insertBefore(script, firstScript);
+    })(window, document, 'script', 'dataLayer', id);
+  </script>
+)}
+
+{id && placement === 'body' && (
+  <noscript>
+    <iframe
+      src={containerUrl}
+      height="0"
+      width="0"
+      style="display:none;visibility:hidden"
+      title="Google Tag Manager"
+    ></iframe>
+  </noscript>
+)}

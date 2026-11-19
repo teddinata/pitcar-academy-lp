@@ -1,0 +1,358 @@
+---
+import LearnShell from '../../components/learn/LearnShell.astro';
+---
+
+<LearnShell title="Kelas">
+  <div data-player-root>
+    <p class="lead" data-view="loading" aria-live="polite">Memuat kelas.</p>
+
+    <section class="max-w-xl" data-view="error" role="alert" hidden>
+      <h1 class="g-h2">Kelas tidak bisa dibuka</h1>
+      <p class="lead mt-4" data-error-text></p>
+      <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+        <button type="button" class="btn btn-primary" data-retry>Coba lagi</button>
+        <a href="/belajar/" class="btn btn-ghost">Kembali ke Kelas saya</a>
+      </div>
+    </section>
+
+    <section class="max-w-xl" data-view="empty" hidden>
+      <h1 class="g-h2" data-course-title></h1>
+      <p class="lead mt-4">Video kelas ini belum diunggah. Aksesmu sudah aktif, dan videonya muncul di halaman ini begitu tersedia.</p>
+      <div class="mt-6"><a href="/belajar/" class="btn btn-ghost">Kembali ke Kelas saya</a></div>
+    </section>
+
+    <div class="grid gap-10 lg:grid-cols-12 lg:gap-14" data-view="ready" hidden>
+      <div class="min-w-0 lg:col-span-8">
+        <div class="relative aspect-video w-full bg-black" data-stage>
+          <div data-frame class="absolute inset-0 h-full w-full"></div>
+          <p class="absolute inset-0 flex items-center justify-center p-6 text-center text-[#FAFAF9]" data-no-video hidden>Video pelajaran ini belum diunggah.</p>
+        </div>
+
+        <div class="mt-5">
+          <div class="flex items-baseline justify-between gap-4 text-sm">
+            <span class="text-muted">Sudah ditonton</span>
+            <strong class="g-num text-3xl" data-lesson-percent></strong>
+          </div>
+          <div class="learn-bar mt-2" role="progressbar" aria-label="Persentase video ditonton" aria-valuemin="0" aria-valuemax="100" data-lesson-bar><span></span></div>
+          <p class="mt-2 text-sm text-muted" data-lesson-note></p>
+        </div>
+
+        <p class="mt-8 text-sm text-muted" data-lesson-count></p>
+        <h1 class="g-h2 mt-2 !text-[clamp(1.875rem,3.6vw,2.75rem)]" data-lesson-title tabindex="-1"></h1>
+        <p class="mt-4 max-w-prose leading-relaxed text-muted" data-lesson-summary></p>
+
+        <section class="mt-9" data-lesson-files hidden>
+          <h2 class="g-h3">Lampiran video ini</h2>
+          <ul class="mt-3 border-t border-body" data-files></ul>
+        </section>
+
+        <p class="learn-error mt-4" data-file-error role="alert" hidden></p>
+
+        <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+          <button type="button" class="btn btn-ghost" data-prev>Video sebelumnya</button>
+          <button type="button" class="btn btn-primary" data-next>Video berikutnya</button>
+        </div>
+      </div>
+
+      <aside class="min-w-0 lg:col-span-4" aria-label="Isi kelas">
+        <p class="text-sm text-muted" data-course-name></p>
+        <div class="mt-2 flex items-baseline gap-3">
+          <strong class="g-num text-6xl" data-course-percent></strong>
+          <span class="text-sm text-muted" data-course-detail></span>
+        </div>
+        <div class="learn-bar mt-3" role="progressbar" aria-label="Progres kelas" aria-valuemin="0" aria-valuemax="100" data-course-bar><span></span></div>
+
+        <ol class="mt-7 border-t border-body" data-lessons></ol>
+
+        <section class="mt-8" data-course-files hidden>
+          <h2 class="g-h3">Lampiran kelas</h2>
+          <ul class="mt-3 border-t border-body" data-files></ul>
+        </section>
+      </aside>
+    </div>
+  </div>
+</LearnShell>
+
+<style is:global>
+  .learn-lesson {
+    display: flex;
+    width: 100%;
+    min-height: 3.5rem;
+    align-items: baseline;
+    gap: 0.875rem;
+    padding: 0.875rem 0;
+    text-align: left;
+    cursor: pointer;
+  }
+  .learn-lesson:hover strong,
+  .learn-lesson[aria-current='true'] strong {
+    color: rgb(var(--accent));
+  }
+  .learn-file {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgb(var(--line));
+  }
+</style>
+
+<script>
+  import { api, ApiError, download, requireSession } from '../../scripts/learn/api';
+
+  type FileRow = { id: number; name: string; mime: string | null; size: number | null };
+  type Lesson = { id: number; title: string; summary: string | null; video: string | null; duration: number | null; percent: number; position: number; done: boolean; files: FileRow[] };
+  type Course = { slug: string; title: string; percent: number; complete_at: number; files: FileRow[]; modules: { title: string; lessons: Lesson[] }[] };
+
+  const root = document.querySelector<HTMLElement>('[data-player-root]')!;
+  const $ = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+  const show = (view: string) => root.querySelectorAll<HTMLElement>('[data-view]').forEach((el) => (el.hidden = el.dataset.view !== view));
+  const params = new URLSearchParams(location.search);
+  const slug = params.get('k') ?? '';
+
+  let course: Course;
+  let lessons: Lesson[] = [];
+  let current: Lesson;
+  let player: any = null;
+  let ticker: number | undefined;
+  let watched = new Set<number>();
+  let baseSeconds = 0;
+  let lastSent = -1;
+
+  const setBar = (el: HTMLElement, percent: number) => {
+    el.setAttribute('aria-valuenow', String(percent));
+    (el.firstElementChild as HTMLElement).style.width = percent + '%';
+  };
+  const size = (bytes: number | null) => (bytes == null ? '' : bytes >= 1_048_576 ? (bytes / 1_048_576).toFixed(1).replace('.', ',') + ' MB' : Math.max(1, Math.round(bytes / 1024)) + ' KB');
+
+  function fileList(section: HTMLElement, files: FileRow[]) {
+    section.hidden = files.length === 0;
+    section.querySelector('[data-files]')!.replaceChildren(
+      ...files.map((file) => {
+        const li = document.createElement('li');
+        li.className = 'learn-file';
+        const label = document.createElement('span');
+        label.className = 'min-w-0 break-words text-[0.9375rem] font-semibold';
+        label.textContent = file.name;
+        const meta = document.createElement('span');
+        meta.className = 'block text-sm font-normal text-muted';
+        meta.textContent = [file.mime === 'application/pdf' ? 'PDF' : '', size(file.size)].filter(Boolean).join(', ');
+        label.append(meta);
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'btn btn-ghost';
+        button.textContent = 'Unduh';
+        button.setAttribute('aria-label', `Unduh ${file.name}`);
+        button.addEventListener('click', async () => {
+          const error = $('[data-file-error]');
+          error.hidden = true;
+          button.disabled = true;
+          button.textContent = 'Mengunduh';
+          try {
+            await download(file.id, file.name);
+          } catch (e) {
+            error.textContent = e instanceof ApiError ? e.message : 'Berkas tidak bisa diunduh.';
+            error.hidden = false;
+          } finally {
+            button.disabled = false;
+            button.textContent = 'Unduh';
+          }
+        });
+        li.append(label, button);
+        return li;
+      }),
+    );
+  }
+
+  function renderCourse() {
+    const done = lessons.filter((l) => l.done).length;
+    $('[data-course-name]').textContent = course.title;
+    $('[data-course-percent]').textContent = course.percent + '%';
+    $('[data-course-detail]').textContent = `${done} dari ${lessons.length} video selesai`;
+    setBar($('[data-course-bar]'), course.percent);
+
+    $('[data-lessons]').replaceChildren(
+      ...lessons.map((lesson, i) => {
+        const li = document.createElement('li');
+        li.className = 'border-b border-line';
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'learn-lesson';
+        if (lesson === current) button.setAttribute('aria-current', 'true');
+        const n = document.createElement('span');
+        n.className = 'g-num w-7 shrink-0 text-2xl text-muted';
+        n.textContent = String(i + 1);
+        const text = document.createElement('span');
+        text.className = 'min-w-0';
+        const title = document.createElement('strong');
+        title.className = 'block font-display text-xl font-semibold uppercase leading-tight';
+        title.textContent = lesson.title;
+        const status = document.createElement('span');
+        status.className = 'mt-1 block text-sm text-muted';
+        status.textContent = lesson.done ? 'Selesai' : lesson.percent > 0 ? `${lesson.percent}% ditonton` : 'Belum ditonton';
+        text.append(title, status);
+        button.append(n, text);
+        button.addEventListener('click', () => open(lesson, true));
+        li.append(button);
+        return li;
+      }),
+    );
+  }
+
+  function renderLessonProgress() {
+    $('[data-lesson-percent]').textContent = current.percent + '%';
+    setBar($('[data-lesson-bar]'), current.percent);
+    $('[data-lesson-note]').textContent = current.done
+      ? 'Video ini sudah selesai.'
+      : `Tercatat otomatis saat video diputar. Ditandai selesai setelah ${course.complete_at}% ditonton.`;
+  }
+
+  async function send(force = false) {
+    if (!player?.getDuration) return;
+    const duration = player.getDuration();
+    if (!duration) return;
+    const position = Math.floor(player.getCurrentTime());
+    const percent = Math.min(100, Math.round(((baseSeconds + watched.size) / duration) * 100));
+    if (!force && percent === lastSent) return;
+    lastSent = percent;
+    const lesson = current;
+    try {
+      const res = await api<{ percent: number; done: boolean; course_percent: number }>(`/learn/lessons/${lesson.id}/progress`, {
+        method: 'POST',
+        body: { percent, position },
+        keepalive: true,
+      });
+      lesson.percent = res.percent;
+      lesson.done = res.done;
+      lesson.position = position;
+      course.percent = res.course_percent;
+      renderCourse();
+      if (lesson === current) renderLessonProgress();
+    } catch {
+      // A missed save is retried by the next tick.
+      lastSent = -1;
+    }
+  }
+
+  function tick() {
+    if (!player?.getPlayerState || player.getPlayerState() !== 1) return;
+    watched.add(Math.floor(player.getCurrentTime()));
+    if (watched.size % 10 === 0) send();
+  }
+
+  let apiReady: Promise<void> | null = null;
+  function youtube(): Promise<void> {
+    apiReady ??= new Promise((resolve, reject) => {
+      (window as any).onYouTubeIframeAPIReady = () => resolve();
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      tag.onerror = () => { apiReady = null; reject(new Error('youtube')); };
+      document.head.append(tag);
+    });
+    return apiReady;
+  }
+
+  async function mount(lesson: Lesson) {
+    window.clearInterval(ticker);
+    player?.destroy?.();
+    player = null;
+    watched = new Set();
+    lastSent = -1;
+    const stage = $('[data-stage]');
+    const old = stage.querySelector('[data-frame], iframe');
+    const frame = document.createElement('div');
+    frame.dataset.frame = '';
+    frame.className = 'absolute inset-0 h-full w-full';
+    old?.replaceWith(frame);
+    $('[data-no-video]').hidden = Boolean(lesson.video);
+    if (!lesson.video) return;
+
+    try {
+      await youtube();
+    } catch {
+      $('[data-no-video]').textContent = 'Pemutar video tidak bisa dimuat. Periksa koneksi internetmu, lalu muat ulang halaman ini.';
+      $('[data-no-video]').hidden = false;
+      return;
+    }
+    if (lesson !== current) return;
+
+    player = new (window as any).YT.Player(frame, {
+      host: 'https://www.youtube-nocookie.com',
+      videoId: lesson.video,
+      width: '100%',
+      height: '100%',
+      playerVars: { rel: 0, playsinline: 1, start: lesson.done ? 0 : lesson.position },
+      events: {
+        onReady: () => {
+          const duration = player.getDuration() || lesson.duration || 0;
+          baseSeconds = Math.round((lesson.percent / 100) * duration);
+          player.getIframe().title = lesson.title;
+          ticker = window.setInterval(tick, 1000);
+        },
+        // Pause (2) and end (0) are the moments a viewer is most likely to leave.
+        onStateChange: (event: { data: number }) => {
+          if (event.data === 0 && player.getDuration()) for (let s = 0; s < 3; s++) watched.add(Math.floor(player.getDuration()) - s);
+          if (event.data === 0 || event.data === 2) send(true);
+        },
+      },
+    });
+  }
+
+  function open(lesson: Lesson, byUser = false) {
+    if (current && player) send(true);
+    current = lesson;
+    const i = lessons.indexOf(lesson);
+    $('[data-lesson-count]').textContent = `Video ${i + 1} dari ${lessons.length}`;
+    $('[data-lesson-title]').textContent = lesson.title;
+    $('[data-lesson-summary]').textContent = lesson.summary ?? '';
+    $('[data-lesson-summary]').hidden = !lesson.summary;
+    $<HTMLButtonElement>('[data-prev]').disabled = i === 0;
+    const next = $<HTMLButtonElement>('[data-next]');
+    next.disabled = i === lessons.length - 1;
+    next.textContent = i === lessons.length - 1 ? 'Ini video terakhir' : `Lanjut ke video ${i + 2}`;
+    fileList($('[data-lesson-files]'), lesson.files);
+    renderLessonProgress();
+    renderCourse();
+    mount(lesson);
+    if (byUser) {
+      history.replaceState(null, '', `/belajar/kelas/?k=${encodeURIComponent(slug)}&v=${lesson.id}`);
+      $('[data-stage]').scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      $('[data-lesson-title]').focus({ preventScroll: true });
+    }
+  }
+
+  async function load() {
+    show('loading');
+    try {
+      course = await api<Course>(`/learn/courses/${encodeURIComponent(slug)}`);
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 401) return;
+      $('[data-error-text]').textContent =
+        e instanceof ApiError && e.status === 404 ? 'Kelas ini tidak ditemukan. Buka lagi dari Kelas saya.' : e instanceof ApiError ? e.message : 'Kelas tidak bisa dimuat.';
+      $<HTMLElement>('[data-retry]').hidden = e instanceof ApiError && (e.status === 403 || e.status === 404);
+      return show('error');
+    }
+    document.title = `${course.title} | Pitcar Academy`;
+    lessons = course.modules.flatMap((m) => m.lessons);
+    if (lessons.length === 0) {
+      $('[data-course-title]').textContent = course.title;
+      return show('empty');
+    }
+    fileList($('[data-course-files]'), course.files);
+    show('ready');
+    const asked = Number(params.get('v'));
+    open(lessons.find((l) => l.id === asked) ?? lessons.find((l) => !l.done) ?? lessons[0]);
+  }
+
+  $('[data-prev]').addEventListener('click', () => open(lessons[lessons.indexOf(current) - 1], true));
+  $('[data-next]').addEventListener('click', () => open(lessons[lessons.indexOf(current) + 1], true));
+  $('[data-retry]').addEventListener('click', load);
+  window.addEventListener('pagehide', () => send(true));
+
+  if (requireSession()) {
+    api<{ student: { name: string } }>('/learn/courses').then((d) => (document.querySelector('[data-student-name]')!.textContent = d.student.name)).catch(() => {});
+    load();
+  }
+</script>
