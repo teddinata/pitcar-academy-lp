@@ -65,6 +65,29 @@ class ScalevPurchaseFeedTest extends TestCase
         ]);
     }
 
+    public function test_one_checkout_with_two_classes_stays_one_row_on_both_feeds(): void
+    {
+        $order = $this->orderPayload('01F', 'Hengky', null, '2026-09-30T07:00:00Z');
+        $order['final_variants'] = [
+            'Kelas Dasar Diagnosa & Perawatan AC Mobil' => 1,
+            'Kelas Inspeksi Mobil Bekas - Panduan Cek Sebelum Beli Mobil' => 1,
+        ];
+
+        $this->fakeScalevApi([$order]);
+
+        $this->artisan('scalev:sync-purchases')->assertSuccessful();
+
+        $this->assertSame(1, ScalevPurchase::count());
+
+        foreach (['ac', 'inspeksi'] as $product) {
+            $this->getJson("/api/purchases/recent?product={$product}")
+                ->assertSuccessful()
+                ->assertJsonPath('total_purchases', 1)
+                ->assertJsonPath('purchases.0.name', 'Hengky')
+                ->assertJsonPath('purchases.0.products', ['inspeksi', 'ac']);
+        }
+    }
+
     public function test_resyncing_the_same_order_updates_instead_of_duplicating(): void
     {
         config(['services.scalev.api_key' => 'test-key']);

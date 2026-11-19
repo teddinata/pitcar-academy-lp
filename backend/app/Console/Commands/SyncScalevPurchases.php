@@ -133,15 +133,16 @@ class SyncScalevPurchases extends Command
     }
 
     /**
-     * final_variants is a map of variant name to quantity; the first key is
-     * the product the popup should name.
+     * final_variants is a map of variant name to quantity. One checkout can
+     * hold several classes, so every name is kept: the feed matches each
+     * page's patterns against the whole string, and the popup lists them all.
      */
     private function productName(array $order): ?string
     {
         $variants = $order['final_variants'] ?? [];
 
         if (is_array($variants) && $variants !== []) {
-            return (string) array_key_first($variants);
+            return implode(' + ', array_map('strval', array_keys($variants)));
         }
 
         return null;

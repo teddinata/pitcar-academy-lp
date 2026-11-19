@@ -52,17 +52,44 @@ class ScalevPurchase extends Model
     }
 
     /**
-     * Shape consumed by the public sales-popup endpoint: first name plus
-     * when they bought. Nothing beyond this (no city, no product, no
+     * Keys from services.scalev.products whose patterns appear in this
+     * order's product names, in config order. Same case-insensitive
+     * "contains" rule the feed's SQL filter uses.
+     *
+     * @return list<string>
+     */
+    public function productKeys(): array
+    {
+        $names = mb_strtolower((string) $this->product_name);
+        $keys = [];
+
+        foreach ((array) config('services.scalev.products', []) as $key => $patterns) {
+            foreach ((array) $patterns as $pattern) {
+                if ($names !== '' && str_contains($names, mb_strtolower($pattern))) {
+                    $keys[] = (string) $key;
+
+                    break;
+                }
+            }
+        }
+
+        return $keys;
+    }
+
+    /**
+     * Shape consumed by the public sales-popup endpoint: first name, when
+     * they bought, and which classes as config keys (the page owns the
+     * label). Nothing beyond this (no city, no Scalev product name, no
      * order id) may leak to visitors.
      *
-     * @return array{name: string, purchased_at: string}
+     * @return array{name: string, purchased_at: string, products: list<string>}
      */
     public function toPopupData(): array
     {
         return [
             'name' => $this->maskedName(),
             'purchased_at' => $this->purchased_at->toIso8601String(),
+            'products' => $this->productKeys(),
         ];
     }
 }
