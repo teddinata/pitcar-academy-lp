@@ -10,10 +10,12 @@ use App\Services\Lms\LoginLink;
 use App\Support\WhatsAppNumber;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
@@ -37,6 +39,8 @@ class OrdersTable
 
                 TextColumn::make('student.whatsapp')
                     ->label('WhatsApp')
+                    // On the unpaid tab the number is in the follow-up form, where it can also be fixed.
+                    ->visible(fn ($livewire) => ($livewire->activeTab ?? null) !== 'unpaid')
                     ->searchable()
                     ->copyable()
                     ->placeholder('—'),
@@ -71,8 +75,10 @@ class OrdersTable
                         default => 'gray',
                     }),
 
+                // Access and payment columns mean nothing for an unpaid order, and push the follow-up button off screen.
                 TextColumn::make('latestWhatsApp.status')
                     ->label('Akses WA')
+                    ->visible(fn ($livewire) => ($livewire->activeTab ?? null) !== 'unpaid')
                     ->badge()
                     ->placeholder('Belum')
                     ->formatStateUsing(fn ($state, Order $record) => $record->latestWhatsApp?->statusLabel())
@@ -84,11 +90,25 @@ class OrdersTable
                     })
                     ->tooltip(fn (Order $record) => $record->latestWhatsApp?->last_error)
                     ->description(fn (Order $record) => $record->latestWhatsApp
-                        ? ($record->latestWhatsApp->mode === 'auto' ? 'otomatis' : 'manual').', '.$record->latestWhatsApp->updated_at->format('d M H:i')
+                        ? ($record->latestWhatsApp->mode === 'auto' ? 'otomatis' : 'manual').', '.$record->latestWhatsApp->updated_at->timezone(config('app.display_timezone'))->format('d M H:i')
                         : null),
+
+                TextColumn::make('created_at')
+                    ->label('Dipesan')
+                    ->dateTime('d M Y H:i')
+                    ->sortable()
+                    ->toggleable(),
+
+                TextColumn::make('followed_up_at')
+                    ->label('Follow up')
+                    ->dateTime('d M H:i')
+                    ->description(fn (Order $record) => $record->followedUpBy?->name)
+                    ->placeholder('Belum')
+                    ->visible(fn ($livewire) => ($livewire->activeTab ?? null) !== 'paid'),
 
                 TextColumn::make('paid_at')
                     ->label('Dibayar')
+                    ->visible(fn ($livewire) => ($livewire->activeTab ?? null) !== 'unpaid')
                     ->dateTime('d M Y H:i')
                     // Paid by status check only means DOKU's notifications are not reaching us.
                     ->description(fn (Order $record) => match ($record->paid_via) {
@@ -107,14 +127,16 @@ class OrdersTable
                         OrderStatus::Pending->value => 'Menunggu bayar',
                         OrderStatus::Failed->value => 'Gagal',
                         OrderStatus::Expired->value => 'Kedaluwarsa',
-                    ])
-                    ->default(OrderStatus::Paid->value),
+                    ]),
 
                 SelectFilter::make('course_id')
                     ->label('Kelas')
                     ->relationship('course', 'title'),
             ])
+            // On the follow-up list the button leads the row, so it never scrolls off a narrow screen.
+            ->recordActionsPosition(fn ($livewire) => ($livewire->activeTab ?? null) === 'unpaid' ? RecordActionsPosition::BeforeColumns : null)
             ->recordActions([
+                self::followUp(),
                 ActionGroup::make([
                     self::sendViaKirimdev(),
                     self::openWaMe(),
@@ -125,6 +147,77 @@ class OrdersTable
                     ->button()
                     ->visible(fn (Order $record) => $record->status === OrderStatus::Paid),
             ]);
+    }
+
+    /**
+     * A WhatsApp message to someone who ordered and did not pay. A payment page
+     * that is still open goes in the message; otherwise the class's checkout,
+     * so they can order again. The admin sends it from their own WhatsApp.
+     */
+    private static function followUp(): Action
+    {
+        return Action::make('followUp')
+            ->label('Follow up')
+            ->icon('heroicon-o-chat-bubble-left-right')
+            ->button()
+            ->color(fn (Order $record) => $record->followed_up_at ? 'gray' : 'warning')
+            ->visible(fn (Order $record) => $record->status !== OrderStatus::Paid)
+            ->modalHeading(fn (Order $record) => 'Follow up '.$record->student->name)
+            ->modalDescription(fn (Order $record) => $record->followed_up_at
+                ? 'Terakhir di-follow up '.$record->followed_up_at->timezone(config('app.display_timezone'))->format('d M Y H:i').($record->followedUpBy ? ' oleh '.$record->followedUpBy->name : '').'.'
+                : 'Periksa pesannya. Setelah disimpan, WhatsApp terbuka dengan pesan ini, tinggal tekan kirim.')
+            ->modalSubmitActionLabel('Siapkan pesan')
+            ->fillForm(fn (Order $record) => [
+                'phone' => $record->student->whatsapp,
+                'save_phone' => true,
+                'message' => self::followUpMessage($record),
+            ])
+            ->schema([
+                ...self::phoneFields(),
+                Textarea::make('message')
+                    ->label('Pesan')
+                    ->required()
+                    ->rows(7)
+                    ->maxLength(1500),
+            ])
+            ->action(function (Order $record, array $data) {
+                $phone = self::applyPhone($record, $data);
+                $record->update(['followed_up_at' => now(), 'followed_up_by' => auth()->id()]);
+
+                Notification::make()
+                    ->success()
+                    ->title('Pesan follow up siap')
+                    ->body('Tekan "Buka WhatsApp", lalu kirim. Pesanan ini sudah ditandai sudah di-follow up.')
+                    ->actions([
+                        Action::make('open')
+                            ->label('Buka WhatsApp')
+                            ->button()
+                            ->url('https://wa.me/'.$phone.'?text='.rawurlencode($data['message']), shouldOpenInNewTab: true),
+                    ])
+                    ->persistent()
+                    ->send();
+            });
+    }
+
+    private static function followUpMessage(Order $order): string
+    {
+        $first = strtok(trim($order->student->name), ' ') ?: $order->student->name;
+        $title = $order->purchaseTitle();
+        $open = $order->status === OrderStatus::Pending && $order->payment_url && $order->expires_at?->isFuture();
+
+        if ($open) {
+            $until = $order->expires_at->timezone(config('app.display_timezone'))->format('d M H:i');
+
+            return "Halo {$first}, ini dari Pitcar Academy. Pesanan {$title} ({$order->number}) belum dibayar. "
+                ."Kalau masih berminat, pembayarannya bisa diselesaikan di sini sebelum {$until} WIB:\n{$order->payment_url}\n\n"
+                .'Ada kendala saat membayar? Balas pesan ini saja, kami bantu.';
+        }
+
+        $checkout = config('lms.frontend_url').'/checkout/?kelas='.$order->course->slug;
+
+        return "Halo {$first}, ini dari Pitcar Academy. Kamu sempat memesan {$title}, tapi pembayarannya belum selesai. "
+            ."Kalau masih berminat, kelasnya bisa dipesan lagi di sini:\n{$checkout}\n\n"
+            .'Ada pertanyaan soal isi kelasnya? Balas pesan ini saja.';
     }
 
     /** The buyer's number can be fixed before sending; a typo at checkout is the usual reason to resend. */

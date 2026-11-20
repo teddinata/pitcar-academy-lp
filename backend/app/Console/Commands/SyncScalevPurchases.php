@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use App\Http\Controllers\Api\PurchaseFeedController;
 use App\Models\ScalevPurchase;
+use App\Models\ScalevUnpaidOrder;
+use App\Services\Lms\ScalevImport;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -12,15 +14,13 @@ class SyncScalevPurchases extends Command
 {
     protected $signature = 'scalev:sync-purchases';
 
-    protected $description = 'Pull paid orders from the Scalev API into the local scalev_purchases table';
+    protected $description = 'Pull recent Scalev orders: paid ones feed the sales popup and open the class in the LMS, unpaid ones go on the follow-up list';
 
     // Guard rail so a runaway cursor can never loop forever. 10 pages x 25
     // orders = 250 of the newest paid orders, far more than any popup needs.
     private const MAX_PAGES = 10;
 
-    private const COLUMNS = 'order_id,created_at,confirmed_time,payment_status,status,gross_revenue,final_variants,customer,destination_address,is_probably_spam';
-
-    public function handle(): int
+    public function handle(ScalevImport $import): int
     {
         $apiKey = (string) config('services.scalev.api_key');
 
@@ -44,7 +44,7 @@ class SyncScalevPurchases extends Command
                 ->withToken($apiKey)
                 ->get('/v3/orders', array_filter([
                     'page_size' => 25,
-                    'columns' => self::COLUMNS,
+                    'columns' => ScalevImport::COLUMNS,
                     'next_cursor' => $cursor,
                 ]));
 
@@ -54,7 +54,14 @@ class SyncScalevPurchases extends Command
                 return self::FAILURE;
             }
 
-            ['created' => $c, 'updated' => $u, 'skipped' => $s] = $this->ingest($response->json('data', []));
+            $orders = $response->json('data', []);
+
+            // While Scalev still sells, its buyers keep getting the class here.
+            foreach ($orders as $order) {
+                $import->apply($order);
+            }
+
+            ['created' => $c, 'updated' => $u, 'skipped' => $s] = $this->ingest($orders);
             $created += $c;
             $updated += $u;
             $skipped += $s;
@@ -65,6 +72,8 @@ class SyncScalevPurchases extends Command
 
             $cursor = $response->json('next_cursor');
         }
+
+        ScalevUnpaidOrder::where('ordered_at', '<', now()->subDays(30))->delete();
 
         $this->info("Scalev sync done: {$created} new, {$updated} updated, {$skipped} skipped.");
 

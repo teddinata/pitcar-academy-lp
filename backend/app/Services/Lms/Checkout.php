@@ -112,6 +112,7 @@ class Checkout
         }
 
         $order->update(['payment_url' => $payment['url'], 'expires_at' => $payment['expires_at']]);
+        app(TeamAlerts::class)->newOrder($order);
 
         return ['order' => $order, 'claim' => $claim];
     }

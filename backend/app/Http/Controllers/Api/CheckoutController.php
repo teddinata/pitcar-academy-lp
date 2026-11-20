@@ -85,8 +85,12 @@ class CheckoutController extends Controller
 
         $offers = $course->offers()->available()->with('offerCourse')->get();
 
+        // Shown on the sales page as "bergabung dengan N siswa lain". Asked on
+        // every visit, so it is counted at most once a minute.
+        $students = Cache::remember('course-students:'.$course->id, 60, fn () => $course->enrollments()->whereNull('revoked_at')->count());
+
         return response()->json([
-            'course' => self::coursePayload($course),
+            'course' => self::coursePayload($course) + ['students' => $students],
             'offers' => $offers->map(fn (CourseOffer $offer) => self::coursePayload($offer->offerCourse) + [
                 'offer_price' => $offer->price,
                 'headline' => $offer->headline,

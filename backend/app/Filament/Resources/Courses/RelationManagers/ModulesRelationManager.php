@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Courses\RelationManagers;
 
-use App\Http\Controllers\Api\LearnController;
+use App\Support\VideoLink;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -52,16 +52,20 @@ class ModulesRelationManager extends RelationManager
                         ->maxLength(150)
                         ->columnSpanFull(),
 
+                    // The column keeps its old name; it now holds a YouTube or a Google Drive link.
                     TextInput::make('youtube_url')
-                        ->label('Link YouTube')
+                        ->label('Link video (YouTube atau Google Drive)')
                         ->url()
                         ->maxLength(255)
-                        ->placeholder('https://youtu.be/...')
-                        ->helperText('Kosongkan kalau videonya belum siap; siswa melihat "belum diunggah".')
+                        ->placeholder('https://youtu.be/... atau https://drive.google.com/file/d/...')
+                        ->helperText('Video Drive: atur aksesnya ke "Siapa saja yang memiliki link". Progres video Drive tidak tercatat otomatis, jadi siswa menandai selesai sendiri. Kosongkan kalau videonya belum siap.')
                         ->rule(fn () => function (string $attribute, $value, $fail) {
-                            if (filled($value) && LearnController::youtubeId($value) === null) {
-                                $fail('Bukan link video YouTube. Contoh: https://youtu.be/abc123xyz00');
+                            if (blank($value) || VideoLink::parse($value) !== null) {
+                                return;
                             }
+                            $fail(VideoLink::isDriveFolder($value)
+                                ? 'Ini link folder Drive. Buka videonya, lalu salin link file-nya (drive.google.com/file/d/...).'
+                                : 'Bukan link video YouTube atau Google Drive. Contoh: https://youtu.be/abc123xyz00 atau https://drive.google.com/file/d/.../view');
                         }),
 
                     TextInput::make('duration_seconds')

@@ -1,5 +1,6 @@
 ---
 import LearnShell from '../../components/learn/LearnShell.astro';
+import ClassTalk from '../../components/learn/ClassTalk.astro';
 ---
 
 <LearnShell title="Kelas">
@@ -35,6 +36,8 @@ import LearnShell from '../../components/learn/LearnShell.astro';
           </div>
           <div class="learn-bar mt-2" role="progressbar" aria-label="Persentase video ditonton" aria-valuemin="0" aria-valuemax="100" data-lesson-bar><span></span></div>
           <p class="mt-2 text-sm text-muted" data-lesson-note></p>
+          <button type="button" class="btn btn-ghost mt-4 w-full sm:w-auto" data-mark-done hidden>Tandai video ini selesai</button>
+          <p class="learn-error mt-2" data-mark-error role="alert" hidden></p>
         </div>
 
         <p class="mt-8 text-sm text-muted" data-lesson-count></p>
@@ -54,7 +57,7 @@ import LearnShell from '../../components/learn/LearnShell.astro';
         </div>
       </div>
 
-      <aside class="min-w-0 lg:col-span-4" aria-label="Isi kelas">
+      <aside class="min-w-0 lg:col-span-4 lg:row-span-2" aria-label="Isi kelas">
         <p class="text-sm text-muted" data-course-name></p>
         <div class="mt-2 flex items-baseline gap-3">
           <strong class="g-num text-6xl" data-course-percent></strong>
@@ -68,9 +71,59 @@ import LearnShell from '../../components/learn/LearnShell.astro';
           <h2 class="g-h3">Lampiran kelas</h2>
           <ul class="mt-3 border-t border-body" data-files></ul>
         </section>
+
+        <section class="mt-12 border-t border-body pt-6" aria-labelledby="review-title">
+          <h2 id="review-title" class="g-h3">Nilai kelas ini</h2>
+          <p class="mt-2 text-sm text-muted" data-review-intro></p>
+          <form class="mt-5 flex flex-col gap-5" novalidate data-review-form>
+            <fieldset aria-describedby="review-scale">
+              <legend class="text-sm font-semibold">Seberapa membantu kelas ini?</legend>
+              <div class="mt-2 grid grid-cols-5 gap-2">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <label class="learn-choice">
+                    <input type="radio" name="rating" value={n} />
+                    <span class="g-num text-2xl">{n}<span class="sr-only"> dari 5</span></span>
+                  </label>
+                ))}
+              </div>
+              <p id="review-scale" class="mt-2 flex justify-between gap-4 text-sm text-muted"><span>1 kurang membantu</span><span class="text-right">5 sangat membantu</span></p>
+            </fieldset>
+            <p class="learn-error -mt-2" data-review-error role="alert" hidden></p>
+            <div class="flex flex-col gap-1.5">
+              <label for="review-body" class="text-sm font-semibold">Ulasan <span class="font-normal text-muted">(boleh dikosongkan)</span></label>
+              <textarea id="review-body" name="body" maxlength="2000" rows="4" class="learn-input" aria-describedby="review-body-hint"></textarea>
+              <p id="review-body-hint" class="text-sm text-muted">Apa yang paling berguna, dan apa yang masih kurang jelas?</p>
+            </div>
+            <label class="flex min-h-11 cursor-pointer items-start gap-3 text-sm">
+              <input type="checkbox" name="may_publish" class="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-[#cc0000]" />
+              <span>Tim boleh menampilkan ulasan ini di halaman kelas, dengan nama depanku.</span>
+            </label>
+            <div>
+              <button type="submit" class="btn btn-ghost w-full sm:w-auto lg:w-full" data-review-submit>Kirim nilai</button>
+            </div>
+            <p class="text-sm" data-review-done role="status" tabindex="-1" hidden>Terima kasih. Nilaimu tersimpan.</p>
+          </form>
+          <p class="mt-6 text-sm text-muted">Ada usul materi atau kendala? <a href="/belajar/masukan/" data-request-link>Kirim pesan ke tim kami</a>.</p>
+        </section>
       </aside>
+
+      <!-- After the class list on a phone; under the video on a wide screen. -->
+      <div class="min-w-0 lg:col-span-8">
+        <ClassTalk />
+      </div>
     </div>
   </div>
+
+  <dialog class="learn-viewer" aria-labelledby="viewer-title" data-viewer>
+    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-line px-4 py-3 sm:px-5">
+      <h2 id="viewer-title" class="g-h3 min-w-0 truncate" data-viewer-title></h2>
+      <div class="flex shrink-0 gap-2">
+        <button type="button" class="btn btn-ghost" data-viewer-download>Unduh</button>
+        <button type="button" class="btn btn-primary" data-viewer-close>Tutup</button>
+      </div>
+    </div>
+    <iframe class="min-h-0 w-full flex-1 bg-white" title="" data-viewer-frame></iframe>
+  </dialog>
 </LearnShell>
 
 <style is:global>
@@ -88,6 +141,24 @@ import LearnShell from '../../components/learn/LearnShell.astro';
   .learn-lesson[aria-current='true'] strong {
     color: rgb(var(--accent));
   }
+  /* PDF preview: a sheet over the page, flat like everything else in this world. */
+  .learn-viewer {
+    width: min(64rem, calc(100vw - 2rem));
+    height: calc(100dvh - 2rem);
+    max-width: none;
+    max-height: none;
+    padding: 0;
+    color: rgb(var(--body));
+    background: rgb(var(--ground));
+    border: 1px solid rgb(var(--line));
+  }
+  .learn-viewer[open] {
+    display: flex;
+    flex-direction: column;
+  }
+  .learn-viewer::backdrop {
+    background: rgb(0 0 0 / 0.6);
+  }
   .learn-file {
     display: flex;
     flex-wrap: wrap;
@@ -100,11 +171,13 @@ import LearnShell from '../../components/learn/LearnShell.astro';
 </style>
 
 <script>
-  import { api, ApiError, download, requireSession } from '../../scripts/learn/api';
+  import { api, ApiError, fetchFile, requireSession, saveFile } from '../../scripts/learn/api';
+  import { mountTalk } from '../../scripts/learn/talk';
 
   type FileRow = { id: number; name: string; mime: string | null; size: number | null };
-  type Lesson = { id: number; title: string; summary: string | null; video: string | null; duration: number | null; percent: number; position: number; done: boolean; files: FileRow[] };
-  type Course = { slug: string; title: string; percent: number; complete_at: number; files: FileRow[]; modules: { title: string; lessons: Lesson[] }[] };
+  type Lesson = { id: number; title: string; summary: string | null; video: string | null; provider: 'youtube' | 'drive' | null; duration: number | null; percent: number; position: number; done: boolean; files: FileRow[] };
+  type Review = { rating: number; body: string | null; may_publish: boolean; updated_at: string };
+  type Course = { slug: string; title: string; percent: number; complete_at: number; review: Review | null; files: FileRow[]; modules: { title: string; lessons: Lesson[] }[] };
 
   const root = document.querySelector<HTMLElement>('[data-player-root]')!;
   const $ = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
@@ -120,12 +193,64 @@ import LearnShell from '../../components/learn/LearnShell.astro';
   let watched = new Set<number>();
   let baseSeconds = 0;
   let lastSent = -1;
+  let talk: ReturnType<typeof mountTalk> | null = null;
 
   const setBar = (el: HTMLElement, percent: number) => {
     el.setAttribute('aria-valuenow', String(percent));
     (el.firstElementChild as HTMLElement).style.width = percent + '%';
   };
   const size = (bytes: number | null) => (bytes == null ? '' : bytes >= 1_048_576 ? (bytes / 1_048_576).toFixed(1).replace('.', ',') + ' MB' : Math.max(1, Math.round(bytes / 1024)) + ' KB');
+
+  function fileButton(text: string, busy: string, name: string, run: () => Promise<void>): HTMLButtonElement {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'btn btn-ghost';
+    button.textContent = text;
+    button.setAttribute('aria-label', name);
+    button.addEventListener('click', async () => {
+      const error = $('[data-file-error]');
+      error.hidden = true;
+      button.disabled = true;
+      button.textContent = busy;
+      try {
+        await run();
+      } catch (e) {
+        error.textContent = e instanceof ApiError ? e.message : 'Berkas tidak bisa dibuka.';
+        error.hidden = false;
+      } finally {
+        button.disabled = false;
+        button.textContent = text;
+      }
+    });
+    return button;
+  }
+
+  const viewer = document.querySelector<HTMLDialogElement>('[data-viewer]')!;
+  const viewerFrame = viewer.querySelector<HTMLIFrameElement>('[data-viewer-frame]')!;
+  let viewing: { file: FileRow; blob: Blob; url: string } | null = null;
+
+  function openViewer(file: FileRow, blob: Blob) {
+    closeViewer();
+    // The server may label it generically; the viewer needs the PDF type to render instead of download.
+    const pdf = blob.type === 'application/pdf' ? blob : new Blob([blob], { type: 'application/pdf' });
+    viewing = { file, blob: pdf, url: URL.createObjectURL(pdf) };
+    viewer.querySelector('[data-viewer-title]')!.textContent = file.name;
+    viewerFrame.title = file.name;
+    viewerFrame.src = viewing.url;
+    viewer.showModal();
+  }
+
+  function closeViewer() {
+    if (viewer.open) viewer.close();
+    if (!viewing) return;
+    viewerFrame.removeAttribute('src');
+    URL.revokeObjectURL(viewing.url);
+    viewing = null;
+  }
+
+  viewer.addEventListener('close', closeViewer);
+  viewer.querySelector('[data-viewer-close]')!.addEventListener('click', closeViewer);
+  viewer.querySelector('[data-viewer-download]')!.addEventListener('click', () => viewing && saveFile(viewing.blob, viewing.file.name));
 
   function fileList(section: HTMLElement, files: FileRow[]) {
     section.hidden = files.length === 0;
@@ -140,27 +265,14 @@ import LearnShell from '../../components/learn/LearnShell.astro';
         meta.className = 'block text-sm font-normal text-muted';
         meta.textContent = [file.mime === 'application/pdf' ? 'PDF' : '', size(file.size)].filter(Boolean).join(', ');
         label.append(meta);
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'btn btn-ghost';
-        button.textContent = 'Unduh';
-        button.setAttribute('aria-label', `Unduh ${file.name}`);
-        button.addEventListener('click', async () => {
-          const error = $('[data-file-error]');
-          error.hidden = true;
-          button.disabled = true;
-          button.textContent = 'Mengunduh';
-          try {
-            await download(file.id, file.name);
-          } catch (e) {
-            error.textContent = e instanceof ApiError ? e.message : 'Berkas tidak bisa diunduh.';
-            error.hidden = false;
-          } finally {
-            button.disabled = false;
-            button.textContent = 'Unduh';
-          }
-        });
-        li.append(label, button);
+        const actions = document.createElement('span');
+        actions.className = 'flex shrink-0 gap-2';
+        // Phones without a built-in PDF viewer (Android Chrome) would only download it again.
+        if (file.mime === 'application/pdf' && navigator.pdfViewerEnabled) {
+          actions.append(fileButton('Lihat', 'Membuka', `Lihat ${file.name}`, async () => openViewer(file, await fetchFile(file.id))));
+        }
+        actions.append(fileButton('Unduh', 'Mengunduh', `Unduh ${file.name}`, async () => saveFile(await fetchFile(file.id), file.name)));
+        li.append(label, actions);
         return li;
       }),
     );
@@ -204,10 +316,40 @@ import LearnShell from '../../components/learn/LearnShell.astro';
   function renderLessonProgress() {
     $('[data-lesson-percent]').textContent = current.percent + '%';
     setBar($('[data-lesson-bar]'), current.percent);
+    const drive = current.provider === 'drive';
     $('[data-lesson-note]').textContent = current.done
       ? 'Video ini sudah selesai.'
-      : `Tercatat otomatis saat video diputar. Ditandai selesai setelah ${course.complete_at}% ditonton.`;
+      : drive
+        ? 'Video ini diputar dari Google Drive, jadi progresnya tidak tercatat otomatis. Tandai selesai setelah kamu menontonnya.'
+        : `Tercatat otomatis saat video diputar. Ditandai selesai setelah ${course.complete_at}% ditonton.`;
+    $('[data-mark-done]').hidden = !drive || current.done || !current.video;
+    $('[data-mark-error]').hidden = true;
   }
+
+  $('[data-mark-done]').addEventListener('click', async () => {
+    const button = $<HTMLButtonElement>('[data-mark-done]');
+    const lesson = current;
+    button.disabled = true;
+    button.textContent = 'Menyimpan';
+    try {
+      const res = await api<{ percent: number; done: boolean; course_percent: number }>(`/learn/lessons/${lesson.id}/progress`, {
+        method: 'POST',
+        body: { percent: 100, position: 0 },
+      });
+      lesson.percent = res.percent;
+      lesson.done = res.done;
+      course.percent = res.course_percent;
+      renderCourse();
+      if (lesson === current) renderLessonProgress();
+    } catch (e) {
+      const error = $('[data-mark-error]');
+      error.textContent = e instanceof ApiError ? e.message : 'Belum tersimpan. Coba lagi.';
+      error.hidden = false;
+    } finally {
+      button.disabled = false;
+      button.textContent = 'Tandai video ini selesai';
+    }
+  });
 
   async function send(force = false) {
     if (!player?.getDuration) return;
@@ -269,6 +411,19 @@ import LearnShell from '../../components/learn/LearnShell.astro';
     $('[data-no-video]').hidden = Boolean(lesson.video);
     if (!lesson.video) return;
 
+    if (lesson.provider === 'drive') {
+      const drive = document.createElement('iframe');
+      drive.dataset.frame = '';
+      drive.className = 'absolute inset-0 h-full w-full';
+      drive.src = `https://drive.google.com/file/d/${encodeURIComponent(lesson.video)}/preview`;
+      drive.title = lesson.title;
+      drive.allow = 'autoplay; fullscreen';
+      drive.allowFullscreen = true;
+      drive.referrerPolicy = 'strict-origin-when-cross-origin';
+      frame.replaceWith(drive);
+      return;
+    }
+
     try {
       await youtube();
     } catch {
@@ -313,6 +468,7 @@ import LearnShell from '../../components/learn/LearnShell.astro';
     next.disabled = i === lessons.length - 1;
     next.textContent = i === lessons.length - 1 ? 'Ini video terakhir' : `Lanjut ke video ${i + 2}`;
     fileList($('[data-lesson-files]'), lesson.files);
+    talk?.setLesson({ id: lesson.id, title: lesson.title });
     renderLessonProgress();
     renderCourse();
     mount(lesson);
@@ -341,10 +497,71 @@ import LearnShell from '../../components/learn/LearnShell.astro';
       return show('empty');
     }
     fileList($('[data-course-files]'), course.files);
+    renderReview();
     show('ready');
+    talk ??= mountTalk(document.querySelector<HTMLElement>('[data-talk]')!, slug);
     const asked = Number(params.get('v'));
     open(lessons.find((l) => l.id === asked) ?? lessons.find((l) => !l.done) ?? lessons[0]);
   }
+
+  const reviewForm = $<HTMLFormElement>('[data-review-form]');
+  const reviewSubmit = $<HTMLButtonElement>('[data-review-submit]');
+  const reviewDone = $('[data-review-done]');
+  const reviewError = $('[data-review-error]');
+  const ratings = [...reviewForm.querySelectorAll<HTMLInputElement>('input[name="rating"]')];
+  const day = new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+  function renderReview() {
+    const review = course.review;
+    $('[data-review-intro]').textContent = review
+      ? `Kamu memberi nilai ${review.rating} pada ${day.format(new Date(review.updated_at))}. Bisa diubah kapan saja.`
+      : 'Hanya dibaca tim Pitcar Academy, untuk memperbaiki kelas ini.';
+    ratings.forEach((r) => (r.checked = Number(r.value) === review?.rating));
+    reviewForm.querySelector<HTMLTextAreaElement>('[name="body"]')!.value = review?.body ?? '';
+    reviewForm.querySelector<HTMLInputElement>('[name="may_publish"]')!.checked = review?.may_publish ?? false;
+    reviewSubmit.textContent = review ? 'Simpan perubahan' : 'Kirim nilai';
+    $<HTMLAnchorElement>('[data-request-link]').href = `/belajar/masukan/?k=${encodeURIComponent(course.slug)}`;
+  }
+
+  function reviewProblem(message: string | null) {
+    reviewError.textContent = message ?? '';
+    reviewError.hidden = !message;
+  }
+
+  reviewForm.addEventListener('input', (event) => {
+    reviewDone.hidden = true;
+    if ((event.target as HTMLInputElement).name === 'rating') reviewProblem(null);
+  });
+
+  reviewForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    reviewDone.hidden = true;
+    const picked = ratings.find((r) => r.checked);
+    if (!picked) {
+      reviewProblem('Pilih nilai dari 1 sampai 5.');
+      return ratings[0].focus();
+    }
+    reviewProblem(null);
+    const data = new FormData(reviewForm);
+    const label = reviewSubmit.textContent;
+    reviewSubmit.disabled = true;
+    reviewSubmit.textContent = 'Menyimpan';
+    try {
+      const res = await api<{ review: Review }>(`/learn/courses/${encodeURIComponent(course.slug)}/review`, {
+        method: 'POST',
+        body: { rating: Number(picked.value), body: String(data.get('body') ?? ''), may_publish: data.get('may_publish') === 'on' },
+      });
+      course.review = res.review;
+      renderReview();
+      reviewDone.hidden = false;
+      reviewDone.focus();
+    } catch (e) {
+      reviewSubmit.textContent = label;
+      reviewProblem(e instanceof ApiError ? (e.status === 429 ? 'Terlalu sering. Tunggu satu menit, lalu coba lagi.' : e.message) : 'Nilai tidak bisa disimpan. Coba lagi.');
+    } finally {
+      reviewSubmit.disabled = false;
+    }
+  });
 
   $('[data-prev]').addEventListener('click', () => open(lessons[lessons.indexOf(current) - 1], true));
   $('[data-next]').addEventListener('click', () => open(lessons[lessons.indexOf(current) + 1], true));

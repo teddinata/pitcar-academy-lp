@@ -40,6 +40,11 @@ class Course extends Model
         return $this->hasMany(Enrollment::class);
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(CourseReview::class);
+    }
+
     /** Courses recommended at this course's checkout. */
     public function offers(): HasMany
     {

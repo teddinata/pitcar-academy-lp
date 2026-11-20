@@ -1,4 +1,5 @@
 import { acCourse } from '../content.config';
+import { livePriceAttrs } from '../lib/livePrices';
 
 /**
  * Komponen yang bisa dibuka di mobil x-ray pada homepage.
@@ -46,7 +47,7 @@ export interface CarPart {
     note?: string;
   };
   /** Kelas online yang membahas komponen ini, bila ada. */
-  online?: { href: string; label: string; price: string };
+  online?: { href: string; label: string; price: string; live: ReturnType<typeof livePriceAttrs> };
 }
 
 export const carParts: CarPart[] = [
@@ -124,7 +125,7 @@ export const carParts: CarPart[] = [
     ],
     symptom: 'AC tidak dingin belum tentu kurang freon. Bisa kompresor, kondensor kotor, atau kelistrikan.',
     program: { interest: 'basic', level: 'Basic', material: 'Sistem Pendingin' },
-    online: { href: '/kelas-online-ac/', label: 'Kelas online AC mobil', price: acCourse.priceDisplay },
+    online: { href: '/kelas-online-ac/', label: 'Kelas online AC mobil', price: acCourse.priceDisplay, live: livePriceAttrs('kelas-online-ac', acCourse) },
   },
   {
     id: 'transmisi',

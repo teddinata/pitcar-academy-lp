@@ -1,0 +1,26 @@
+---
+/**
+ * "Bergabung dengan N siswa lain": the number of students who currently hold
+ * the class, from the LMS. The build prints its count and the browser refreshes
+ * it on every visit (src/scripts/livePrices.ts). Below MIN_CLASSMATES the line
+ * stays hidden: a small number undersells the class more than none does.
+ */
+import { MIN_CLASSMATES } from '../lib/livePrices';
+
+interface Props {
+  slug: string;
+  count?: number;
+  /** join: next to the buy button. talk: where the discussion room is sold. */
+  variant?: 'join' | 'talk';
+  class?: string;
+}
+
+const { slug, count = 0, variant = 'join', class: className } = Astro.props;
+const [before, after] = variant === 'talk'
+  ? ['Belajar dan diskusi bareng ', ' di kelas ini.']
+  : ['Bergabung dengan ', ' yang sudah belajar di kelas ini.'];
+---
+
+<p data-classmates={slug} hidden={count < MIN_CLASSMATES} class:list={['g-node text-sm leading-relaxed text-muted', className]}>
+  {before}<strong class="font-semibold text-body"><span data-classmates-count>{count}</span> siswa lain</strong>{after}
+</p>

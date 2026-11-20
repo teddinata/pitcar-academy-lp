@@ -13,7 +13,7 @@ class CoursesTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn ($query) => $query->withCount(['lessons', 'attachments', 'enrollments'])->with('offers.offerCourse'))
+            ->modifyQueryUsing(fn ($query) => $query->withCount(['lessons', 'attachments', 'enrollments', 'reviews'])->withAvg('reviews', 'rating')->with('offers.offerCourse'))
             ->defaultSort('id')
             ->columns([
                 TextColumn::make('title')
@@ -46,6 +46,12 @@ class CoursesTable
 
                 TextColumn::make('enrollments_count')
                     ->label('Siswa'),
+
+                TextColumn::make('reviews_avg_rating')
+                    ->label('Nilai')
+                    ->state(fn (Course $record) => $record->reviews_count > 0
+                        ? number_format((float) $record->reviews_avg_rating, 1, ',', '.').' dari '.$record->reviews_count.' siswa'
+                        : 'Belum ada'),
 
                 TextColumn::make('status')
                     ->label('Status')

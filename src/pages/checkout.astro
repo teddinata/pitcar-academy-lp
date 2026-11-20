@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
 import '../styles/garage.css';
 import { acCourse, contact, inspectionCourse } from '../content.config';
+import { livePriceAttrs } from '../lib/livePrices';
 
 // Slugs match the course rows on the backend (LmsCourseSeeder).
 const courses = [
@@ -59,7 +60,7 @@ const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURICompon
         <h1 class="g-h2">Pilih kelas yang ingin dibeli.</h1>
         <ul class="mt-8 border-t border-body">
           {courses.map((course) => (
-            <li class="border-b border-line">
+            <li class="border-b border-line" {...livePriceAttrs(course.slug, { price: course.amount, strikePriceDisplay: course.strike })}>
               <a href={`/checkout/?kelas=${course.slug}`} class="flex min-h-16 flex-wrap items-baseline justify-between gap-x-6 gap-y-1 py-4 !text-inherit !no-underline hover:!text-accent">
                 <span class="g-h3">{course.name}</span>
                 <span class="g-num text-3xl">{course.price}</span>
@@ -345,8 +346,24 @@ const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURICompon
   const pay = $('[data-view-step="pay"]');
   const submit = $<HTMLButtonElement>('[data-submit]');
 
+  // Each class keeps its own unpaid order, so opening another class starts that class
+  // instead of resuming the first one. The claim belongs to an order, so it is keyed by its number.
+  const orderKey = (slug: string) => `co-order:${slug}`;
+  const claimKey = (number: string) => `co-claim:${number}`;
+  const orderFor = (slug: string | null) => (slug ? store.get(orderKey(slug)) : null);
   // Proves to the server that this browser created the order, so it may open the class without the mail.
-  const claim = () => store.get('co-claim');
+  // Tabs opened before the per-class keys still hold one unkeyed pair; it only counts for its own order.
+  const claimFor = (number: string | null) =>
+    number ? store.get(claimKey(number)) ?? (store.get('co-order') === number ? store.get('co-claim') : null) : null;
+  const claim = () => claimFor(current?.order ?? null);
+  function forget(slug: string | null, number: string | null) {
+    if (slug && store.get(orderKey(slug)) === number) store.del(orderKey(slug));
+    if (number) store.del(claimKey(number));
+    if (number && store.get('co-order') === number) {
+      store.del('co-order');
+      store.del('co-claim');
+    }
+  }
 
   type Item = { course: string; title: string; tracking_id: string; kind: string; price: number };
   type Order = { order: string; course: string; status: string; amount: number; items?: Item[]; payment_url: string | null; expires_at: string | null };
@@ -541,11 +558,11 @@ const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURICompon
     }
 
     if (state === 'pending') {
-      store.set('co-order', order.order);
+      store.set(orderKey(order.course), order.order);
     } else {
       // A paid order stays remembered, so a reload returns to this screen instead of an empty form.
-      if (state === 'paid') store.set('co-order', order.order);
-      else store.del('co-order');
+      if (state === 'paid') store.set(orderKey(order.course), order.order);
+      else forget(order.course, order.order);
       window.clearInterval(timer);
       closePopup();
       frame.removeAttribute('src');
@@ -562,7 +579,7 @@ const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURICompon
     try {
       const res = await fetch(`${api}/api/checkout/orders/${encodeURIComponent(number)}`, { headers: { Accept: 'application/json' } });
       if (res.status === 404) {
-        store.del('co-order');
+        forget(params.get('kelas'), number);
         step(1);
         return;
       }
@@ -570,6 +587,12 @@ const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURICompon
       const before = current?.status;
       const order: Order = await res.json();
       showCourse(order.course);
+      // Back from DOKU the address names only the order; naming its class makes a reload land here again.
+      if (params.get('kelas') !== order.course) {
+        params.set('kelas', order.course);
+        params.delete('order');
+        history.replaceState(null, '', `/checkout/?${params}`);
+      }
       render(order);
       if (before && before !== order.status) pay.querySelector<HTMLElement>('[data-state]:not([hidden]) h2')?.focus();
     } catch {
@@ -680,7 +703,8 @@ const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURICompon
       const data = await opened.json().catch(() => ({}));
       if (!opened.ok) throw new Error(data.message);
       localStorage.setItem('pitcar-learn-session', data.session);
-      store.del('co-claim');
+      store.del(claimKey(current.order));
+      if (store.get('co-order') === current.order) store.del('co-claim');
       location.href = `/belajar/kelas/?k=${encodeURIComponent(current.course)}`;
     } catch (e) {
       error.textContent = (e instanceof Error && e.message) || 'Kelas tidak bisa dibuka dari sini. Masuk lewat halaman Masuk dengan emailmu.';
@@ -718,8 +742,9 @@ const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURICompon
           course: params.get('kelas'),
           addons: selected().map((o) => o.slug),
           attribution: attribution(),
-          order: store.get('co-order'),
-          claim: claim(),
+          // Only this class's own unpaid order can be reused; the server checks the rest.
+          order: orderFor(params.get('kelas')),
+          claim: claimFor(orderFor(params.get('kelas'))),
         }),
       });
       const body = await res.json().catch(() => ({}));
@@ -734,7 +759,7 @@ const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURICompon
       }
 
       store.set('co-email', data.email.trim().toLowerCase());
-      store.set('co-claim', body.claim);
+      store.set(claimKey(body.order), body.claim);
       render(body as Order);
       trackPaymentInfo(body as Order);
       watch(body.order);
@@ -755,14 +780,13 @@ const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURICompon
     if (target.matches('[data-close-pay]')) closePopup();
     if (target.matches('[data-enter]')) enter(target as HTMLButtonElement);
     if (target.matches('[data-pass-copy]')) copyPassword();
-    if (target.matches('[data-retry]') && store.get('co-order')) refresh(store.get('co-order')!, false);
+    if (target.matches('[data-retry]') && resume) refresh(resume, false);
     if (target.matches('[data-edit]')) {
       // Back from a resumed order: the form needs the course's price and add-ons too.
       const slug = params.get('kelas') ?? current?.course;
       if (!course && slug) loadCourse(slug);
       window.clearInterval(timer);
-      store.del('co-order');
-      store.del('co-claim');
+      if (current) forget(current.course, current.order);
       current = null;
       step(1);
       (form.elements.namedItem('name') as HTMLInputElement).focus();
@@ -770,10 +794,10 @@ const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURICompon
   });
 
   // Returning from DOKU's page, or reloading mid-payment, resumes the same order.
-  const resume = params.get('order') ?? store.get('co-order');
+  // Without an order in the address, only the unpaid order of the class asked for is resumed.
   const known = showCourse(params.get('kelas'));
+  const resume = params.get('order') ?? (known ? orderFor(params.get('kelas')) : null);
   if (resume) {
-    store.set('co-order', resume);
     $('[data-view="pick"]').hidden = true;
     $('[data-view="checkout"]').hidden = false;
     refresh(resume, false).then(() => current?.status === 'pending' && watch(resume));

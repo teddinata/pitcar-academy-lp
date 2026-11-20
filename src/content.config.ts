@@ -725,6 +725,8 @@ export const digitalFaqs: FaqItem[] = [
    ========================================================================== */
 
 export interface InspectionCourse {
+  /** Students who hold the class now, filled from the LMS at build time. */
+  students?: number;
   /**
    * Link checkout platform pembayaran. Selama null, tombol beli membuka
    * WhatsApp dengan pesan yang sudah terisi — pembelian tetap bisa terjadi,
@@ -879,6 +881,8 @@ export const inspectionFaqs: FaqItem[] = [
    ========================================================================== */
 
 export interface AcCourse {
+  /** Students who hold the class now, filled from the LMS at build time. */
+  students?: number;
   checkoutUrl: string;
   name: string;
   /** Nama pendek untuk judul tab, katalog, dan event analytics. */
@@ -1078,6 +1082,8 @@ await applyLivePrices({ 'kelas-online-ac': acCourse, 'kelas-online-inspeksi': in
 
 export interface OnlineCourseCard {
   id: string;
+  /** Slug kelas di LMS (admin › Produk online), untuk harga yang diperbarui di browser. */
+  slug: string;
   /** Halaman penjualan. */
   href: string;
   checkoutUrl: string;
@@ -1103,6 +1109,7 @@ export interface OnlineCourseCard {
 export const onlineCourses: OnlineCourseCard[] = [
   {
     id: 'kelas-online-ac',
+    slug: 'kelas-online-ac',
     href: '/kelas-online-ac/',
     checkoutUrl: acCourse.checkoutUrl,
     name: acCourse.name,
@@ -1127,6 +1134,7 @@ export const onlineCourses: OnlineCourseCard[] = [
   },
   {
     id: 'kelas-inspeksi-mobil-bekas',
+    slug: 'kelas-online-inspeksi',
     href: '/kelas-online-inspeksi/',
     checkoutUrl: inspectionCourse.checkoutUrl ?? '/kelas-online-inspeksi/#harga',
     name: inspectionCourse.name,

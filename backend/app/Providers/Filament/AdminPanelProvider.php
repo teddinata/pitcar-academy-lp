@@ -29,6 +29,9 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->brandName('Pitcar Academy')
+            // The bell: new orders, payments and student messages (App\Services\Lms\TeamAlerts).
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('30s')
             ->colors([
                 'primary' => Color::hex('#CC0000'),
             ])

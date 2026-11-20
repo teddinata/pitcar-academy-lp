@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import ClassmateCount from '../components/ClassmateCount.astro';
 import sneakpeek1 from '../assets/kelas-inspeksi/sneakpeek-1.jpg';
 import sneakpeek2 from '../assets/kelas-inspeksi/sneakpeek-2.jpg';
 import sneakpeek3 from '../assets/kelas-inspeksi/sneakpeek-3.jpg';
@@ -82,6 +83,7 @@ const inspectionCompare = [
 ---
 
 <BaseLayout
+  livePrice={{ slug: 'kelas-online-inspeksi', course: c }}
   title={`${c.name}: Cek Sebelum Beli | Pitcar Academy`}
   description={`Pelajari cara mengecek mobil bekas secara sistematis sebelum membeli. Video, form inspeksi dengan scoring, ringkasan red flag, lifetime access. ${c.priceLabel} ${c.priceDisplay}.`}
   canonical="/kelas-online-inspeksi/"
@@ -152,6 +154,7 @@ const inspectionCompare = [
           <a {...checkoutAttrs} data-source-cta="inspeksi_hero" class="btn btn-primary">{checkoutLabel}</a>
           <a href="#isi-kelas" class="btn btn-ghost">Lihat isi kelas</a>
         </div>
+        <ClassmateCount slug="kelas-online-inspeksi" count={c.students} class="mt-4" />
       </InspectExplorer>
     </div>
   </section>
@@ -358,6 +361,7 @@ const inspectionCompare = [
           <p class="mt-3 text-sm font-semibold text-accent">{c.priceLabel}</p>
           <p class="mt-1 text-sm text-muted">Sekali bayar. Lifetime access, langsung terbuka setelah pembayaran.</p>
           <a {...checkoutAttrs} data-source-cta="inspeksi_pricing" class="btn btn-primary mt-7 w-full">{checkoutLabel}</a>
+          <ClassmateCount slug="kelas-online-inspeksi" count={c.students} variant="talk" class="mt-4" />
           {!c.checkoutUrl && (
             <p class="mt-3 text-sm text-muted">Pembelian diproses lewat WhatsApp tim Pitcar Academy.</p>
           )}

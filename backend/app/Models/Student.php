@@ -47,6 +47,16 @@ class Student extends Model
         return $this->hasMany(LessonProgress::class);
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(CourseReview::class);
+    }
+
+    public function requests(): HasMany
+    {
+        return $this->hasMany(StudentRequest::class);
+    }
+
     public function hasAccessTo(Course $course): bool
     {
         return $this->enrollments()->where('course_id', $course->id)->whereNull('revoked_at')->exists();

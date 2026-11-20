@@ -9,6 +9,7 @@ import GoogleTagManager from '../components/GoogleTagManager.astro';
 import Hotjar from '../components/Hotjar.astro';
 import MetaPixel from '../components/MetaPixel.astro';
 import FunnelAnalytics from '../components/FunnelAnalytics.astro';
+import { livePriceAttrs } from '../lib/livePrices';
 import '../styles/global.css';
 
 interface Props {
@@ -35,6 +36,8 @@ interface Props {
   bare?: boolean;
   /** Scopes a page to its own visual world. `garage` also defaults to dark. */
   world?: 'garage';
+  /** The online class this page sells: its printed prices are refreshed from the LMS on load. */
+  livePrice?: { slug: string; course: { price: number; strikePriceDisplay: string } };
   /** A bare page that places ThemeToggle in its own top strip sets this. */
   ownThemeToggle?: boolean;
 }
@@ -56,6 +59,7 @@ const {
   floatingCta,
   bare = false,
   world,
+  livePrice,
   ownThemeToggle = false,
 } = Astro.props;
 
@@ -126,7 +130,7 @@ const metaPixelId = import.meta.env.PUBLIC_META_PIXEL_ID ?? '1364110365687038';
       noindex={noindex}
     />
   </head>
-  <body class="antialiased">
+  <body class="antialiased" {...(livePrice ? livePriceAttrs(livePrice.slug, livePrice.course) : {})}>
     <GoogleTagManager id={gtmId} placement="body" />
     <FunnelAnalytics />
     <a class="skip-link" href="#main-content">Lewati ke konten utama</a>
@@ -142,5 +146,9 @@ const metaPixelId = import.meta.env.PUBLIC_META_PIXEL_ID ?? '1364110365687038';
     </main>
     {!bare && <Footer />}
     <WhatsAppButton {...floatingCta} />
+    <script>
+      import '../scripts/livePrices';
+      import '../scripts/visits';
+    </script>
   </body>
 </html>

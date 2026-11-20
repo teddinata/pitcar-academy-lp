@@ -115,4 +115,10 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    | A mailbox someone reads. Sales follow-up emails set it as Reply-To and
+    | invite a reply only when it is filled in.
+    */
+    'reply_to' => env('MAIL_REPLY_TO_ADDRESS'),
+
 ];

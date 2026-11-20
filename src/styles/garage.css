@@ -195,6 +195,36 @@ html.garage.dark .g-stage {
     top: 3.75rem;
     height: calc(100% - 9.75rem);
   }
+
+  /* The AC readout row also holds the two mini gauges. */
+  [data-ac] .g-stage { height: clamp(28rem, 130vw, 33rem); }
+
+  [data-ac] .g-car,
+  [data-ac] .g-canvas {
+    top: 5.25rem;
+    height: calc(100% - 11.25rem);
+  }
+}
+
+/* The stage's own pair of manifold gauges, below 1024px only (see AcExplorer). */
+.g-hud-gauges {
+  display: flex;
+  gap: 1.25rem;
+  margin-block: 0.125rem;
+}
+
+.g-hud-gauge {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.g-gauge.g-hud-gauge svg { width: 3.25rem; }
+.g-hud-gauge .g-gauge-zone { stroke-width: 3; }
+.g-hud-gauge .g-gauge-needle path { stroke-width: 2; }
+
+@media (min-width: 1024px) {
+  .g-hud-gauges { display: none; }
 }
 
 .g-canvas {

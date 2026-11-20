@@ -12,6 +12,7 @@ use App\Services\Lms\LoginLink;
 use App\Services\Lms\PasswordIssuer;
 use App\Services\Lms\ProgressRecorder;
 use App\Services\Lms\StudentSessions;
+use App\Support\VideoLink;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -158,6 +159,7 @@ class LearnController extends Controller
             'title' => $course->title,
             'percent' => $recorder->coursePercent($student, $course),
             'complete_at' => (int) config('lms.complete_at_percent'),
+            'review' => LearnFeedbackController::review($course->reviews()->where('student_id', $student->id)->first()),
             'files' => $course->attachments->whereNull('lesson_id')->map($file)->values(),
             'modules' => $course->modules->map(fn ($module) => [
                 'title' => $module->title,
@@ -165,7 +167,8 @@ class LearnController extends Controller
                     'id' => $lesson->id,
                     'title' => $lesson->title,
                     'summary' => $lesson->summary,
-                    'video' => self::youtubeId($lesson->youtube_url),
+                    'video' => VideoLink::parse($lesson->youtube_url)['id'] ?? null,
+                    'provider' => VideoLink::parse($lesson->youtube_url)['provider'] ?? null,
                     'duration' => $lesson->duration_seconds,
                     'percent' => $progress->get($lesson->id)?->watched_percent ?? 0,
                     'position' => $progress->get($lesson->id)?->last_position_seconds ?? 0,
@@ -216,9 +219,11 @@ class LearnController extends Controller
         return $request->attributes->get('student');
     }
 
-    /** Accepts youtu.be, watch?v=, embed/ and shorts/ links. */
+    /** The YouTube id of a link, or null for Drive and anything else. */
     public static function youtubeId(?string $url): ?string
     {
-        return $url && preg_match('~(?:youtu\.be/|v=|embed/|shorts/)([A-Za-z0-9_-]{11})~', $url, $m) ? $m[1] : null;
+        $video = VideoLink::parse($url);
+
+        return $video && $video['provider'] === VideoLink::YOUTUBE ? $video['id'] : null;
     }
 }

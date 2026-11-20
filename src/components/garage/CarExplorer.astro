@@ -302,7 +302,7 @@ const client = {
               Tanya program {part.program.level}
             </a>
             {part.online && (
-              <a href={part.online.href} class="btn btn-ghost mt-3 w-full">
+              <a href={part.online.href} class="btn btn-ghost mt-3 w-full" {...part.online.live}>
                 {part.online.label}, {part.online.price}
               </a>
             )}

@@ -80,6 +80,7 @@ class EnrollmentGrant
             app(LoginLink::class)->send($order->student, $order->course, $order->purchaseTitle());
             app(AccessWhatsApp::class)->afterPayment($order);
             SendPurchaseConversion::dispatch($order->id)->afterCommit();
+            app(TeamAlerts::class)->paid($order);
         }
 
         return $enrollment;

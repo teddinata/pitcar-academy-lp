@@ -1,4 +1,5 @@
 ---
+import { livePriceAttrs } from '../../lib/livePrices';
 import LeadForm from '../LeadForm.astro';
 import {
   careerStatement,
@@ -207,7 +208,7 @@ const consultationSteps = [
     </div>
     <ul class="border-t border-body lg:col-span-8">
       {onlineCourses.map((course) => (
-        <li class="border-b border-line">
+        <li class="border-b border-line" {...livePriceAttrs(course.slug, course)}>
           <a href={course.href} class="group flex items-center gap-5 py-5 sm:gap-7">
             <img src={course.cover} alt="" width={course.coverWidth} height={course.coverHeight} loading="lazy" decoding="async" class="h-24 w-24 shrink-0 object-cover sm:h-32 sm:w-32" />
             <span class="min-w-0 flex-1">

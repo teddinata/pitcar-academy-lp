@@ -162,7 +162,29 @@ class CourseCmsTest extends TestCase
         $this->assertTrue($module->lessons->first()->is_preview);
     }
 
-    public function test_a_lesson_link_must_be_a_youtube_video(): void
+    public function test_a_lesson_can_play_from_google_drive(): void
+    {
+        $this->as(UserRole::Admin);
+        $course = $this->ac();
+
+        Livewire::test(ModulesRelationManager::class, ['ownerRecord' => $course, 'pageClass' => EditCourse::class])
+            ->callTableAction('create', data: [
+                'title' => 'Modul',
+                'lessons' => [['title' => 'Video Drive', 'youtube_url' => 'https://drive.google.com/file/d/1PfYC-E3CFt20HXzr8SSabcdEFGH/view?usp=sharing', 'duration_seconds' => '10:00', 'is_preview' => false]],
+            ])
+            ->assertHasNoTableActionErrors();
+
+        Livewire::test(ModulesRelationManager::class, ['ownerRecord' => $course, 'pageClass' => EditCourse::class])
+            ->callTableAction('create', data: [
+                'title' => 'Folder',
+                'lessons' => [['title' => 'Video', 'youtube_url' => 'https://drive.google.com/drive/folders/1AbCdEfGhIjKlMnOpQrStUv', 'duration_seconds' => null, 'is_preview' => false]],
+            ])
+            ->assertHasTableActionErrors();
+
+        $this->assertSame(1, $course->modules()->count());
+    }
+
+    public function test_a_lesson_link_must_be_youtube_or_drive(): void
     {
         $this->as(UserRole::Admin);
 

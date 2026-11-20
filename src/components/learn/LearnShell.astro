@@ -22,6 +22,7 @@ const { title, signedOut = false } = Astro.props;
           {!signedOut && (
             <>
               <a href="/belajar/" class="inline-flex min-h-11 items-center !text-inherit !no-underline hover:!text-accent">Kelas saya</a>
+              <a href="/belajar/masukan/" class="inline-flex min-h-11 items-center !text-inherit !no-underline hover:!text-accent">Masukan</a>
               <a href="/belajar/akun/" class="inline-flex min-h-11 items-center !text-inherit !no-underline hover:!text-accent">Akun<span class="ml-1.5 hidden max-w-[16ch] truncate font-normal text-muted sm:inline" data-student-name></span></a>
               <button type="button" class="learn-link min-h-11" data-logout>Keluar</button>
             </>
@@ -76,6 +77,59 @@ const { title, signedOut = false } = Astro.props;
   .learn-input:focus-visible {
     outline: 2px solid rgb(var(--accent));
     outline-offset: 2px;
+  }
+  textarea.learn-input {
+    min-height: 7.5rem;
+    resize: vertical;
+    line-height: 1.6;
+  }
+  select.learn-input {
+    cursor: pointer;
+  }
+  /* A native radio dressed as the world's chip: arrow keys move between
+     options, and the chosen one takes the red fill like a selected chip. */
+  .learn-choice {
+    position: relative;
+    display: flex;
+    cursor: pointer;
+  }
+  .learn-choice > input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  .learn-choice > span {
+    display: flex;
+    width: 100%;
+    min-height: 3rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 0.875rem;
+    border: 1px solid rgb(var(--muted));
+    background-color: rgb(var(--ground));
+    color: rgb(var(--body));
+    white-space: nowrap;
+    transition: border-color 200ms ease, background-color 200ms ease, color 200ms ease;
+  }
+  .learn-choice:hover > span {
+    border-color: rgb(var(--body));
+  }
+  .learn-choice:active > span {
+    background-color: rgb(var(--ground-alt));
+  }
+  .learn-choice > input:checked + span {
+    border-color: #cc0000;
+    background-color: #cc0000;
+    color: #ffffff;
+  }
+  .learn-choice > input:focus-visible + span {
+    outline: 3px solid rgb(var(--accent));
+    outline-offset: 3px;
+  }
+  .learn-choice > input:disabled + span {
+    cursor: not-allowed;
+    opacity: 0.6;
   }
   .learn-error {
     font-size: 0.875rem;

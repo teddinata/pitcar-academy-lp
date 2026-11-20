@@ -8,6 +8,7 @@ use App\Filament\Resources\Courses\Pages\ListCourses;
 use App\Filament\Resources\Courses\RelationManagers\AttachmentsRelationManager;
 use App\Filament\Resources\Courses\RelationManagers\ModulesRelationManager;
 use App\Filament\Resources\Courses\RelationManagers\OffersRelationManager;
+use App\Filament\Resources\Courses\RelationManagers\StudentsRelationManager;
 use App\Filament\Resources\Courses\Schemas\CourseForm;
 use App\Filament\Resources\Courses\Tables\CoursesTable;
 use App\Models\Course;
@@ -79,6 +80,7 @@ class CourseResource extends Resource
     {
         return [
             ModulesRelationManager::class,
+            StudentsRelationManager::class,
             AttachmentsRelationManager::class,
             OffersRelationManager::class,
         ];
