@@ -16,7 +16,8 @@ const checkoutLabel = `Beli kelas ini, ${c.priceDisplay}`;
 // The shared content file separates clauses with a long dash; this page sets
 // them with a comma instead of editing copy other pages use.
 const tidy = (text: string) => text.replaceAll(' — ', ', ');
-const checkoutAttrs = { href: c.checkoutUrl, 'data-checkout': '' };
+// The item fields feed the ad events (src/scripts/checkoutClick.ts); the live-price refresh keeps data-price current.
+const checkoutAttrs = { href: c.checkoutUrl, 'data-checkout': '', 'data-item-id': 'kelas-online-ac', 'data-item-name': c.name, 'data-price': c.price };
 
 const workshopNumbers = trustNumbers.filter((n) => n.publish);
 
@@ -318,37 +319,7 @@ const structuredData = [
   <SalesPopup productName={c.shortName} product="ac" image="/kelas-ac/thumb-192.webp" />
 </BaseLayout>
 
-<script define:vars={{ price: c.price, itemName: c.name }}>
-  // GA4 ecommerce shape, so the purchase funnel can be built on standard
-  // reports. Payment and Purchase are reported by the checkout page.
-  const item = { item_id: 'kelas-online-ac', item_name: itemName, price, quantity: 1 };
-  const commerce = { currency: 'IDR', value: price, items: [item] };
-
-  // Inline scripts run before the bundled analytics module defines
-  // trackFunnelEvent; module scripts are done by DOMContentLoaded.
-  document.addEventListener('DOMContentLoaded', () => window.trackFunnelEvent?.('view_item', commerce));
-
-  // The checkout reads these off its own URL, so carrying them across keeps
-  // the ad source attached to the order.
-  const attributionParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'gclid', 'ttclid', 'fbclid'];
-
-  document.addEventListener('click', (event) => {
-    const link = event.target?.closest?.('[data-checkout]');
-    if (!link) return;
-    const toCheckout = link.hostname === window.location.hostname && link.pathname.startsWith('/checkout');
-    if (toCheckout || link.hostname.endsWith('myscalev.com')) {
-      const from = new URLSearchParams(window.location.search);
-      const to = new URL(link.href);
-      for (const key of attributionParams) {
-        if (from.has(key) && !to.searchParams.has(key)) to.searchParams.set(key, from.get(key));
-      }
-      link.href = to.toString();
-    }
-    window.trackFunnelEvent?.('begin_checkout', { ...commerce, source_cta: link.dataset.sourceCta || 'unknown' });
-    window.fbq?.('track', 'InitiateCheckout', { value: price, currency: 'IDR', content_name: itemName, content_ids: [item.item_id], content_type: 'product' });
-    // The checkout page sends InitiateCheckout itself unless told this click already did.
-    if (toCheckout) {
-      try { sessionStorage.setItem('pitcar_checkout_initiated', new URL(link.href).searchParams.get('kelas') || ''); } catch { /* storage blocked */ }
-    }
-  });
+<script>
+  import { trackSalesPage } from '../scripts/checkoutClick';
+  trackSalesPage({ view: 'item', click: 'begin_checkout' });
 </script>

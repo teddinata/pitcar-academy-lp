@@ -49,7 +49,9 @@ class EditCourse extends EditRecord
 
         Notification::make()
             ->title('Harga tersimpan')
-            ->body('Checkout sudah memakai harga baru. Landing page masih menampilkan harga lama sampai situs diterbitkan ulang lewat tombol "Terbitkan ulang situs".')
+            // The sales pages swap prices in the browser on every visit (src/scripts/livePrices.ts);
+            // only what is read without running the page waits for a rebuild.
+            ->body('Checkout dan landing page sudah memakai harga baru sejak kunjungan berikutnya. Pratinjau link saat dibagikan dan hasil pencarian Google masih memakai harga lama sampai situs diterbitkan ulang lewat tombol "Terbitkan ulang situs".')
             ->warning()
             ->persistent()
             ->send();

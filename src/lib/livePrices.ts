@@ -11,12 +11,12 @@
  * The checkout always charges the database price either way.
  */
 
+import { parseRupiah, rupiah, strike } from './pricing';
+
 interface PricedCourse {
   price: number;
   priceDisplay: string;
   strikePriceDisplay: string;
-  /** "hemat RpX" next to the price, where a page shows one. */
-  savingsDisplay?: string;
   /** Students who hold the class now, for "bergabung dengan N siswa lain". */
   students?: number;
   reviews?: CourseReviews;
@@ -58,9 +58,6 @@ export function parseReviews(value: unknown): CourseReviews | null {
 /** Below this the classmate line is not shown at all. */
 export const MIN_CLASSMATES = 10;
 
-export const rupiah = (n: number) => 'Rp' + Math.round(n).toLocaleString('id-ID');
-const digits = (text: string) => Number(text.replace(/\D/g, '')) || 0;
-
 /**
  * Attributes for an element whose printed prices belong to one online class.
  * Every price, strike price and saving of that class inside the element (text,
@@ -68,7 +65,7 @@ const digits = (text: string) => Number(text.replace(/\D/g, '')) || 0;
  * page's own class; a block about another class carries its own.
  */
 export function livePriceAttrs(slug: string, course: { price: number; strikePriceDisplay: string }) {
-  return { 'data-live-price': slug, 'data-live-built': `${course.price}/${digits(course.strikePriceDisplay)}` };
+  return { 'data-live-price': slug, 'data-live-built': `${course.price}/${parseRupiah(course.strikePriceDisplay)}` };
 }
 
 export async function applyLivePrices(courses: Record<string, PricedCourse>): Promise<void> {
@@ -87,17 +84,16 @@ export async function applyLivePrices(courses: Record<string, PricedCourse>): Pr
         const reviews = parseReviews(data.reviews);
         if (reviews) course.reviews = reviews;
         const price = data.course?.price;
-        const strike = data.course?.strike_price;
+        const strikePrice = data.course?.strike_price;
         const students = data.course?.students;
         if (typeof students === 'number' && Number.isInteger(students) && students >= 0) course.students = students;
         if (typeof price !== 'number' || !Number.isInteger(price) || price <= 0) throw new Error('harga tidak valid');
 
         // A missing or lower strike price keeps the printed one, as the browser refresh does.
-        const strikeNow = typeof strike === 'number' && strike > price ? strike : digits(course.strikePriceDisplay);
+        const strikeNow = strike(price, typeof strikePrice === 'number' ? strikePrice : null, parseRupiah(course.strikePriceDisplay));
         course.price = price;
         course.priceDisplay = rupiah(price);
-        if (strikeNow > 0) course.strikePriceDisplay = rupiah(strikeNow);
-        if (course.savingsDisplay !== undefined && strikeNow > price) course.savingsDisplay = rupiah(strikeNow - price);
+        if (strikeNow) course.strikePriceDisplay = rupiah(strikeNow);
       } catch (error) {
         console.warn(`[harga] ${slug}: memakai harga bawaan ${course.priceDisplay} (${error instanceof Error ? error.message : error})`);
       }

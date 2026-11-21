@@ -4,6 +4,7 @@ import ThemeToggle from '../components/ThemeToggle.astro';
 import '../styles/garage.css';
 import { acCourse, contact, inspectionCourse, onlineCourses } from '../content.config';
 import { livePriceAttrs } from '../lib/livePrices';
+import { parseRupiah } from '../lib/pricing';
 
 // The add-on card shows the add-on's poster, cropped to its title block.
 const coverFocus: Record<string, string> = { 'kelas-online-ac': '50% 22%', 'kelas-online-inspeksi': '50% 0%' };
@@ -82,7 +83,7 @@ const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURICompon
       <div data-view="checkout" class="grid gap-10 lg:grid-cols-12 lg:gap-16" hidden>
         <aside class="min-w-0 lg:col-span-5" aria-label="Ringkasan pesanan">
           {courses.map((course) => (
-            <div data-course={course.slug} data-title={course.name} data-tracking-id={course.trackingId} data-amount={course.amount} data-strike-amount={Number(course.strike.replace(/\D/g, '')) || ''} hidden>
+            <div data-course={course.slug} data-title={course.name} data-tracking-id={course.trackingId} data-amount={course.amount} data-strike-amount={parseRupiah(course.strike) || ''} hidden>
               <h1 class="g-h2 !text-[clamp(2rem,4vw,3rem)]">{course.name}</h1>
               <div class="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
                 <span class="g-num text-5xl" data-price>{course.price}</span>
@@ -601,6 +602,7 @@ const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURICompon
 
 <script>
   import { readMetaCookie } from '../lib/leads';
+  import { quote, ribu, rupiah, strike, type Offer as PricedOffer, type Priced } from '../lib/pricing';
 
   const root = document.querySelector<HTMLElement>('[data-checkout-root]')!;
   const api = root.dataset.api ?? '';
@@ -633,8 +635,8 @@ const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURICompon
 
   type Item = { course: string; title: string; tracking_id: string; kind: string; price: number };
   type Order = { order: string; course: string; status: string; amount: number; items?: Item[]; payment_url: string | null; expires_at: string | null };
-  type CoursePrice = { slug: string; title: string; tracking_id: string; price: number; strike_price: number | null };
-  type Offer = CoursePrice & { offer_price: number; headline: string | null };
+  type CoursePrice = Priced & { tracking_id: string };
+  type Offer = CoursePrice & PricedOffer & { headline: string | null };
   let current: Order | null = null;
   let timer: number | undefined;
 
@@ -644,9 +646,6 @@ const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURICompon
     del: (key: string) => { try { sessionStorage.removeItem(key); } catch { /* private mode */ } },
   };
 
-  const rupiah = (n: number) => 'Rp' + n.toLocaleString('id-ID');
-  // "79 ribu" reads cheaper than "Rp79.000"; odd amounts keep the full figure.
-  const ribu = (n: number) => (n >= 1000 && n % 1000 === 0 ? `${(n / 1000).toLocaleString('id-ID')} ribu` : rupiah(n));
   const upsell = $<HTMLFieldSetElement>('[data-upsell]');
   type Cover = { src: string; srcset: string; alt: string; focus: string };
   const covers: Record<string, Cover> = (() => {
@@ -659,26 +658,16 @@ const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURICompon
     offers.filter((offer) => upsell.querySelector<HTMLInputElement>(`[data-addon="${CSS.escape(offer.slug)}"]`)?.checked);
 
   /**
-   * The receipt under the order bump. Each line shows what it would cost
-   * without this checkout (the class's normal price, or the add-on bought on
-   * its own) struck through, then what is charged. Ticking an add-on adds its
-   * line, so the struck total, the saving and the total all move together.
+   * The receipt under the order bump: each line's harga normal struck through,
+   * then what is charged (src/lib/pricing.ts decides both). Ticking an add-on
+   * adds its line, so the struck total, the saving and the total move together.
    */
   let lastSaving = -1;
   function updateTotal() {
     if (!course) return;
-    const lines = [
-      {
-        title: course.title,
-        note: '',
-        normal: course.strike_price && course.strike_price > course.price ? course.strike_price : course.price,
-        price: course.price,
-      },
-      ...selected().map((o) => ({ title: o.title, note: 'Tambahan bundling', normal: Math.max(o.price, o.offer_price), price: o.offer_price })),
-    ];
-    const total = lines.reduce((sum, l) => sum + l.price, 0);
-    const normal = lines.reduce((sum, l) => sum + l.normal, 0);
-    const saving = normal - total;
+    const q = quote(course, offers, selected().map((o) => o.slug));
+    const { saving, total } = q;
+    const lines = q.lines.map((l, i) => ({ ...l, note: i === 0 ? '' : 'Tambahan bundling' }));
 
     const template = document.querySelector<HTMLTemplateElement>('#co-sum-item')!;
     $('[data-sum-items]').replaceChildren(
@@ -688,24 +677,24 @@ const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURICompon
         set('[data-i-title]', line.title);
         set('[data-i-note]', line.note);
         set('[data-i-price]', rupiah(line.price));
-        const strike = row.querySelector<HTMLElement>('[data-i-strike]')!;
-        if (line.normal > line.price) strike.innerHTML = `<span class="sr-only">Harga normal </span>${rupiah(line.normal)}`;
-        else strike.remove();
+        const struck = row.querySelector<HTMLElement>('[data-i-strike]')!;
+        if (line.normal > line.price) struck.innerHTML = `<span class="sr-only">Harga normal </span>${rupiah(line.normal)}`;
+        else struck.remove();
         if (!line.note) row.querySelector('[data-i-note]')!.remove();
         return row;
       }),
     );
 
-    $('[data-sum-normal]').innerHTML = `<span class="sr-only">Sebelumnya </span>${rupiah(normal)}`;
+    $('[data-sum-normal]').innerHTML = `<span class="sr-only">Sebelumnya </span>${rupiah(q.normal)}`;
     $('[data-sum-save]').textContent = rupiah(saving);
     $('[data-sum-normal-row]').hidden = saving <= 0;
     $('[data-sum-save-row]').hidden = saving <= 0;
     $('[data-total-value]').textContent = rupiah(total);
 
-    // One unticked add-on is still worth naming next to the saving it would add.
-    const missed = offers.find((o) => !selected().includes(o) && o.price > o.offer_price);
+    // The unticked add-on that would save the most is worth naming next to the saving.
+    const missed = q.missed;
     const nudge = $('[data-sum-nudge]');
-    nudge.textContent = missed ? `Centang ${missed.title} di atas untuk hemat ${rupiah(missed.price - missed.offer_price)} lagi.` : '';
+    nudge.textContent = missed ? `Centang ${missed.title} di atas untuk hemat ${rupiah(missed.saving)} lagi.` : '';
     nudge.hidden = !missed;
 
     // A bigger saving gets one short flash, so the change below the bump is seen.
@@ -722,6 +711,8 @@ const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURICompon
   function renderOffers() {
     const template = document.querySelector<HTMLTemplateElement>('#co-upsell')!;
     upsell.querySelectorAll('.co-upsell').forEach((el) => el.remove());
+    if (!course) return;
+    const priced = new Map(quote(course, offers, []).addons.map((a) => [a.slug, a]));
     for (const offer of offers) {
       const card = template.content.firstElementChild!.cloneNode(true) as HTMLElement;
       const box = card.querySelector<HTMLInputElement>('input')!;
@@ -729,15 +720,17 @@ const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURICompon
       box.name = 'addons';
       box.value = offer.slug;
       const fill = (sel: string, text: string) => (card.querySelector<HTMLElement>(sel)!.textContent = text);
-      const discounted = offer.price > offer.offer_price;
+      // Struck at its harga normal, as its own sales page shows it; "beli terpisah" is what it costs alone.
+      const { normal, saving, alone: own, price } = priced.get(offer.slug)!;
+      const alone = own > price ? ` Beli terpisah nanti, harganya ${rupiah(own)}.` : '';
       fill('[data-u-title]', offer.title);
       fill('[data-u-headline]', offer.headline ?? '');
       fill('[data-u-price]', ribu(offer.offer_price));
-      fill('[data-u-normal]', discounted ? rupiah(offer.price) : '');
+      fill('[data-u-normal]', saving > 0 ? rupiah(normal) : '');
       fill(
         '[data-u-saving]',
-        discounted
-          ? `Hemat ${rupiah(offer.price - offer.offer_price)}. Harga ini cuma ada di halaman checkout. Beli terpisah nanti, harganya kembali ${rupiah(offer.price)}.`
+        saving > 0
+          ? `Hemat ${rupiah(saving)}. Harga ini cuma ada di halaman checkout.${alone}`
           : 'Harga ini cuma ada di halaman checkout, sebelum kamu lanjut ke pembayaran.',
       );
       const cover = covers[offer.slug];
@@ -766,6 +759,7 @@ const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURICompon
 
   /** Price and add-ons come from the LMS; the printed price stands in until it answers, or if it cannot. */
   async function loadCourse(slug: string) {
+    lastSaving = -1; // another class's saving must not flash as this one's
     const panel = root.querySelector<HTMLElement>(`[data-course="${CSS.escape(slug)}"]`);
     if (!panel) return;
     course = { slug, title: panel.dataset.title ?? '', tracking_id: panel.dataset.trackingId ?? slug, price: Number(panel.dataset.amount) || 0, strike_price: Number(panel.dataset.strikeAmount) || null };
@@ -773,8 +767,13 @@ const helpHref = `https://wa.me/${contact.whatsappNumber}?text=${encodeURICompon
       const res = await fetch(`${api}/api/checkout/courses/${encodeURIComponent(slug)}`, { headers: { Accept: 'application/json' } });
       if (res.ok) {
         const data: { course: CoursePrice; offers: Offer[] } = await res.json();
-        course = data.course;
-        offers = data.offers ?? [];
+        // A missing or lower strike price keeps the one printed on the page, as the sales pages do.
+        course = { ...data.course, strike_price: strike(data.course.price, data.course.strike_price, course.strike_price ?? 0) };
+        // An add-on falls back to the strike price its own panel prints, like the class does.
+        offers = (data.offers ?? []).map((o) => {
+          const printed = Number(root.querySelector<HTMLElement>(`[data-course="${CSS.escape(o.slug)}"]`)?.dataset.strikeAmount) || 0;
+          return { ...o, strike_price: strike(o.price, o.strike_price, printed) };
+        });
         panel.querySelector<HTMLElement>('[data-price]')!.textContent = rupiah(course.price);
         panel.querySelector<HTMLElement>('[data-strike]')!.textContent = course.strike_price ? rupiah(course.strike_price) : '';
         renderOffers();

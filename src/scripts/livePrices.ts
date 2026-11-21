@@ -11,9 +11,14 @@
  *
  * The same answer carries the class's reviews, which refill the "Kata siswa"
  * section (CourseReviews.astro).
+ *
+ * When it is done, answered or not, <html> gets data-live-prices="done" and
+ * the document hears "live-prices:done", so analytics can wait for the price
+ * a visitor actually sees (src/scripts/checkoutClick.ts).
  */
 
 import { MIN_RATINGS, parseReviews, type CourseReviews } from '../lib/livePrices';
+import { priceChanges } from '../lib/pricing';
 
 type Built = { price: number; strike: number };
 type Live = { price: number; strike: number | null; students: number | null; reviews: CourseReviews | null };
@@ -21,7 +26,6 @@ type Live = { price: number; strike: number | null; students: number | null; rev
 // Same floor as the build (MIN_CLASSMATES in src/lib/livePrices.ts).
 const MIN_CLASSMATES = 10;
 
-const rupiah = (n: number) => 'Rp' + Math.round(n).toLocaleString('id-ID');
 const base = (import.meta.env.PUBLIC_API_BASE_URL ?? import.meta.env.PUBLIC_LEAD_API_BASE_URL ?? '').trim().replace(/\/$/, '');
 const ATTRIBUTES = ['href', 'aria-label', 'title'];
 
@@ -45,19 +49,6 @@ async function fetchPrice(slug: string): Promise<Live | null> {
   }
 }
 
-/** Old string to new string. Empty when nothing a visitor would see has changed. */
-function changes(built: Built, live: Live): Map<string, string> {
-  // Same rule as the build: a missing or lower strike price keeps the printed one.
-  const strike = live.strike !== null && live.strike > live.price ? live.strike : built.strike;
-  const map = new Map<string, string>();
-  if (live.price !== built.price) map.set(rupiah(built.price), rupiah(live.price));
-  if (built.strike > 0 && strike !== built.strike) map.set(rupiah(built.strike), rupiah(strike));
-  const savedBefore = built.strike - built.price;
-  const savedNow = strike - live.price;
-  if (savedBefore > 0 && savedNow > 0 && savedNow !== savedBefore) map.set(rupiah(savedBefore), rupiah(savedNow));
-  return map;
-}
-
 /** One pass, so a new price that equals another old string is not replaced twice. */
 function replacer(map: Map<string, string>): (text: string) => string {
   const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -67,7 +58,7 @@ function replacer(map: Map<string, string>): (text: string) => string {
 }
 
 function apply(scope: HTMLElement, built: Built, live: Live) {
-  const map = changes(built, live);
+  const map = priceChanges(built, live);
   if (map.size === 0) return;
   const swap = replacer(map);
   const own = (el: Element | null) => el?.closest('[data-live-price]') === scope;
@@ -168,4 +159,9 @@ async function refresh() {
   }
 }
 
-refresh();
+refresh()
+  .catch(() => { /* the printed prices stay */ })
+  .finally(() => {
+    document.documentElement.dataset.livePrices = 'done';
+    document.dispatchEvent(new Event('live-prices:done'));
+  });

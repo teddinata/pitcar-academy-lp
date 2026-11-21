@@ -1,4 +1,5 @@
 import { applyLivePrices, type CourseReviews } from './lib/livePrices';
+import { parseRupiah, rupiah } from './lib/pricing';
 
 export const collections = {
   // Content data — semua info bisnis di sini
@@ -895,8 +896,8 @@ export interface AcCourse {
   price: number;
   priceDisplay: string;
   strikePriceDisplay: string;
-  /** Selisih harga coret dan harga jual. !! VERIFY saat salah satunya berubah. */
-  savingsDisplay: string;
+  /** Strike price minus price, from the two above, so it follows a live price. */
+  readonly savingsDisplay: string;
   priceLabel: string;
   headline: string;
   subheadline: string;
@@ -924,7 +925,9 @@ export const acCourse: AcCourse = {
   price: 99000,
   priceDisplay: 'Rp99.000',
   strikePriceDisplay: 'Rp499.000',
-  savingsDisplay: 'Rp400.000',
+  get savingsDisplay() {
+    return rupiah(parseRupiah(this.strikePriceDisplay) - this.price);
+  },
   priceLabel: 'Harga spesial launching',
   headline: 'AC nggak dingin bukan berarti kurang freon.',
   subheadline:
